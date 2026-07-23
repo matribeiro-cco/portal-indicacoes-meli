@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal de Indicações — Meli Logística</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0A0F1E;
+  --surface: #111827;
+  --input-bg: #1A2235;
+  --border: #1E2D45;
+  --text: #F0F4FF;
+  --muted: #7A8BA8;
+  --yellow: #FFE600;
+  --blue: #3B82F6;
+  --blue-bg: #1E3A5F;
+  --green: #10B981;
+  --green-bg: #064E3B;
+  --amber: #F59E0B;
+  --red: #EF4444;
+  --purple: #8B5CF6;
+}
+
+body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; align-items: center; justify-content: center; padding: 24px; }
+#dashScreen { display: none; flex-direction: column; align-items: stretch; justify-content: flex-start; min-height: 100vh; padding: 0; }
+#dashScreen.active { display: flex; }
+
+/* ── AUTH CARD ── */
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 440px;
+}
+
+.auth-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 36px; }
+.logo-badge { background: var(--yellow); color: #000; font-weight: 700; font-size: 15px; padding: 7px 14px; border-radius: 8px; }
+.logo-text { font-size: 16px; font-weight: 600; }
+
+.auth-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.auth-sub { font-size: 14px; color: var(--muted); margin-bottom: 32px; line-height: 1.5; }
+
+.auth-field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+.auth-field label { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+
+.auth-input {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 15px;
+  padding: 13px 16px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color .15s;
+  width: 100%;
+}
+.auth-input:focus { border-color: var(--yellow); }
+.auth-input.error { border-color: var(--red); }
+.auth-input::placeholder { color: var(--muted); }
+
+.auth-select {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 15px;
+  padding: 13px 16px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color .15s;
+  width: 100%;
+  cursor: pointer;
+}
+.auth-select:focus { border-color: var(--yellow); }
+.auth-select.error { border-color: var(--red); }
+.auth-select option { background: var(--surface); }
+
+.field-err { font-size: 12px; color: var(--red); display: none; margin-top: 2px; }
+.field-err.show { display: block; }
+
+.btn-primary {
+  width: 100%;
+  background: var(--yellow);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background .15s;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-primary:hover { background: #f0d900; }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+.auth-alert {
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  margin-top: 12px;
+  display: none;
+}
+.auth-alert.error { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25); color: var(--red); }
+.auth-alert.success { background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.25); color: var(--green); }
+.auth-alert.show { display: block; }
+
+.auth-link { font-size: 13px; color: var(--muted); margin-top: 20px; text-align: center; }
+.auth-link button { background: none; border: none; color: var(--yellow); cursor: pointer; font-size: 13px; font-family: inherit; font-weight: 600; padding: 0; }
+.auth-link button:hover { text-decoration: underline; }
+
+.divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.divider span { font-size: 12px; color: var(--muted); }
+
+/* Senha com toggle */
+.input-wrap { position: relative; }
+.toggle-senha { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0; }
+
+/* ── SPINNER ── */
+.spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(0,0,0,.2); border-top-color: #000; border-radius: 50%; animation: spin .6s linear infinite; }
+.spinner-light { border-color: rgba(255,255,255,.2); border-top-color: #fff; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── HEADER ── */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.header-badge { background: var(--yellow); color: #000; font-weight: 700; font-size: 13px; padding: 5px 11px; border-radius: 8px; }
+.header-title { font-size: 15px; font-weight: 600; }
+.header-sub { font-size: 11px; color: var(--muted); }
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+.user-chip { background: var(--input-bg); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+.user-chip .dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; flex-shrink: 0; }
+
+.btn-sair { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer; font-family: inherit; transition: all .15s; }
+.btn-sair:hover { border-color: var(--red); color: var(--red); }
+
+/* ── MAIN ── */
+main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; width: 100%; }
+
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
+.page-title { font-size: 22px; font-weight: 700; }
+.page-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; font-family: inherit; }
+.btn-yellow { background: var(--yellow); color: #000; }
+.btn-yellow:hover { background: #f0d900; }
+.btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+
+/* ── METRICS ── */
+.metrics-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
+.metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; border-top: 3px solid transparent; }
+.metric-card.blue { border-top-color: var(--blue); }
+.metric-card.green { border-top-color: var(--green); }
+.metric-card.amber { border-top-color: var(--amber); }
+.metric-card.red { border-top-color: var(--red); }
+.metric-value { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+.metric-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+
+/* ── TABLE ── */
+.table-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.table-toolbar { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.toolbar-left { display: flex; align-items: center; gap: 12px; }
+.count-badge { background: var(--input-bg); border: 1px solid var(--border); color: var(--muted); font-size: 12px; padding: 3px 10px; border-radius: 20px; }
+.search-input { background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; padding: 7px 12px; width: 220px; outline: none; font-family: inherit; transition: border-color .15s; }
+.search-input::placeholder { color: var(--muted); }
+.search-input:focus { border-color: var(--blue); }
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: var(--input-bg); }
+th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--border); }
+td { padding: 14px 16px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tbody tr { transition: background .1s; cursor: pointer; }
+tbody tr:hover { background: var(--input-bg); }
+.cpf-chip { font-family: monospace; font-size: 12px; color: var(--yellow); background: rgba(255,230,0,.08); padding: 3px 8px; border-radius: 4px; }
+
+/* ── BADGES ── */
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.b-validacao { color: var(--blue); background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.25); }
+.b-aprovado { color: var(--green); background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.25); }
+.b-reprovado { color: var(--red); background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.25); }
+.b-pendente { color: var(--amber); background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.25); }
+.b-cancelado { color: var(--muted); background: rgba(122,139,168,.1); border: 1px solid rgba(122,139,168,.2); }
+.b-doc { color: var(--amber); background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.25); }
+.b-licenciamento { color: var(--purple); background: rgba(139,92,246,.12); border: 1px solid rgba(139,92,246,.25); }
+
+/* ── STATES ── */
+.loading-state { text-align: center; padding: 60px 24px; color: var(--muted); font-size: 14px; }
+.loading-state .spinner { width: 24px; height: 24px; border-width: 3px; border-color: var(--border); border-top-color: var(--yellow); margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto; }
+.empty-state { text-align: center; padding: 60px 24px; }
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+.empty-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.empty-sub { font-size: 13px; color: var(--muted); }
+
+/* ── FORM MODAL ── */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 200; backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 16px; }
+.overlay.active { display: flex; }
+.form-modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 620px; max-height: 92vh; overflow-y: auto; position: relative; }
+
+.form-header { padding: 24px 28px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 10; display: flex; align-items: flex-start; justify-content: space-between; }
+.form-title { font-size: 18px; font-weight: 700; }
+.form-subtitle { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.close-btn { background: var(--input-bg); border: 1px solid var(--border); color: var(--muted); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .15s; }
+.close-btn:hover { color: var(--text); border-color: var(--text); }
+
+.steps-bar { padding: 20px 28px; display: flex; align-items: center; }
+.step-item { display: flex; align-items: center; flex: 1; }
+.step-item:last-child { flex: 0; }
+.step-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); background: var(--input-bg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--muted); flex-shrink: 0; transition: all .2s; }
+.step-dot.active { border-color: var(--yellow); background: rgba(255,230,0,.1); color: var(--yellow); }
+.step-dot.done { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+.step-line { flex: 1; height: 2px; background: var(--border); margin: 0 4px; transition: background .2s; }
+.step-line.done { background: var(--green); }
+
+.form-body { padding: 4px 28px 28px; }
+.form-section { display: none; }
+.form-section.active { display: block; }
+.section-label { font-size: 11px; font-weight: 600; color: var(--yellow); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; margin-top: 8px; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field.span2 { grid-column: span 2; }
+.f-label { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+.req { color: var(--red); }
+.f-input { background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; padding: 10px 12px; outline: none; font-family: inherit; transition: border-color .15s; width: 100%; }
+.f-input:focus { border-color: var(--blue); }
+.f-input.error { border-color: var(--red); }
+.f-select { background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; padding: 10px 12px; outline: none; font-family: inherit; transition: border-color .15s; width: 100%; cursor: pointer; }
+.f-select:focus { border-color: var(--blue); }
+.f-select.error { border-color: var(--red); }
+.f-select option { background: var(--surface); }
+.f-err { font-size: 11px; color: var(--red); display: none; }
+.f-err.show { display: block; }
+
+.upload-area { border: 2px dashed var(--border); border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: all .15s; background: var(--input-bg); }
+.upload-area:hover { border-color: var(--blue); background: rgba(59,130,246,.04); }
+.upload-area.error { border-color: var(--red); }
+input[type=file] { display: none; }
+.upload-done { display: none; align-items: center; gap: 10px; background: var(--green-bg); border: 1px solid rgba(16,185,129,.3); border-radius: 8px; padding: 12px 14px; font-size: 13px; color: var(--green); }
+.upload-done.show { display: flex; }
+.upload-done button { background: none; border: none; color: var(--muted); cursor: pointer; margin-left: auto; font-size: 18px; line-height: 1; }
+
+.review-box { margin-top: 20px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.review-label { font-size: 12px; color: var(--yellow); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; }
+.review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; }
+.review-item span:first-child { display: block; color: var(--muted); font-size: 11px; margin-bottom: 2px; text-transform: uppercase; letter-spacing: .3px; }
+
+.form-footer { padding: 16px 28px 24px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); margin-top: 20px; }
+.step-lbl { font-size: 12px; color: var(--muted); }
+
+.submitting-ov { display: none; position: absolute; inset: 0; background: rgba(10,15,30,.92); border-radius: 16px; align-items: center; justify-content: center; flex-direction: column; gap: 14px; z-index: 20; }
+.submitting-ov.show { display: flex; }
+.submitting-ov p { font-size: 14px; color: var(--muted); }
+.submitting-ov .spinner { width: 32px; height: 32px; border-width: 3px; border-color: var(--border); border-top-color: var(--yellow); }
+
+.success-screen { display: none; text-align: center; padding: 48px 28px; }
+.success-screen.active { display: block; }
+.success-icon { width: 64px; height: 64px; background: var(--green-bg); border: 2px solid rgba(16,185,129,.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 20px; }
+.success-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.success-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+.protocol-chip { font-family: monospace; font-size: 18px; color: var(--yellow); background: rgba(255,230,0,.08); border: 1px solid rgba(255,230,0,.2); padding: 10px 20px; border-radius: 8px; display: inline-block; margin-bottom: 28px; letter-spacing: 2px; }
+
+/* ── DRAWER ── */
+.drawer-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 300; }
+.drawer-ov.active { display: block; }
+.drawer { position: fixed; top: 0; right: -420px; bottom: 0; width: 400px; background: var(--surface); border-left: 1px solid var(--border); z-index: 301; display: flex; flex-direction: column; transition: right .25s ease; }
+.drawer.active { right: 0; }
+.drawer-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.drawer-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.detail-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.detail-row:last-child { border-bottom: none; }
+.detail-key { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; flex-shrink: 0; width: 130px; }
+.detail-val { font-size: 13px; color: var(--text); text-align: right; }
+.doc-link { display: inline-flex; align-items: center; gap: 6px; background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(59,130,246,.3); border-radius: 6px; padding: 5px 10px; font-size: 12px; font-weight: 500; text-decoration: none; transition: background .15s; }
+.doc-link:hover { background: rgba(59,130,246,.2); }
+
+@media (max-width: 768px) {
+  .auth-card { padding: 36px 24px; }
+  .metrics-grid { grid-template-columns: repeat(2,1fr); }
+  .form-grid { grid-template-columns: 1fr; }
+  .field.span2 { grid-column: span 1; }
+  .drawer { width: 100%; }
+  .search-input { width: 150px; }
+  .review-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TELA 1: EMAIL ══ -->
+<div id="emailScreen" class="screen active">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-badge">MELI</div>
+      <div class="logo-text">Logística</div>
+    </div>
+    <div class="auth-title">Portal de Indicações</div>
+    <div class="auth-sub">Digite seu e-mail para acessar ou criar sua conta.</div>
+
+    <div class="auth-field">
+      <label>E-mail</label>
+      <input class="auth-input" id="emailInput" type="email" placeholder="seu@email.com"
+        onkeydown="if(event.key==='Enter') verificarEmail()">
+    </div>
+
+    <button class="btn-primary" id="btnEmail" onclick="verificarEmail()">
+      Continuar
+    </button>
+    <div class="auth-alert error" id="emailAlert"></div>
+  </div>
+</div>
+
+<!-- ══ TELA 2: LOGIN ══ -->
+<div id="loginScreen" class="screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-badge">MELI</div>
+      <div class="logo-text">Logística</div>
+    </div>
+    <div class="auth-title">Bem-vindo de volta</div>
+    <div class="auth-sub">Conta encontrada para <strong id="loginEmailLabel">—</strong></div>
+
+    <div class="auth-field">
+      <label>Senha</label>
+      <div class="input-wrap">
+        <input class="auth-input" id="senhaInput" type="password" placeholder="Digite sua senha"
+          onkeydown="if(event.key==='Enter') fazerLogin()">
+        <button class="toggle-senha" onclick="toggleSenha('senhaInput', this)" type="button">👁</button>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btnLogin" onclick="fazerLogin()">Entrar</button>
+    <div class="auth-alert error" id="loginAlert"></div>
+    <div class="auth-link">
+      <button onclick="voltarParaEmail()">← Usar outro e-mail</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TELA 3: CADASTRO ══ -->
+<div id="cadastroScreen" class="screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-badge">MELI</div>
+      <div class="logo-text">Logística</div>
+    </div>
+    <div class="auth-title">Criar conta</div>
+    <div class="auth-sub">Primeiro acesso para <strong id="cadEmailLabel">—</strong></div>
+
+    <div class="auth-field">
+      <label>Nome completo <span style="color:var(--red)">*</span></label>
+      <input class="auth-input" id="cadNome" type="text" placeholder="Seu nome completo">
+      <span class="field-err" id="errCadNome">Campo obrigatório</span>
+    </div>
+
+    <div class="auth-field">
+      <label>Transportadora (ETC) <span style="color:var(--red)">*</span></label>
+      <select class="auth-select" id="cadEtc">
+        <option value="">Selecione sua ETC…</option>
+      </select>
+      <span class="field-err" id="errCadEtc">Selecione uma ETC</span>
+    </div>
+
+    <div class="auth-field">
+      <label>Criar senha <span style="color:var(--red)">*</span></label>
+      <div class="input-wrap">
+        <input class="auth-input" id="cadSenha" type="password" placeholder="Mínimo 6 caracteres">
+        <button class="toggle-senha" onclick="toggleSenha('cadSenha', this)" type="button">👁</button>
+      </div>
+      <span class="field-err" id="errCadSenha">Mínimo 6 caracteres</span>
+    </div>
+
+    <div class="auth-field">
+      <label>Confirmar senha <span style="color:var(--red)">*</span></label>
+      <div class="input-wrap">
+        <input class="auth-input" id="cadConfirma" type="password" placeholder="Repita a senha"
+          onkeydown="if(event.key==='Enter') fazerCadastro()">
+        <button class="toggle-senha" onclick="toggleSenha('cadConfirma', this)" type="button">👁</button>
+      </div>
+      <span class="field-err" id="errCadConfirma">As senhas não coincidem</span>
+    </div>
+
+    <button class="btn-primary" id="btnCadastro" onclick="fazerCadastro()">Criar conta e entrar</button>
+    <div class="auth-alert error" id="cadAlert"></div>
+    <div class="auth-link">
+      <button onclick="voltarParaEmail()">← Usar outro e-mail</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TELA 4: DASHBOARD ══ -->
+<div id="dashScreen" class="screen">
+  <header>
+    <div class="header-left">
+      <div class="header-badge">MELI</div>
+      <div>
+        <div class="header-title">Portal de Indicações</div>
+        <div class="header-sub">Motoristas & Veículos</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="user-chip">
+        <span class="dot"></span>
+        <span id="headerEtc">—</span>
+      </div>
+      <button class="btn-sair" onclick="sair()">Sair</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-header">
+      <div>
+        <div class="page-title">Suas indicações</div>
+        <div class="page-sub" id="pageSubNome">—</div>
+      </div>
+      <button class="btn btn-yellow" onclick="abrirForm()">+ Indicar motorista</button>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card blue">
+        <div class="metric-value" style="color:var(--blue)" id="mValidacao">—</div>
+        <div class="metric-label">Em validação</div>
+      </div>
+      <div class="metric-card green">
+        <div class="metric-value" style="color:var(--green)" id="mAprovado">—</div>
+        <div class="metric-label">Aprovados</div>
+      </div>
+      <div class="metric-card amber">
+        <div class="metric-value" style="color:var(--amber)" id="mPendente">—</div>
+        <div class="metric-label">Pendências</div>
+      </div>
+      <div class="metric-card red">
+        <div class="metric-value" style="color:var(--red)" id="mReprovado">—</div>
+        <div class="metric-label">Reprovados</div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-toolbar">
+        <div class="toolbar-left">
+          <span style="font-size:14px;font-weight:600">Motoristas</span>
+          <span class="count-badge" id="countBadge">—</span>
+        </div>
+        <input class="search-input" type="text" placeholder="Buscar por nome ou CPF…" oninput="filtrar(this.value)">
+      </div>
+      <div id="tableBody">
+        <div class="loading-state"><div class="spinner"></div><br>Carregando…</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ══ FORM MODAL ══ -->
+<div class="overlay" id="formOverlay">
+  <div class="form-modal" id="formModal">
+    <div class="submitting-ov" id="submittingOv">
+      <div class="spinner"></div>
+      <p>Enviando indicação e documentos…</p>
+    </div>
+
+    <div id="formInner">
+      <div class="form-header">
+        <div>
+          <div class="form-title">Indicar motorista</div>
+          <div class="form-subtitle">Todos os campos com * são obrigatórios</div>
+        </div>
+        <button class="close-btn" onclick="fecharForm()">✕</button>
+      </div>
+
+      <div class="steps-bar" id="stepsBar">
+        <div class="step-item"><div class="step-dot active" id="dot1">1</div><div class="step-line" id="line1"></div></div>
+        <div class="step-item"><div class="step-dot" id="dot2">2</div><div class="step-line" id="line2"></div></div>
+        <div class="step-item"><div class="step-dot" id="dot3">3</div><div class="step-line" id="line3"></div></div>
+        <div class="step-item"><div class="step-dot" id="dot4">4</div></div>
+      </div>
+
+      <div class="form-body">
+        <!-- STEP 1 -->
+        <div class="form-section active" id="step1">
+          <div class="section-label">Etapa 1 — Dados do motorista</div>
+          <div class="form-grid">
+            <div class="field span2">
+              <label class="f-label">Nome completo <span class="req">*</span></label>
+              <input class="f-input" id="fNome" type="text" placeholder="Nome completo do motorista">
+              <span class="f-err" id="errNome">Campo obrigatório</span>
+            </div>
+            <div class="field">
+              <label class="f-label">CPF <span class="req">*</span></label>
+              <input class="f-input" id="fCpf" type="text" placeholder="000.000.000-00" oninput="fmtCpf(this)" maxlength="14">
+              <span class="f-err" id="errCpf">CPF inválido</span>
+            </div>
+            <div class="field">
+              <label class="f-label">Telefone <span class="req">*</span></label>
+              <input class="f-input" id="fTel" type="text" placeholder="(11) 99999-9999" oninput="fmtTel(this)" maxlength="15">
+              <span class="f-err" id="errTel">Campo obrigatório</span>
+            </div>
+            <div class="field span2">
+              <label class="f-label">E-mail <span class="req">*</span></label>
+              <input class="f-input" id="fEmail" type="email" placeholder="motorista@email.com">
+              <span class="f-err" id="errEmail">E-mail inválido</span>
+            </div>
+            <div class="field span2">
+              <label class="f-label">Cidade <span class="req">*</span></label>
+              <input class="f-input" id="fCidade" type="text" placeholder="Ex: São Paulo">
+              <span class="f-err" id="errCidade">Campo obrigatório</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="form-section" id="step2">
+          <div class="section-label">Etapa 2 — Habilitação (CNH)</div>
+          <div class="form-grid">
+            <div class="field">
+              <label class="f-label">Número da CNH <span class="req">*</span></label>
+              <input class="f-input" id="fCnhNum" type="text" placeholder="00000000000" maxlength="11">
+              <span class="f-err" id="errCnhNum">Campo obrigatório</span>
+            </div>
+            <div class="field">
+              <label class="f-label">Categoria <span class="req">*</span></label>
+              <select class="f-select" id="fCnhCat">
+                <option value="">Selecione…</option>
+                <option>A</option><option>B</option><option>AB</option>
+                <option>C</option><option>D</option><option>E</option>
+              </select>
+              <span class="f-err" id="errCnhCat">Campo obrigatório</span>
+            </div>
+            <div class="field span2">
+              <label class="f-label">Validade da CNH <span class="req">*</span></label>
+              <input class="f-input" id="fCnhVal" type="date">
+              <span class="f-err" id="errCnhVal">Data inválida ou CNH vencida</span>
+            </div>
+            <div class="field span2">
+              <label class="f-label">Foto da CNH <span class="req">*</span></label>
+              <input type="file" id="fileCnh" accept=".jpg,.jpeg,.png,.pdf" onchange="handleUpload('cnh',this)">
+              <div class="upload-area" id="areaCnh" onclick="document.getElementById('fileCnh').click()">
+                <div style="font-size:28px;margin-bottom:8px">📄</div>
+                <div style="font-size:13px;font-weight:500">Clique para enviar a CNH</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:4px">JPG, PNG ou PDF • máx. 10MB</div>
+              </div>
+              <div class="upload-done" id="doneCnh">
+                <span id="doneCnhName">—</span>
+                <button onclick="removerUpload('cnh')" type="button">✕</button>
+              </div>
+              <span class="f-err" id="errCnh">Envie o documento da CNH</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="form-section" id="step3">
+          <div class="section-label">Etapa 3 — Veículo</div>
+          <div class="form-grid">
+            <div class="field">
+              <label class="f-label">Tipo de veículo <span class="req">*</span></label>
+              <select class="f-select" id="fTipoVei">
+                <option value="">Selecione…</option>
+                <option>Van</option><option>Utilitário</option><option>VUC</option>
+              </select>
+              <span class="f-err" id="errTipoVei">Campo obrigatório</span>
+            </div>
+            <div class="field">
+              <label class="f-label">Placa <span class="req">*</span></label>
+              <input class="f-input" id="fPlaca" type="text" placeholder="ABC-1234" style="text-transform:uppercase" maxlength="8">
+              <span class="f-err" id="errPlaca">Formato inválido</span>
+            </div>
+            <div class="field span2">
+              <label class="f-label">CRLV — Documento do veículo <span class="req">*</span></label>
+              <input type="file" id="fileCrlv" accept=".jpg,.jpeg,.png,.pdf" onchange="handleUpload('crlv',this)">
+              <div class="upload-area" id="areaCrlv" onclick="document.getElementById('fileCrlv').click()">
+                <div style="font-size:28px;margin-bottom:8px">🚐</div>
+                <div style="font-size:13px;font-weight:500">Clique para enviar o CRLV</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:4px">JPG, PNG ou PDF • máx. 10MB</div>
+              </div>
+              <div class="upload-done" id="doneCrlv">
+                <span id="doneCrlvName">—</span>
+                <button onclick="removerUpload('crlv')" type="button">✕</button>
+              </div>
+              <span class="f-err" id="errCrlv">Envie o documento do veículo</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="form-section" id="step4">
+          <div class="section-label">Etapa 4 — Operação</div>
+          <div class="form-grid">
+            <div class="field span2">
+              <label class="f-label">Tipo de operação <span class="req">*</span></label>
+              <select class="f-select" id="fTipoOp">
+                <option value="">Selecione…</option>
+                <option>Last Mile</option><option>First Mile</option>
+              </select>
+              <span class="f-err" id="errTipoOp">Campo obrigatório</span>
+            </div>
+            <div class="field span2">
+              <label class="f-label">Operação de preferência <span class="req">*</span></label>
+              <select class="f-select" id="fOpPref">
+                <option value="">Selecione…</option>
+                <option>Osasco — SP</option>
+                <option>Santo André — SP</option>
+                <option>Guarulhos — SP</option>
+                <option>Campinas — SP</option>
+                <option>Santos — SP</option>
+                <option>Rio de Janeiro — RJ</option>
+                <option>Belo Horizonte — MG</option>
+                <option>Curitiba — PR</option>
+              </select>
+              <span class="f-err" id="errOpPref">Campo obrigatório</span>
+            </div>
+          </div>
+          <div class="review-box">
+            <div class="review-label">Resumo da indicação</div>
+            <div class="review-grid" id="reviewGrid"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success-screen" id="successScreen">
+        <div class="success-icon">✅</div>
+        <div class="success-title">Indicação enviada!</div>
+        <div class="success-sub">Nossa equipe vai analisar em até 2 dias úteis. Acompanhe o status pelo portal.</div>
+        <div class="protocol-chip" id="protocoloChip">—</div>
+        <div style="display:flex;gap:12px;justify-content:center">
+          <button class="btn btn-ghost" onclick="fecharForm()">Fechar</button>
+          <button class="btn btn-yellow" onclick="resetForm()">Indicar outro</button>
+        </div>
+      </div>
+
+      <div class="form-footer" id="formFooter">
+        <span class="step-lbl" id="stepLbl">Etapa 1 de 4</span>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-ghost" id="backBtn" onclick="prevStep()" style="display:none">← Voltar</button>
+          <button class="btn btn-yellow" id="nextBtn" onclick="nextStep()">Próximo →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DRAWER ══ -->
+<div class="drawer-ov" id="drawerOv" onclick="fecharDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div>
+      <div style="font-size:16px;font-weight:700" id="dNome">—</div>
+      <div style="margin-top:4px" id="dBadge"></div>
+    </div>
+    <button class="close-btn" onclick="fecharDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
+    <div class="detail-row"><span class="detail-key">CPF</span><span class="detail-val"><span class="cpf-chip" id="dCpf">—</span></span></div>
+    <div class="detail-row"><span class="detail-key">E-mail</span><span class="detail-val" id="dEmail">—</span></div>
+    <div class="detail-row"><span class="detail-key">Telefone</span><span class="detail-val" id="dTel">—</span></div>
+    <div class="detail-row"><span class="detail-key">Cidade</span><span class="detail-val" id="dCidade">—</span></div>
+    <div class="detail-row"><span class="detail-key">Veículo</span><span class="detail-val" id="dVeiculo">—</span></div>
+    <div class="detail-row"><span class="detail-key">Placa</span><span class="detail-val" id="dPlaca">—</span></div>
+    <div class="detail-row"><span class="detail-key">Operação</span><span class="detail-val" id="dOp">—</span></div>
+    <div class="detail-row"><span class="detail-key">Data</span><span class="detail-val" id="dData">—</span></div>
+    <div class="detail-row">
+      <span class="detail-key">Documentos</span>
+      <span class="detail-val" style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        <a id="dLinkCnh" href="#" target="_blank" class="doc-link">📄 Ver CNH</a>
+        <a id="dLinkCrlv" href="#" target="_blank" class="doc-link">🚐 Ver CRLV</a>
+      </span>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://script.google.com/a/macros/mercadolivre.com/s/AKfycbwI0ergfWnJ3oislo21bj2qmTfzY-YzxaYNdSMoIOfF1ngjnucY9PoWe5kUZnvHhNPTJQ/exec';
+
+const STATUS_MAP = {
+  'Em validação': 'b-validacao',
+  'Documento incorreto': 'b-doc',
+  'Aprovado': 'b-aprovado',
+  'Reprovado': 'b-reprovado',
+  'Pendente GUEP': 'b-pendente',
+  'Cancelado': 'b-cancelado',
+  'Licenciamento': 'b-licenciamento',
+};
+
+let sessao = null;
+let todasIndicacoes = [];
+let emailAtual = '';
+let currentStep = 1;
+let arquivos = { cnh: null, crlv: null };
+
+// ── UTILS ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function setLoading(btnId, loading, label = '') {
+  const btn = document.getElementById(btnId);
+  if (loading) {
+    btn.disabled = true;
+    btn.innerHTML = `<div class="spinner"></div>`;
+  } else {
+    btn.disabled = false;
+    btn.textContent = label;
+  }
+}
+
+function toggleSenha(inputId, btn) {
+  const el = document.getElementById(inputId);
+  el.type = el.type === 'password' ? 'text' : 'password';
+  btn.textContent = el.type === 'password' ? '👁' : '🙈';
+}
+
+function voltarParaEmail() { showScreen('emailScreen'); }
+
+// ── TELA 1: VERIFICAR EMAIL ──
+async function verificarEmail() {
+  const email = document.getElementById('emailInput').value.trim();
+  const alert = document.getElementById('emailAlert');
+  alert.classList.remove('show');
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert.textContent = 'Digite um e-mail válido.';
+    alert.classList.add('show');
+    return;
+  }
+
+  emailAtual = email;
+  setLoading('btnEmail', true);
+
+  try {
+    const res = await fetch(`${API}?action=verificar_email&email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+
+    if (data.existe) {
+      document.getElementById('loginEmailLabel').textContent = email;
+      document.getElementById('senhaInput').value = '';
+      showScreen('loginScreen');
+    } else {
+      document.getElementById('cadEmailLabel').textContent = email;
+      document.getElementById('cadNome').value = '';
+      document.getElementById('cadSenha').value = '';
+      document.getElementById('cadConfirma').value = '';
+      document.getElementById('cadEtc').value = '';
+      await carregarEtcs();
+      showScreen('cadastroScreen');
+    }
+  } catch(e) {
+    alert.textContent = 'Erro de conexão. Tente novamente.';
+    alert.classList.add('show');
+  }
+
+  setLoading('btnEmail', false, 'Continuar');
+}
+
+// ── TELA 2: LOGIN ──
+async function fazerLogin() {
+  const senha = document.getElementById('senhaInput').value;
+  const alert = document.getElementById('loginAlert');
+  alert.classList.remove('show');
+
+  if (!senha) {
+    alert.textContent = 'Digite sua senha.';
+    alert.classList.add('show');
+    return;
+  }
+
+  setLoading('btnLogin', true);
+
+  try {
+    const res = await fetch(`${API}?action=login&email=${encodeURIComponent(emailAtual)}&senha=${encodeURIComponent(senha)}`);
+    const data = await res.json();
+
+    if (data.ok) {
+      entrarNoDash(data);
+    } else {
+      alert.textContent = data.erro || 'Senha incorreta.';
+      alert.classList.add('show');
+    }
+  } catch(e) {
+    alert.textContent = 'Erro de conexão.';
+    alert.classList.add('show');
+  }
+
+  setLoading('btnLogin', false, 'Entrar');
+}
+
+// ── TELA 3: CADASTRO ──
+async function carregarEtcs() {
+  const sel = document.getElementById('cadEtc');
+  try {
+    const res = await fetch(`${API}?action=etcs`);
+    const data = await res.json();
+    if (data.ok) {
+      sel.innerHTML = '<option value="">Selecione sua ETC…</option>' +
+        data.etcs.map(e => `<option>${e}</option>`).join('');
+    }
+  } catch(e) {}
+}
+
+async function fazerCadastro() {
+  const nome = document.getElementById('cadNome').value.trim();
+  const etc = document.getElementById('cadEtc').value;
+  const senha = document.getElementById('cadSenha').value;
+  const confirma = document.getElementById('cadConfirma').value;
+  const alert = document.getElementById('cadAlert');
+  alert.classList.remove('show');
+
+  let ok = true;
+  const check = (id, errId, cond) => {
+    document.getElementById(id).classList.toggle('error', !cond);
+    document.getElementById(errId).classList.toggle('show', !cond);
+    if (!cond) ok = false;
+  };
+
+  check('cadNome', 'errCadNome', nome !== '');
+  check('cadEtc', 'errCadEtc', etc !== '');
+  check('cadSenha', 'errCadSenha', senha.length >= 6);
+  check('cadConfirma', 'errCadConfirma', senha === confirma && confirma !== '');
+  if (!ok) return;
+
+  setLoading('btnCadastro', true);
+
+  try {
+    const res = await fetch(API, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'cadastro', email: emailAtual, nome, etc, senha })
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      entrarNoDash(data);
+    } else {
+      alert.textContent = data.erro || 'Erro ao criar conta.';
+      alert.classList.add('show');
+    }
+  } catch(e) {
+    alert.textContent = 'Erro de conexão.';
+    alert.classList.add('show');
+  }
+
+  setLoading('btnCadastro', false, 'Criar conta e entrar');
+}
+
+// ── ENTRAR NO DASHBOARD ──
+function entrarNoDash(data) {
+  sessao = { email: data.email, nome: data.nome, etc: data.etc };
+  document.getElementById('headerEtc').textContent = data.etc;
+  document.getElementById('pageSubNome').textContent = `Olá, ${data.nome} — ${data.etc}`;
+  showScreen('dashScreen');
+  carregarIndicacoes();
+}
+
+function sair() {
+  sessao = null;
+  todasIndicacoes = [];
+  emailAtual = '';
+  document.getElementById('emailInput').value = '';
+  showScreen('emailScreen');
+}
+
+// ── INDICAÇÕES ──
+async function carregarIndicacoes() {
+  document.getElementById('tableBody').innerHTML =
+    '<div class="loading-state"><div class="spinner"></div><br>Carregando indicações…</div>';
+  try {
+    const res = await fetch(`${API}?action=indicacoes&email=${encodeURIComponent(sessao.email)}`);
+    const data = await res.json();
+    todasIndicacoes = data.indicacoes || [];
+    renderTabela(todasIndicacoes);
+    atualizarMetricas(todasIndicacoes);
+  } catch(e) {
+    document.getElementById('tableBody').innerHTML =
+      '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Erro ao carregar</div><div class="empty-sub">Recarregue a página.</div></div>';
+  }
+}
+
+function atualizarMetricas(lista) {
+  document.getElementById('mValidacao').textContent = lista.filter(i => i['Status'] === 'Em validação').length;
+  document.getElementById('mAprovado').textContent = lista.filter(i => i['Status'] === 'Aprovado').length;
+  document.getElementById('mPendente').textContent = lista.filter(i => ['Pendente GUEP','Documento incorreto','Licenciamento'].includes(i['Status'])).length;
+  document.getElementById('mReprovado').textContent = lista.filter(i => i['Status'] === 'Reprovado').length;
+  document.getElementById('countBadge').textContent = `${lista.length} indicações`;
+}
+
+function renderTabela(lista) {
+  if (!lista.length) {
+    document.getElementById('tableBody').innerHTML =
+      '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Nenhuma indicação ainda</div><div class="empty-sub">Clique em "Indicar motorista" para começar.</div></div>';
+    return;
+  }
+  const rows = lista.map(r => {
+    const status = r['Status'] || '—';
+    const badge = STATUS_MAP[status] || '';
+    const data = r['Data'] ? new Date(r['Data']).toLocaleDateString('pt-BR') : '—';
+    return `<tr onclick='abrirDrawer(${JSON.stringify(r)})'>
+      <td><strong>${r['Nome Motorista']||'—'}</strong><br><span style="font-size:11px;color:var(--muted)">${r['Cidade']||'—'}</span></td>
+      <td><span class="cpf-chip">${r['CPF']||'—'}</span></td>
+      <td>${r['Tipo Veículo']||'—'}</td>
+      <td>${r['Tipo Operação']||'—'}</td>
+      <td style="color:var(--muted);font-size:12px">${data}</td>
+      <td><span class="badge ${badge}">${status}</span></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tableBody').innerHTML =
+    `<table><thead><tr><th>Motorista</th><th>CPF</th><th>Veículo</th><th>Operação</th><th>Data</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function filtrar(q) {
+  const t = q.toLowerCase();
+  const f = todasIndicacoes.filter(r =>
+    (r['Nome Motorista']||'').toLowerCase().includes(t) || (r['CPF']||'').includes(t));
+  renderTabela(f);
+  document.getElementById('countBadge').textContent = `${f.length} indicações`;
+}
+
+// ── DRAWER ──
+function abrirDrawer(r) {
+  const status = r['Status'] || '—';
+  document.getElementById('dNome').textContent = r['Nome Motorista'] || '—';
+  document.getElementById('dBadge').innerHTML = `<span class="badge ${STATUS_MAP[status]||''}">${status}</span>`;
+  document.getElementById('dCpf').textContent = r['CPF'] || '—';
+  document.getElementById('dEmail').textContent = r['Email'] || '—';
+  document.getElementById('dTel').textContent = r['Telefone'] || '—';
+  document.getElementById('dCidade').textContent = r['Cidade'] || '—';
+  document.getElementById('dVeiculo').textContent = r['Tipo Veículo'] || '—';
+  document.getElementById('dPlaca').textContent = r['Placa'] || '—';
+  document.getElementById('dOp').textContent = `${r['Tipo Operação']||'—'} — ${r['Operação Preferência']||'—'}`;
+  document.getElementById('dData').textContent = r['Data'] ? new Date(r['Data']).toLocaleDateString('pt-BR') : '—';
+  document.getElementById('dLinkCnh').href = r['CNH Drive Link'] || '#';
+  document.getElementById('dLinkCrlv').href = r['CRLV Drive Link'] || '#';
+  document.getElementById('drawerOv').classList.add('active');
+  document.getElementById('drawer').classList.add('active');
+}
+
+function fecharDrawer() {
+  document.getElementById('drawerOv').classList.remove('active');
+  document.getElementById('drawer').classList.remove('active');
+}
+
+// ── FORM ──
+function abrirForm() { resetForm(); document.getElementById('formOverlay').classList.add('active'); }
+function fecharForm() { document.getElementById('formOverlay').classList.remove('active'); }
+
+function resetForm() {
+  currentStep = 1; arquivos = { cnh: null, crlv: null };
+  ['fNome','fCpf','fTel','fEmail','fCidade','fCnhNum','fCnhVal','fPlaca'].forEach(id => {
+    const el = document.getElementById(id); if (el) { el.value = ''; el.classList.remove('error'); }
+  });
+  ['fCnhCat','fTipoVei','fTipoOp','fOpPref'].forEach(id => {
+    const el = document.getElementById(id); if (el) { el.value = ''; el.classList.remove('error'); }
+  });
+  document.querySelectorAll('.f-err').forEach(e => e.classList.remove('show'));
+  ['Cnh','Crlv'].forEach(t => {
+    document.getElementById('area'+t).classList.remove('error');
+    document.getElementById('area'+t).style.display = '';
+    document.getElementById('done'+t).classList.remove('show');
+    document.getElementById('file'+t).value = '';
+  });
+  document.getElementById('stepsBar').style.display = 'flex';
+  document.getElementById('formFooter').style.display = 'flex';
+  document.getElementById('successScreen').classList.remove('active');
+  document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+  atualizarSteps();
+}
+
+function atualizarSteps() {
+  for (let i = 1; i <= 4; i++) {
+    const d = document.getElementById('dot'+i);
+    if (i < currentStep) { d.className = 'step-dot done'; d.textContent = '✓'; }
+    else if (i === currentStep) { d.className = 'step-dot active'; d.textContent = i; }
+    else { d.className = 'step-dot'; d.textContent = i; }
+    if (i < 4) document.getElementById('line'+i).className = i < currentStep ? 'step-line done' : 'step-line';
+  }
+  document.getElementById('stepLbl').textContent = `Etapa ${currentStep} de 4`;
+  document.querySelectorAll('.form-section').forEach((s,i) => s.classList.toggle('active', i+1===currentStep));
+  document.getElementById('backBtn').style.display = currentStep > 1 ? 'inline-flex' : 'none';
+  document.getElementById('nextBtn').textContent = currentStep === 4 ? 'Enviar indicação ✓' : 'Próximo →';
+  if (currentStep === 4) preencherRevisao();
+}
+
+function validarStep(step) {
+  let ok = true;
+  const req = (id, errId, fn) => {
+    const el = document.getElementById(id);
+    const v = fn ? fn(el.value) : el.value.trim() !== '';
+    el.classList.toggle('error', !v);
+    document.getElementById(errId).classList.toggle('show', !v);
+    if (!v) ok = false;
+  };
+  if (step === 1) {
+    req('fNome','errNome');
+    req('fCpf','errCpf', v => validarCpf(v));
+    req('fTel','errTel', v => v.replace(/\D/g,'').length >= 10);
+    req('fEmail','errEmail', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
+    req('fCidade','errCidade');
+  }
+  if (step === 2) {
+    req('fCnhNum','errCnhNum', v => v.replace(/\D/g,'').length >= 9);
+    req('fCnhCat','errCnhCat');
+    req('fCnhVal','errCnhVal', v => v && new Date(v) > new Date());
+    if (!arquivos.cnh) {
+      document.getElementById('areaCnh').classList.add('error');
+      document.getElementById('errCnh').classList.add('show');
+      ok = false;
+    }
+  }
+  if (step === 3) {
+    req('fTipoVei','errTipoVei');
+    req('fPlaca','errPlaca', v => /^[A-Za-z]{3}[\s-]?\d[A-Za-z0-9]\d{2}$/.test(v.trim()));
+    if (!arquivos.crlv) {
+      document.getElementById('areaCrlv').classList.add('error');
+      document.getElementById('errCrlv').classList.add('show');
+      ok = false;
+    }
+  }
+  if (step === 4) {
+    req('fTipoOp','errTipoOp');
+    req('fOpPref','errOpPref');
+  }
+  return ok;
+}
+
+function nextStep() {
+  if (!validarStep(currentStep)) return;
+  if (currentStep < 4) { currentStep++; atualizarSteps(); }
+  else enviarIndicacao();
+}
+
+function prevStep() { if (currentStep > 1) { currentStep--; atualizarSteps(); } }
+
+function preencherRevisao() {
+  const items = [
+    ['Motorista', document.getElementById('fNome').value],
+    ['CPF', document.getElementById('fCpf').value],
+    ['Veículo', `${document.getElementById('fTipoVei').value} — ${document.getElementById('fPlaca').value.toUpperCase()}`],
+    ['CNH Cat.', document.getElementById('fCnhCat').value],
+    ['Tipo operação', document.getElementById('fTipoOp').value],
+    ['Operação pref.', document.getElementById('fOpPref').value],
+  ];
+  document.getElementById('reviewGrid').innerHTML = items.map(([k,v]) =>
+    `<div class="review-item"><span>${k}</span><strong>${v}</strong></div>`).join('');
+}
+
+// ── UPLOAD ──
+function handleUpload(tipo, input) {
+  const file = input.files[0]; if (!file) return;
+  if (file.size > 10*1024*1024) { alert('Arquivo muito grande. Máximo 10MB.'); input.value = ''; return; }
+  arquivos[tipo] = file;
+  const T = tipo === 'cnh' ? 'Cnh' : 'Crlv';
+  document.getElementById('area'+T).style.display = 'none';
+  document.getElementById('done'+T).classList.add('show');
+  document.getElementById('done'+T+'Name').textContent = '✅  ' + file.name;
+  document.getElementById('area'+T).classList.remove('error');
+  document.getElementById('err'+T).classList.remove('show');
+}
+
+function removerUpload(tipo) {
+  arquivos[tipo] = null;
+  const T = tipo === 'cnh' ? 'Cnh' : 'Crlv';
+  document.getElementById('file'+T).value = '';
+  document.getElementById('done'+T).classList.remove('show');
+  document.getElementById('area'+T).style.display = '';
+}
+
+// ── ENVIAR ──
+async function enviarIndicacao() {
+  document.getElementById('submittingOv').classList.add('show');
+  try {
+    const toB64 = f => new Promise((res,rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result.split(',')[1]);
+      r.onerror = rej;
+      r.readAsDataURL(f);
+    });
+    const [cnhB64, crlvB64] = await Promise.all([toB64(arquivos.cnh), toB64(arquivos.crlv)]);
+    const payload = {
+      action: 'nova_indicacao',
+      email: sessao.email,
+      etc: sessao.etc,
+      nomeMotorista: document.getElementById('fNome').value,
+      cpf: document.getElementById('fCpf').value,
+      emailMotorista: document.getElementById('fEmail').value,
+      telefone: document.getElementById('fTel').value,
+      cidade: document.getElementById('fCidade').value,
+      cnhNumero: document.getElementById('fCnhNum').value,
+      cnhCategoria: document.getElementById('fCnhCat').value,
+      cnhValidade: document.getElementById('fCnhVal').value,
+      cnhBase64: cnhB64, cnhMime: arquivos.cnh.type, cnhNome: arquivos.cnh.name,
+      tipoVeiculo: document.getElementById('fTipoVei').value,
+      placa: document.getElementById('fPlaca').value.toUpperCase(),
+      crlvBase64: crlvB64, crlvMime: arquivos.crlv.type, crlvNome: arquivos.crlv.name,
+      tipoOperacao: document.getElementById('fTipoOp').value,
+      operacaoPreferencia: document.getElementById('fOpPref').value,
+    };
+    const res = await fetch(API, { method: 'POST', body: JSON.stringify(payload) });
+    const data = await res.json();
+    document.getElementById('submittingOv').classList.remove('show');
+    if (data.ok) {
+      document.getElementById('stepsBar').style.display = 'none';
+      document.getElementById('formFooter').style.display = 'none';
+      document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+      document.getElementById('protocoloChip').textContent = data.protocolo;
+      document.getElementById('successScreen').classList.add('active');
+      carregarIndicacoes();
+    } else {
+      alert('Erro: ' + (data.erro || 'Tente novamente.'));
+    }
+  } catch(e) {
+    document.getElementById('submittingOv').classList.remove('show');
+    alert('Erro de conexão. Tente novamente.');
+  }
+}
+
+// ── FORMATAÇÃO ──
+function fmtCpf(input) {
+  let v = input.value.replace(/\D/g,'').slice(0,11);
+  if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/,'$1.$2.$3-$4');
+  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/,'$1.$2.$3');
+  else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/,'$1.$2');
+  input.value = v;
+}
+
+function fmtTel(input) {
+  let v = input.value.replace(/\D/g,'').slice(0,11);
+  if (v.length > 10) v = v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3');
+  else if (v.length > 6) v = v.replace(/(\d{2})(\d{4,5})(\d{0,4})/,'($1) $2-$3');
+  else if (v.length > 2) v = v.replace(/(\d{2})(\d+)/,'($1) $2');
+  input.value = v;
+}
+
+function validarCpf(cpf) {
+  const n = cpf.replace(/\D/g,'');
+  if (n.length !== 11 || /^(\d)\1+$/.test(n)) return false;
+  let s = 0;
+  for (let i = 0; i < 9; i++) s += parseInt(n[i])*(10-i);
+  let r = (s*10)%11; if (r===10||r===11) r=0;
+  if (r!==parseInt(n[9])) return false;
+  s = 0;
+  for (let i = 0; i < 10; i++) s += parseInt(n[i])*(11-i);
+  r = (s*10)%11; if (r===10||r===11) r=0;
+  return r===parseInt(n[10]);
+}
+</script>
+</body>
+</html>
