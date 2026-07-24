@@ -795,11 +795,12 @@ async function verificarEmail() {
   }
   emailAtual = email;
  
-  if (ADMIN_EMAILS.includes(email.toLowerCase())) {
+ if (ADMIN_EMAILS.includes(email.toLowerCase())) {
     document.getElementById('loginTitle').textContent = 'Acesso da equipe Meli';
     document.getElementById('loginSubtitle').innerHTML = '🔐 Portal administrativo — <strong>' + email + '</strong>';
     document.getElementById('loginEmailLabel').textContent = email;
     document.getElementById('senhaInput').value = '';
+    setLoading('btnEmail', false, 'Continuar');
     showScreen('loginScreen');
     return;
   }
