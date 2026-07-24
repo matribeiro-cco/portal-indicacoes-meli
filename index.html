@@ -183,6 +183,10 @@ input[type=file] { display: none; }
 .status-select-inline { background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 12px; padding: 5px 8px; outline: none; font-family: inherit; cursor: pointer; }
 .status-select-inline option { background: var(--surface); }
 .admin-badge { background: rgba(139,92,246,.15); border: 1px solid rgba(139,92,246,.3); color: var(--purple); border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600; }
+.admin-tabs { display: flex; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; padding: 3px; gap: 2px; }
+.admin-tab { background: transparent; border: none; color: var(--muted); border-radius: 8px; padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; }
+.admin-tab.active { background: var(--yellow); color: #000; }
+.admin-tab:not(.active):hover { color: var(--text); }
 .obs-input { background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 13px; padding: 8px 10px; outline: none; font-family: inherit; width: 100%; resize: vertical; min-height: 60px; }
 .obs-input:focus { border-color: var(--blue); }
 .save-btn { background: var(--green); color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s; }
@@ -335,38 +339,66 @@ input[type=file] { display: none; }
   <header>
     <div class="header-left">
       <div class="header-badge">MELI</div>
-      <div><div class="header-title">Portal de Indicações</div><div class="header-sub">Painel Administrativo</div></div>
+      <div><div class="header-title">Portal de Indicações</div><div class="header-sub" id="adminHeaderSub">Painel Administrativo</div></div>
     </div>
     <div class="header-right">
+      <div class="admin-tabs" id="adminTabs">
+        <button class="admin-tab active" id="tabAdmin" onclick="switchTab('admin')">🗂 Admin</button>
+        <button class="admin-tab" id="tabEtc" onclick="switchTab('etc')">📦 Transportadoras</button>
+      </div>
       <span class="admin-badge">👤 Admin</span>
       <button class="btn-sair" onclick="sair()">Sair</button>
     </div>
   </header>
   <main>
-    <div class="page-header">
-      <div><div class="page-title">Todas as indicações</div><div class="page-sub" id="adminTotal">—</div></div>
-      <button class="btn btn-ghost" onclick="carregarAdmin()">↻ Atualizar</button>
-    </div>
-    <div class="metrics-grid">
-      <div class="metric-card blue"><div class="metric-value" style="color:var(--blue)" id="amValidacao">—</div><div class="metric-label">Em validação</div></div>
-      <div class="metric-card green"><div class="metric-value" style="color:var(--green)" id="amAprovado">—</div><div class="metric-label">Aprovados</div></div>
-      <div class="metric-card amber"><div class="metric-value" style="color:var(--amber)" id="amPendente">—</div><div class="metric-label">Pendências</div></div>
-      <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="amReprovado">—</div><div class="metric-label">Reprovados</div></div>
-    </div>
-    <div class="table-card">
-      <div class="table-toolbar">
-        <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Indicações</span><span class="count-badge" id="adminCount">—</span></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <select class="filter-select" id="filtroEtc" onchange="filtrarAdmin()"><option value="">Todas as ETCs</option></select>
-          <select class="filter-select" id="filtroStatus" onchange="filtrarAdmin()">
-            <option value="">Todos os status</option>
-            <option>Em validação</option><option>Documento incorreto</option><option>Aprovado</option>
-            <option>Reprovado</option><option>Pendente GUEP</option><option>Cancelado</option><option>Licenciamento</option>
-          </select>
-          <input class="search-input" type="text" placeholder="Buscar motorista…" oninput="filtrarAdmin()" id="adminSearch" style="width:180px">
-        </div>
+    <!-- PAINEL ADMIN -->
+    <div id="adminPanel">
+      <div class="page-header">
+        <div><div class="page-title">Todas as indicações</div><div class="page-sub" id="adminTotal">—</div></div>
+        <button class="btn btn-ghost" onclick="carregarAdmin()">↻ Atualizar</button>
       </div>
-      <div id="adminTableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando…</div></div>
+      <div class="metrics-grid">
+        <div class="metric-card blue"><div class="metric-value" style="color:var(--blue)" id="amValidacao">—</div><div class="metric-label">Em validação</div></div>
+        <div class="metric-card green"><div class="metric-value" style="color:var(--green)" id="amAprovado">—</div><div class="metric-label">Aprovados</div></div>
+        <div class="metric-card amber"><div class="metric-value" style="color:var(--amber)" id="amPendente">—</div><div class="metric-label">Pendências</div></div>
+        <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="amReprovado">—</div><div class="metric-label">Reprovados</div></div>
+      </div>
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Indicações</span><span class="count-badge" id="adminCount">—</span></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select class="filter-select" id="filtroEtc" onchange="filtrarAdmin()"><option value="">Todas as ETCs</option></select>
+            <select class="filter-select" id="filtroStatus" onchange="filtrarAdmin()">
+              <option value="">Todos os status</option>
+              <option>Em validação</option><option>Documento incorreto</option><option>Aprovado</option>
+              <option>Reprovado</option><option>Pendente GUEP</option><option>Cancelado</option><option>Licenciamento</option>
+            </select>
+            <input class="search-input" type="text" placeholder="Buscar motorista…" oninput="filtrarAdmin()" id="adminSearch" style="width:180px">
+          </div>
+        </div>
+        <div id="adminTableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando…</div></div>
+      </div>
+    </div>
+
+    <!-- PAINEL TRANSPORTADORAS (visão admin) -->
+    <div id="etcPanel" style="display:none">
+      <div class="page-header">
+        <div><div class="page-title">Indicar motorista</div><div class="page-sub">Envio de indicações como equipe Meli</div></div>
+        <button class="btn btn-yellow" onclick="abrirForm()">+ Indicar motorista</button>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-card blue"><div class="metric-value" style="color:var(--blue)" id="etcAmValidacao">—</div><div class="metric-label">Em validação</div></div>
+        <div class="metric-card green"><div class="metric-value" style="color:var(--green)" id="etcAmAprovado">—</div><div class="metric-label">Aprovados</div></div>
+        <div class="metric-card amber"><div class="metric-value" style="color:var(--amber)" id="etcAmPendente">—</div><div class="metric-label">Pendências</div></div>
+        <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="etcAmReprovado">—</div><div class="metric-label">Reprovados</div></div>
+      </div>
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Todas as indicações</span><span class="count-badge" id="etcAmCount">—</span></div>
+          <input class="search-input" type="text" placeholder="Buscar por nome ou CPF…" oninput="filtrarEtcAdmin(this.value)">
+        </div>
+        <div id="etcAmTableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando…</div></div>
+      </div>
     </div>
   </main>
 </div>
@@ -1137,6 +1169,73 @@ async function enviarIndicacao(){
     document.getElementById('successScreen').classList.add('active');
     carregarIndicacoes();
   } catch(e) { document.getElementById('submittingOv').classList.remove('show'); alert('Erro: '+e.message); }
+}
+
+function switchTab(tab) {
+  const adminPanel = document.getElementById('adminPanel');
+  const etcPanel = document.getElementById('etcPanel');
+  const tabAdmin = document.getElementById('tabAdmin');
+  const tabEtc = document.getElementById('tabEtc');
+  const sub = document.getElementById('adminHeaderSub');
+
+  if (tab === 'admin') {
+    adminPanel.style.display = '';
+    etcPanel.style.display = 'none';
+    tabAdmin.classList.add('active');
+    tabEtc.classList.remove('active');
+    sub.textContent = 'Painel Administrativo';
+  } else {
+    adminPanel.style.display = 'none';
+    etcPanel.style.display = '';
+    tabAdmin.classList.remove('active');
+    tabEtc.classList.add('active');
+    sub.textContent = 'Visão Transportadoras';
+    carregarEtcAdmin();
+  }
+}
+
+async function carregarEtcAdmin() {
+  document.getElementById('etcAmTableBody').innerHTML = '<div class="loading-state"><div class="spinner"></div><br>Carregando…</div>';
+  try {
+    const { data } = await sb.from('indicacoes').select('*').order('criado_em', { ascending: false });
+    const lista = data || [];
+    document.getElementById('etcAmValidacao').textContent = lista.filter(i => i.status === 'Em validação').length;
+    document.getElementById('etcAmAprovado').textContent = lista.filter(i => i.status === 'Aprovado').length;
+    document.getElementById('etcAmPendente').textContent = lista.filter(i => ['Pendente GUEP','Documento incorreto','Licenciamento'].includes(i.status)).length;
+    document.getElementById('etcAmReprovado').textContent = lista.filter(i => i.status === 'Reprovado').length;
+    document.getElementById('etcAmCount').textContent = lista.length + ' indicações';
+    renderEtcAdmin(lista);
+  } catch(e) {
+    document.getElementById('etcAmTableBody').innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Erro ao carregar</div></div>';
+  }
+}
+
+function renderEtcAdmin(lista) {
+  if (!lista.length) {
+    document.getElementById('etcAmTableBody').innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Nenhuma indicação</div></div>';
+    return;
+  }
+  const rows = lista.map(r => {
+    const status = r.status || '—';
+    const data = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '—';
+    return `<tr onclick='abrirDrawer(${JSON.stringify(r).replace(/'/g,"&#39;")}, false)'>
+      <td><strong>${r.nome_motorista||'—'}</strong><br><span style="font-size:11px;color:var(--muted)">${r.cidade||'—'}</span></td>
+      <td><span style="font-size:12px;color:var(--muted)">${r.etc||'—'}</span></td>
+      <td><span class="cpf-chip">${r.cpf||'—'}</span></td>
+      <td>${r.tipo_veiculo||'—'}</td>
+      <td style="color:var(--muted);font-size:12px">${data}</td>
+      <td><span class="badge ${STATUS_MAP[status]||''}">${status}</span></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('etcAmTableBody').innerHTML =
+    `<table><thead><tr><th>Motorista</th><th>ETC</th><th>CPF</th><th>Veículo</th><th>Data</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function filtrarEtcAdmin(q) {
+  const t = q.toLowerCase();
+  const f = todasAdmin.filter(r => (r.nome_motorista||'').toLowerCase().includes(t) || (r.cpf||'').includes(t));
+  renderEtcAdmin(f);
+  document.getElementById('etcAmCount').textContent = f.length + ' indicações';
 }
 
 function fmtCpf(input){let v=input.value.replace(/\D/g,'').slice(0,11);if(v.length>9)v=v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/,'$1.$2.$3-$4');else if(v.length>6)v=v.replace(/(\d{3})(\d{3})(\d{1,3})/,'$1.$2.$3');else if(v.length>3)v=v.replace(/(\d{3})(\d{1,3})/,'$1.$2');input.value=v;}
