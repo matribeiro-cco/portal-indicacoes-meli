@@ -223,8 +223,8 @@ input[type=file] { display: none; }
 <div id="loginScreen" class="screen">
   <div class="auth-card">
     <div class="auth-logo"><div class="logo-badge">MELI</div><div class="logo-text">Logística</div></div>
-    <div class="auth-title">Bem-vindo de volta</div>
-    <div class="auth-sub">Conta encontrada para <strong id="loginEmailLabel">—</strong></div>
+    <div class="auth-title" id="loginTitle">Bem-vindo de volta</div>
+    <div class="auth-sub" id="loginSubtitle">Conta encontrada para <strong id="loginEmailLabel">—</strong></div>
     <div class="auth-field">
       <label>Senha</label>
       <div class="input-wrap">
@@ -451,7 +451,7 @@ input[type=file] { display: none; }
         <div class="form-section" id="step3">
           <div class="section-label">Etapa 3 — Veículo</div>
           <div class="form-grid">
-            <div class="field"><label class="f-label">Tipo de veículo <span class="req">*</span></label><select class="f-select" id="fTipoVei"><option value="">Selecione…</option><option>Van</option><option>Utilitário</option><option>VUC</option></select><span class="f-err" id="errTipoVei">Campo obrigatório</span></div>
+            <div class="field"><label class="f-label">Tipo de veículo <span class="req">*</span></label><select class="f-select" id="fTipoVei"><option value="">Selecione…</option><option>VUC</option><option>Van</option><option>Utilitário</option><option>Truck</option><option>Toco</option><option>Passeio</option><option>Médio</option><option>HR</option><option>Carreta</option></select><span class="f-err" id="errTipoVei">Campo obrigatório</span></div>
             <div class="field"><label class="f-label">Placa <span class="req">*</span></label><input class="f-input" id="fPlaca" type="text" placeholder="ABC-1234" style="text-transform:uppercase" maxlength="8"><span class="f-err" id="errPlaca">Formato inválido</span></div>
             <div class="field span2">
               <label class="f-label">CRLV <span class="req">*</span></label>
@@ -788,11 +788,15 @@ async function verificarEmail() {
   emailAtual = email;
 
   if (ADMIN_EMAILS.includes(email.toLowerCase())) {
+    document.getElementById('loginTitle').textContent = 'Acesso da equipe Meli';
+    document.getElementById('loginSubtitle').innerHTML = '🔐 Portal administrativo — <strong>' + email + '</strong>';
     document.getElementById('loginEmailLabel').textContent = email;
     document.getElementById('senhaInput').value = '';
     showScreen('loginScreen');
     return;
   }
+  document.getElementById('loginTitle').textContent = 'Bem-vindo de volta';
+  document.getElementById('loginSubtitle').innerHTML = 'Conta encontrada para <strong id="loginEmailLabel">' + email + '</strong>';
 
   setLoading('btnEmail', true);
   try {
@@ -819,7 +823,11 @@ async function fazerLogin() {
   setLoading('btnLogin', true);
   try {
     if (ADMIN_EMAILS.includes(emailAtual.toLowerCase())) {
-      entrarNoDash({ email: emailAtual, nome: 'Admin', etc: 'Admin' });
+      if (senha === 'Meli@2025') {
+        entrarNoDash({ email: emailAtual, nome: emailAtual.split('@')[0], etc: 'Admin' });
+      } else {
+        alertEl.textContent = 'Senha incorreta.'; alertEl.classList.add('show');
+      }
       return;
     }
     const { data } = await sb.from('usuarios').select('*').eq('email', emailAtual).eq('senha', senha).maybeSingle();
