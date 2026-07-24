@@ -8,95 +8,68 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --bg: #0A0F1E;
-  --surface: #111827;
-  --input-bg: #1A2235;
-  --border: #1E2D45;
-  --text: #F0F4FF;
-  --muted: #7A8BA8;
-  --yellow: #FFE600;
-  --blue: #3B82F6;
-  --blue-bg: #1E3A5F;
-  --green: #10B981;
-  --green-bg: #064E3B;
-  --amber: #F59E0B;
-  --red: #EF4444;
-  --purple: #8B5CF6;
+  --bg: #0A0F1E; --surface: #111827; --input-bg: #1A2235; --border: #1E2D45;
+  --text: #F0F4FF; --muted: #7A8BA8; --yellow: #FFE600; --blue: #3B82F6;
+  --blue-bg: #1E3A5F; --green: #10B981; --green-bg: #064E3B; --amber: #F59E0B;
+  --red: #EF4444; --purple: #8B5CF6;
 }
-
 body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
 .screen { display: none; min-height: 100vh; }
 .screen.active { display: flex; align-items: center; justify-content: center; padding: 24px; }
-#dashScreen { display: none; flex-direction: column; align-items: stretch; justify-content: flex-start; min-height: 100vh; padding: 0; }
-#dashScreen.active { display: flex; }
-
+#dashScreen, #adminScreen { display: none; flex-direction: column; align-items: stretch; justify-content: flex-start; min-height: 100vh; padding: 0; }
+#dashScreen.active, #adminScreen.active { display: flex; }
 .auth-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 48px 40px; width: 100%; max-width: 440px; }
 .auth-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 36px; }
 .logo-badge { background: var(--yellow); color: #000; font-weight: 700; font-size: 15px; padding: 7px 14px; border-radius: 8px; }
 .logo-text { font-size: 16px; font-weight: 600; }
 .auth-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
 .auth-sub { font-size: 14px; color: var(--muted); margin-bottom: 32px; line-height: 1.5; }
-
 .auth-field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
 .auth-field label { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
-
 .auth-input { background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; padding: 13px 16px; outline: none; font-family: inherit; transition: border-color .15s; width: 100%; }
 .auth-input:focus { border-color: var(--yellow); }
 .auth-input.error { border-color: var(--red); }
 .auth-input::placeholder { color: var(--muted); }
-
 .auth-select { background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; padding: 13px 16px; outline: none; font-family: inherit; transition: border-color .15s; width: 100%; cursor: pointer; }
 .auth-select:focus { border-color: var(--yellow); }
 .auth-select.error { border-color: var(--red); }
 .auth-select option { background: var(--surface); }
-
 .field-err { font-size: 12px; color: var(--red); display: none; margin-top: 2px; }
 .field-err.show { display: block; }
-
 .btn-primary { width: 100%; background: var(--yellow); color: #000; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; padding: 14px; cursor: pointer; margin-top: 8px; transition: background .15s; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .btn-primary:hover { background: #f0d900; }
 .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
-
 .auth-alert { border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-top: 12px; display: none; }
 .auth-alert.error { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25); color: var(--red); }
 .auth-alert.show { display: block; }
-
 .auth-link { font-size: 13px; color: var(--muted); margin-top: 20px; text-align: center; }
 .auth-link button { background: none; border: none; color: var(--yellow); cursor: pointer; font-size: 13px; font-family: inherit; font-weight: 600; padding: 0; }
-
 .input-wrap { position: relative; }
 .toggle-senha { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0; }
-
 .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(0,0,0,.2); border-top-color: #000; border-radius: 50%; animation: spin .6s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-
 header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; position: sticky; top: 0; z-index: 100; }
 .header-left { display: flex; align-items: center; gap: 12px; }
 .header-badge { background: var(--yellow); color: #000; font-weight: 700; font-size: 13px; padding: 5px 11px; border-radius: 8px; }
 .header-title { font-size: 15px; font-weight: 600; }
 .header-sub { font-size: 11px; color: var(--muted); }
 .header-right { display: flex; align-items: center; gap: 10px; }
-
 .user-chip { background: var(--input-bg); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
 .user-chip .dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; flex-shrink: 0; }
-
 .btn-sair { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer; font-family: inherit; transition: all .15s; }
 .btn-sair:hover { border-color: var(--red); color: var(--red); }
-
 main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; width: 100%; }
 .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
 .page-title { font-size: 22px; font-weight: 700; }
 .page-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
-
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; font-family: inherit; }
 .btn-yellow { background: var(--yellow); color: #000; }
 .btn-yellow:hover { background: #f0d900; }
 .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
 .btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
-
+.btn-blue { background: var(--blue); color: #fff; }
+.btn-blue:hover { background: #2563eb; }
 .metrics-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
 .metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; border-top: 3px solid transparent; }
 .metric-card.blue { border-top-color: var(--blue); }
@@ -105,15 +78,15 @@ main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; width: 100%; }
 .metric-card.red { border-top-color: var(--red); }
 .metric-value { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
 .metric-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
-
 .table-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-.table-toolbar { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.table-toolbar { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 .toolbar-left { display: flex; align-items: center; gap: 12px; }
 .count-badge { background: var(--input-bg); border: 1px solid var(--border); color: var(--muted); font-size: 12px; padding: 3px 10px; border-radius: 20px; }
 .search-input { background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; padding: 7px 12px; width: 220px; outline: none; font-family: inherit; transition: border-color .15s; }
 .search-input::placeholder { color: var(--muted); }
 .search-input:focus { border-color: var(--blue); }
-
+.filter-select { background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; padding: 7px 12px; outline: none; font-family: inherit; cursor: pointer; }
+.filter-select option { background: var(--surface); }
 table { width: 100%; border-collapse: collapse; }
 thead tr { background: var(--input-bg); }
 th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--border); }
@@ -122,7 +95,6 @@ tr:last-child td { border-bottom: none; }
 tbody tr { transition: background .1s; cursor: pointer; }
 tbody tr:hover { background: var(--input-bg); }
 .cpf-chip { font-family: monospace; font-size: 12px; color: var(--yellow); background: rgba(255,230,0,.08); padding: 3px 8px; border-radius: 4px; }
-
 .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
 .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .b-validacao { color: var(--blue); background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.25); }
@@ -132,24 +104,20 @@ tbody tr:hover { background: var(--input-bg); }
 .b-cancelado { color: var(--muted); background: rgba(122,139,168,.1); border: 1px solid rgba(122,139,168,.2); }
 .b-doc { color: var(--amber); background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.25); }
 .b-licenciamento { color: var(--purple); background: rgba(139,92,246,.12); border: 1px solid rgba(139,92,246,.25); }
-
 .loading-state { text-align: center; padding: 60px 24px; color: var(--muted); font-size: 14px; }
 .loading-state .spinner { width: 24px; height: 24px; border-width: 3px; border-color: var(--border); border-top-color: var(--yellow); display: block; margin: 0 auto 12px; }
 .empty-state { text-align: center; padding: 60px 24px; }
 .empty-icon { font-size: 40px; margin-bottom: 12px; }
 .empty-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
 .empty-sub { font-size: 13px; color: var(--muted); }
-
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 200; backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 16px; }
 .overlay.active { display: flex; }
 .form-modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 620px; max-height: 92vh; overflow-y: auto; position: relative; }
-
 .form-header { padding: 24px 28px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 10; display: flex; align-items: flex-start; justify-content: space-between; }
 .form-title { font-size: 18px; font-weight: 700; }
 .form-subtitle { font-size: 13px; color: var(--muted); margin-top: 3px; }
 .close-btn { background: var(--input-bg); border: 1px solid var(--border); color: var(--muted); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .close-btn:hover { color: var(--text); border-color: var(--text); }
-
 .steps-bar { padding: 20px 28px; display: flex; align-items: center; }
 .step-item { display: flex; align-items: center; flex: 1; }
 .step-item:last-child { flex: 0; }
@@ -158,12 +126,10 @@ tbody tr:hover { background: var(--input-bg); }
 .step-dot.done { border-color: var(--green); background: var(--green-bg); color: var(--green); }
 .step-line { flex: 1; height: 2px; background: var(--border); margin: 0 4px; transition: background .2s; }
 .step-line.done { background: var(--green); }
-
 .form-body { padding: 4px 28px 28px; }
 .form-section { display: none; }
 .form-section.active { display: block; }
 .section-label { font-size: 11px; font-weight: 600; color: var(--yellow); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; margin-top: 8px; }
-
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field.span2 { grid-column: span 2; }
@@ -178,7 +144,6 @@ tbody tr:hover { background: var(--input-bg); }
 .f-select option { background: var(--surface); }
 .f-err { font-size: 11px; color: var(--red); display: none; }
 .f-err.show { display: block; }
-
 .upload-area { border: 2px dashed var(--border); border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: all .15s; background: var(--input-bg); }
 .upload-area:hover { border-color: var(--blue); }
 .upload-area.error { border-color: var(--red); }
@@ -186,30 +151,25 @@ input[type=file] { display: none; }
 .upload-done { display: none; align-items: center; gap: 10px; background: var(--green-bg); border: 1px solid rgba(16,185,129,.3); border-radius: 8px; padding: 12px 14px; font-size: 13px; color: var(--green); }
 .upload-done.show { display: flex; }
 .upload-done button { background: none; border: none; color: var(--muted); cursor: pointer; margin-left: auto; font-size: 18px; }
-
 .review-box { margin-top: 20px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
 .review-label { font-size: 12px; color: var(--yellow); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; }
 .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; }
 .review-item span:first-child { display: block; color: var(--muted); font-size: 11px; margin-bottom: 2px; text-transform: uppercase; }
-
 .form-footer { padding: 16px 28px 24px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); margin-top: 20px; }
 .step-lbl { font-size: 12px; color: var(--muted); }
-
 .submitting-ov { display: none; position: absolute; inset: 0; background: rgba(10,15,30,.92); border-radius: 16px; align-items: center; justify-content: center; flex-direction: column; gap: 14px; z-index: 20; }
 .submitting-ov.show { display: flex; }
 .submitting-ov p { font-size: 14px; color: var(--muted); }
 .submitting-ov .spinner { width: 32px; height: 32px; border-width: 3px; border-color: var(--border); border-top-color: var(--yellow); }
-
 .success-screen { display: none; text-align: center; padding: 48px 28px; }
 .success-screen.active { display: block; }
 .success-icon { width: 64px; height: 64px; background: var(--green-bg); border: 2px solid rgba(16,185,129,.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 20px; }
 .success-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
 .success-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
 .protocol-chip { font-family: monospace; font-size: 18px; color: var(--yellow); background: rgba(255,230,0,.08); border: 1px solid rgba(255,230,0,.2); padding: 10px 20px; border-radius: 8px; display: inline-block; margin-bottom: 28px; letter-spacing: 2px; }
-
 .drawer-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 300; }
 .drawer-ov.active { display: block; }
-.drawer { position: fixed; top: 0; right: -420px; bottom: 0; width: 400px; background: var(--surface); border-left: 1px solid var(--border); z-index: 301; display: flex; flex-direction: column; transition: right .25s ease; }
+.drawer { position: fixed; top: 0; right: -480px; bottom: 0; width: 460px; background: var(--surface); border-left: 1px solid var(--border); z-index: 301; display: flex; flex-direction: column; transition: right .25s ease; }
 .drawer.active { right: 0; }
 .drawer-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
 .drawer-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
@@ -219,13 +179,20 @@ input[type=file] { display: none; }
 .detail-val { font-size: 13px; color: var(--text); text-align: right; }
 .doc-link { display: inline-flex; align-items: center; gap: 6px; background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(59,130,246,.3); border-radius: 6px; padding: 5px 10px; font-size: 12px; font-weight: 500; text-decoration: none; }
 .doc-link:hover { background: rgba(59,130,246,.2); }
-
+/* ADMIN */
+.status-select-inline { background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 12px; padding: 5px 8px; outline: none; font-family: inherit; cursor: pointer; }
+.status-select-inline option { background: var(--surface); }
+.admin-badge { background: rgba(139,92,246,.15); border: 1px solid rgba(139,92,246,.3); color: var(--purple); border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600; }
+.obs-input { background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 13px; padding: 8px 10px; outline: none; font-family: inherit; width: 100%; resize: vertical; min-height: 60px; }
+.obs-input:focus { border-color: var(--blue); }
+.save-btn { background: var(--green); color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s; }
+.save-btn:hover { background: #059669; }
 @media (max-width: 768px) {
   .auth-card { padding: 36px 24px; }
   .metrics-grid { grid-template-columns: repeat(2,1fr); }
   .form-grid { grid-template-columns: 1fr; }
   .field.span2 { grid-column: span 1; }
-  .drawer { width: 100%; }
+  .drawer { width: 100%; right: -100%; }
   .search-input { width: 150px; }
   .review-grid { grid-template-columns: 1fr; }
 }
@@ -233,7 +200,7 @@ input[type=file] { display: none; }
 </head>
 <body>
 
-<!-- TELA 1: EMAIL -->
+<!-- TELA EMAIL -->
 <div id="emailScreen" class="screen active">
   <div class="auth-card">
     <div class="auth-logo"><div class="logo-badge">MELI</div><div class="logo-text">Logística</div></div>
@@ -248,7 +215,7 @@ input[type=file] { display: none; }
   </div>
 </div>
 
-<!-- TELA 2: LOGIN -->
+<!-- TELA LOGIN -->
 <div id="loginScreen" class="screen">
   <div class="auth-card">
     <div class="auth-logo"><div class="logo-badge">MELI</div><div class="logo-text">Logística</div></div>
@@ -267,7 +234,7 @@ input[type=file] { display: none; }
   </div>
 </div>
 
-<!-- TELA 3: CADASTRO -->
+<!-- TELA CADASTRO -->
 <div id="cadastroScreen" class="screen">
   <div class="auth-card">
     <div class="auth-logo"><div class="logo-badge">MELI</div><div class="logo-text">Logística</div></div>
@@ -330,7 +297,7 @@ input[type=file] { display: none; }
   </div>
 </div>
 
-<!-- TELA 4: DASHBOARD -->
+<!-- DASHBOARD ETC -->
 <div id="dashScreen" class="screen">
   <header>
     <div class="header-left">
@@ -355,13 +322,51 @@ input[type=file] { display: none; }
     </div>
     <div class="table-card">
       <div class="table-toolbar">
-        <div class="toolbar-left">
-          <span style="font-size:14px;font-weight:600">Motoristas</span>
-          <span class="count-badge" id="countBadge">—</span>
-        </div>
+        <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Motoristas</span><span class="count-badge" id="countBadge">—</span></div>
         <input class="search-input" type="text" placeholder="Buscar por nome ou CPF…" oninput="filtrar(this.value)">
       </div>
       <div id="tableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando…</div></div>
+    </div>
+  </main>
+</div>
+
+<!-- ADMIN SCREEN -->
+<div id="adminScreen" class="screen">
+  <header>
+    <div class="header-left">
+      <div class="header-badge">MELI</div>
+      <div><div class="header-title">Portal de Indicações</div><div class="header-sub">Painel Administrativo</div></div>
+    </div>
+    <div class="header-right">
+      <span class="admin-badge">👤 Admin</span>
+      <button class="btn-sair" onclick="sair()">Sair</button>
+    </div>
+  </header>
+  <main>
+    <div class="page-header">
+      <div><div class="page-title">Todas as indicações</div><div class="page-sub" id="adminTotal">—</div></div>
+      <button class="btn btn-ghost" onclick="carregarAdmin()">↻ Atualizar</button>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card blue"><div class="metric-value" style="color:var(--blue)" id="amValidacao">—</div><div class="metric-label">Em validação</div></div>
+      <div class="metric-card green"><div class="metric-value" style="color:var(--green)" id="amAprovado">—</div><div class="metric-label">Aprovados</div></div>
+      <div class="metric-card amber"><div class="metric-value" style="color:var(--amber)" id="amPendente">—</div><div class="metric-label">Pendências</div></div>
+      <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="amReprovado">—</div><div class="metric-label">Reprovados</div></div>
+    </div>
+    <div class="table-card">
+      <div class="table-toolbar">
+        <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Indicações</span><span class="count-badge" id="adminCount">—</span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <select class="filter-select" id="filtroEtc" onchange="filtrarAdmin()"><option value="">Todas as ETCs</option></select>
+          <select class="filter-select" id="filtroStatus" onchange="filtrarAdmin()">
+            <option value="">Todos os status</option>
+            <option>Em validação</option><option>Documento incorreto</option><option>Aprovado</option>
+            <option>Reprovado</option><option>Pendente GUEP</option><option>Cancelado</option><option>Licenciamento</option>
+          </select>
+          <input class="search-input" type="text" placeholder="Buscar motorista…" oninput="filtrarAdmin()" id="adminSearch" style="width:180px">
+        </div>
+      </div>
+      <div id="adminTableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando…</div></div>
     </div>
   </main>
 </div>
@@ -382,7 +387,6 @@ input[type=file] { display: none; }
         <div class="step-item"><div class="step-dot" id="dot4">4</div></div>
       </div>
       <div class="form-body">
-        <!-- STEP 1 -->
         <div class="form-section active" id="step1">
           <div class="section-label">Etapa 1 — Dados do motorista</div>
           <div class="form-grid">
@@ -393,7 +397,6 @@ input[type=file] { display: none; }
             <div class="field span2"><label class="f-label">Cidade <span class="req">*</span></label><input class="f-input" id="fCidade" type="text" placeholder="Ex: São Paulo"><span class="f-err" id="errCidade">Campo obrigatório</span></div>
           </div>
         </div>
-        <!-- STEP 2 -->
         <div class="form-section" id="step2">
           <div class="section-label">Etapa 2 — Habilitação (CNH)</div>
           <div class="form-grid">
@@ -413,7 +416,6 @@ input[type=file] { display: none; }
             </div>
           </div>
         </div>
-        <!-- STEP 3 -->
         <div class="form-section" id="step3">
           <div class="section-label">Etapa 3 — Veículo</div>
           <div class="form-grid">
@@ -432,17 +434,246 @@ input[type=file] { display: none; }
             </div>
           </div>
         </div>
-        <!-- STEP 4 -->
         <div class="form-section" id="step4">
           <div class="section-label">Etapa 4 — Operação</div>
           <div class="form-grid">
             <div class="field span2"><label class="f-label">Tipo de operação <span class="req">*</span></label><select class="f-select" id="fTipoOp"><option value="">Selecione…</option><option>Last Mile</option><option>First Mile</option></select><span class="f-err" id="errTipoOp">Campo obrigatório</span></div>
-            <div class="field span2"><label class="f-label">Operação de preferência <span class="req">*</span></label><select class="f-select" id="fOpPref"><option value="">Selecione…</option><option>Osasco — SP</option><option>Santo André — SP</option><option>Guarulhos — SP</option><option>Campinas — SP</option><option>Santos — SP</option><option>Rio de Janeiro — RJ</option><option>Belo Horizonte — MG</option><option>Curitiba — PR</option></select><span class="f-err" id="errOpPref">Campo obrigatório</span></div>
+            <div class="field span2">
+              <label class="f-label">Operação de preferência <span class="req">*</span></label>
+              <select class="f-select" id="fOpPref">
+                <option value="">Selecione…</option>
+                <option>BRAAL1 - Rio Largo</option>
+                <option>BRAAM1 - Manaus</option>
+                <option>BRABA1 - Salvador</option>
+                <option>BRACE1 - Fortaleza</option>
+                <option>BRADF1 - Brasília</option>
+                <option>BRAES1 - Vitória</option>
+                <option>BRAGO1 - Goiânia</option>
+                <option>BRAJP1 - João Pessoa</option>
+                <option>BRAMA1 - São Luís</option>
+                <option>BRAMT1 - Várzea Grande</option>
+                <option>BRAPA1 - Belém</option>
+                <option>BRAPE1 - Recife</option>
+                <option>BRAPI1 - Teresina</option>
+                <option>BRARN1 - São Gonçalo do Amarante</option>
+                <option>BRARS1 - Porto Alegre</option>
+                <option>BRARS2 - Caxias do Sul</option>
+                <option>BRASE1 - Aracaju</option>
+                <option>BRASP1 - Guarulhos</option>
+                <option>BRASP2 - Campinas</option>
+                <option>BRASP3 - São Paulo</option>
+                <option>BRBA01 - Lauro de Freitas</option>
+                <option>BRCE01 - Itaitinga</option>
+                <option>BRDF01 - Brasília</option>
+                <option>BRMG01 - Extrema</option>
+                <option>BRMG02 - Betim</option>
+                <option>BRMG03 - Extrema</option>
+                <option>BRPE01 - Cabo de Santo Agostinho</option>
+                <option>BRRJ01 - Rio de Janeiro</option>
+                <option>BRRJ02 - São João de Meriti</option>
+                <option>BRRS01 - Sapucaia do Sul</option>
+                <option>BRSC01 - SC</option>
+                <option>BRSC02 - SC</option>
+                <option>BRSP02 - Cajamar</option>
+                <option>BRSP04 - Cajamar</option>
+                <option>BRSP05 - Franco da Rocha</option>
+                <option>BRSP06 - Araçariguama</option>
+                <option>BRSP08 - Cajamar</option>
+                <option>BRSP09 - Cajamar</option>
+                <option>BRSP10 - Franco da Rocha</option>
+                <option>BRSP11 - PRU</option>
+                <option>BRSP14 - Cajamar</option>
+                <option>BRSP15 - Cajamar</option>
+                <option>BRRC01 - Perus</option>
+                <option>BRRC02 - Sumaré</option>
+                <option>BRRC03 - EMBU</option>
+                <option>SAL1 - Maceió</option>
+                <option>SAM1 - Manaus</option>
+                <option>SAP1 - Macapá</option>
+                <option>SBA1 - Salvador</option>
+                <option>SBA2 - Feira de Santana</option>
+                <option>SBA3 - Vitória da Conquista</option>
+                <option>SBA4 - Feira de Santana</option>
+                <option>SBA6 - Salvador</option>
+                <option>SBA7 - Vitória da Conquista</option>
+                <option>SBA9 - Simões Filho</option>
+                <option>SCE1 - Fortaleza</option>
+                <option>SCE2 - Fortaleza</option>
+                <option>SDF1 - Brasília</option>
+                <option>SDF2 - Brasília 2</option>
+                <option>SES1 - Vitória</option>
+                <option>SES2 - Cachoeiro do Itapemirim</option>
+                <option>SES3 - Linhares</option>
+                <option>SFC1 - Feira de Santana</option>
+                <option>SFC2 - Feira de Santana</option>
+                <option>SFC3 - Feira de Santana</option>
+                <option>SFC6 - Feira de Santana</option>
+                <option>SFN1 - Guarulhos</option>
+                <option>SGO1 - Goiânia</option>
+                <option>SGO2 - Rio Verde</option>
+                <option>SGO3 - Hidrolândia</option>
+                <option>SJP1 - João Pessoa</option>
+                <option>SMG1 - Contagem</option>
+                <option>SMG2 - Juiz de Fora</option>
+                <option>SMG3 - Pouso Alegre</option>
+                <option>SMG4 - Ipatinga</option>
+                <option>SMG5 - Poços de Caldas</option>
+                <option>SMG6 - Uberlândia</option>
+                <option>SMG7 - Montes Claros</option>
+                <option>SMG8 - Vespasiano</option>
+                <option>SMG9 - Varginha</option>
+                <option>SMG10 - Divinópolis</option>
+                <option>SMG11 - Patos de Minas</option>
+                <option>SMG12 - Uberaba</option>
+                <option>SMG13 - Teófilo Otoni</option>
+                <option>SMG14 - Nova Lima</option>
+                <option>SMG15 - Contagem</option>
+                <option>SMG18 - Contagem</option>
+                <option>SMN1 - São Luís</option>
+                <option>SMR1 - Cuiabá</option>
+                <option>SMR2 - Sinop</option>
+                <option>SMS1 - Campo Grande</option>
+                <option>SMS2 - Dourados</option>
+                <option>SPA1 - Belém</option>
+                <option>SPA2 - Benevides</option>
+                <option>SPE1 - Recife</option>
+                <option>SPI1 - Teresina</option>
+                <option>SPR1 - Curitiba</option>
+                <option>SPR2 - Londrina</option>
+                <option>SPR3 - Cascavel</option>
+                <option>SPR4 - Pato Branco</option>
+                <option>SPR5 - Guarapuava</option>
+                <option>SPR6 - Maringá</option>
+                <option>SPR7 - Ponta Grossa</option>
+                <option>SPR8 - Campina Grande do Sul</option>
+                <option>SPR9 - Cascavel</option>
+                <option>SPR10 - Campina Grande do Sul</option>
+                <option>SPR11 - Araucária</option>
+                <option>SRD1 - Porto Velho</option>
+                <option>SRD2 - Porto Velho</option>
+                <option>SRJ1 - Cordovil</option>
+                <option>SRJ2 - Queimados</option>
+                <option>SRJ3 - Volta Redonda</option>
+                <option>SRJ4 - Campos dos Goytacazes</option>
+                <option>SRJ5 - Petrópolis</option>
+                <option>SRJ6 - Mendanha</option>
+                <option>SRJ7 - Macaé</option>
+                <option>SRJ8 - Niterói</option>
+                <option>SRJ9 - Cabo Frio</option>
+                <option>SRJ10 - RJ Barra</option>
+                <option>SRJ12 - Itaperuna</option>
+                <option>SRJ13 - Meriti</option>
+                <option>SRJ14 - Rio de Janeiro</option>
+                <option>SRN1 - Natal</option>
+                <option>SRS1 - Porto Alegre</option>
+                <option>SRS2 - Pelotas</option>
+                <option>SRS3 - Santa Maria</option>
+                <option>SRS4 - Caxias do Sul</option>
+                <option>SRS5 - Passo Fundo</option>
+                <option>SRS6 - Alegrete</option>
+                <option>SRS7 - Ijuí</option>
+                <option>SRS8 - Sapucaia do Sul</option>
+                <option>SRS9 - Santa Rita</option>
+                <option>SRS10 - Lajeado</option>
+                <option>SSC1 - Joinville</option>
+                <option>SSC2 - Florianópolis</option>
+                <option>SSC3 - Gaspar</option>
+                <option>SSC4 - Chapecó</option>
+                <option>SSC5 - Criciúma</option>
+                <option>SSC7 - Lages</option>
+                <option>SSC8 - Itajaí</option>
+                <option>SSC9 - Governador Celso Ramos</option>
+                <option>SSE1 - Aracaju</option>
+                <option>SSP3 - Campinas</option>
+                <option>SSP4 - Ribeirão Preto</option>
+                <option>SSP5 - ARE</option>
+                <option>SSP6 - ZL</option>
+                <option>SSP7 - ZO</option>
+                <option>SSP8 - SJC</option>
+                <option>SSP9 - Limeira</option>
+                <option>SSP10 - Araçatuba</option>
+                <option>SSP11 - PRU</option>
+                <option>SSP12 - SJRP</option>
+                <option>SSP13 - MAR</option>
+                <option>SSP14 - BAU</option>
+                <option>SSP15 - Santos</option>
+                <option>SSP16 - Caraguatatuba</option>
+                <option>SSP17 - SBC</option>
+                <option>SSP18 - Jundiaí</option>
+                <option>SSP19 - Guarulhos</option>
+                <option>SSP20 - Sorocaba</option>
+                <option>SSP21 - Mooca</option>
+                <option>SSP22 - São Carlos</option>
+                <option>SSP23 - Mogi das Cruzes</option>
+                <option>SSP24 - Avaré</option>
+                <option>SSP25 - Atibaia</option>
+                <option>SSP26 - Franca</option>
+                <option>SSP27 - Itapetininga</option>
+                <option>SSP28 - Jales</option>
+                <option>SSP29 - Mogi Mirim</option>
+                <option>SSP30 - GRU</option>
+                <option>SSP31 - Barretos</option>
+                <option>SSP32 - Franco da Rocha</option>
+                <option>SSP34 - Cotia</option>
+                <option>SSP35 - Cubatão</option>
+                <option>SSP36 - Piracicaba</option>
+                <option>SSP38 - Itupeva</option>
+                <option>SSP39 - Lorena</option>
+                <option>SSP40 - ZN</option>
+                <option>SSP44 - São Paulo</option>
+                <option>SSP45 - Itaquera</option>
+                <option>SSP46 - Santos 2</option>
+                <option>SSP48 - Jaguaré</option>
+                <option>SSP49 - Zona Norte</option>
+                <option>SSP50 - Santo André</option>
+                <option>SSP51 - Porto Feliz</option>
+                <option>SSP52 - SBC</option>
+                <option>SSP55 - Ribeirão Preto</option>
+                <option>SSP1 - ZS</option>
+                <option>SC_VG - São Paulo</option>
+                <option>SC_ZS - São Paulo</option>
+                <option>STO1 - Palmas</option>
+                <option>STO2 - Palmas</option>
+                <option>ARENA - Arena</option>
+                <option>BRXBA1 - Simões Filho</option>
+                <option>BRXCE1 - Itaitinga</option>
+                <option>BRXES1 - ES</option>
+                <option>BRXGO1 - Goiânia</option>
+                <option>BRXMG2 - Uberlândia</option>
+                <option>BRXMG3 - Pouso Alegre</option>
+                <option>BRXPE1 - Jaboatão dos Guararapes</option>
+                <option>BRXPR2 - Londrina</option>
+                <option>BRXPR3 - Cascavel</option>
+                <option>BRXPR4 - Maringá</option>
+                <option>BRXRJ1 - RJ</option>
+                <option>BRXRS1 - RS</option>
+                <option>BRXSC2 - SC</option>
+                <option>BRXSP4 - SBC</option>
+                <option>BRXSP5 - RAO</option>
+                <option>BRXSP6 - GRU I</option>
+                <option>BRXSP7 - BAU</option>
+                <option>BRXSP8 - FRC</option>
+                <option>BRXSP9 - Cajamar</option>
+                <option>BRXSP10 - GRU II</option>
+                <option>BRXSP11 - PRU</option>
+                <option>BRXSP12 - Araçatuba</option>
+                <option>BRXSP14 - MAR</option>
+                <option>BRXSP16 - SP</option>
+                <option>BRXSP18 - Santo André</option>
+                <option>VILA_GUILHERME - São Paulo</option>
+                <option>XMG1 - MG</option>
+                <option>XPR1 - Curitiba</option>
+                <option>XRJ1 - RJ</option>
+                <option>XSP4 - SBC</option>
+                <option>CAMPINAS - Campinas</option>
+                <option>BRPR01 - PR</option>
+              </select>
+              <span class="f-err" id="errOpPref">Campo obrigatório</span>
+            </div>
           </div>
           <div class="review-box"><div class="review-label">Resumo</div><div class="review-grid" id="reviewGrid"></div></div>
         </div>
       </div>
-
       <div class="success-screen" id="successScreen">
         <div class="success-icon">✅</div>
         <div class="success-title">Indicação enviada!</div>
@@ -453,7 +684,6 @@ input[type=file] { display: none; }
           <button class="btn btn-yellow" onclick="resetForm()">Indicar outro</button>
         </div>
       </div>
-
       <div class="form-footer" id="formFooter">
         <span class="step-lbl" id="stepLbl">Etapa 1 de 4</span>
         <div style="display:flex;gap:10px">
@@ -472,41 +702,30 @@ input[type=file] { display: none; }
     <div><div style="font-size:16px;font-weight:700" id="dNome">—</div><div style="margin-top:4px" id="dBadge"></div></div>
     <button class="close-btn" onclick="fecharDrawer()">✕</button>
   </div>
-  <div class="drawer-body">
-    <div class="detail-row"><span class="detail-key">CPF</span><span class="detail-val"><span class="cpf-chip" id="dCpf">—</span></span></div>
-    <div class="detail-row"><span class="detail-key">E-mail</span><span class="detail-val" id="dEmail">—</span></div>
-    <div class="detail-row"><span class="detail-key">Telefone</span><span class="detail-val" id="dTel">—</span></div>
-    <div class="detail-row"><span class="detail-key">Cidade</span><span class="detail-val" id="dCidade">—</span></div>
-    <div class="detail-row"><span class="detail-key">Veículo</span><span class="detail-val" id="dVeiculo">—</span></div>
-    <div class="detail-row"><span class="detail-key">Placa</span><span class="detail-val" id="dPlaca">—</span></div>
-    <div class="detail-row"><span class="detail-key">Operação</span><span class="detail-val" id="dOp">—</span></div>
-    <div class="detail-row"><span class="detail-key">Data</span><span class="detail-val" id="dData">—</span></div>
-    <div class="detail-row">
-      <span class="detail-key">Documentos</span>
-      <span class="detail-val" style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
-        <a id="dLinkCnh" href="#" target="_blank" class="doc-link">📄 Ver CNH</a>
-        <a id="dLinkCrlv" href="#" target="_blank" class="doc-link">🚐 Ver CRLV</a>
-      </span>
-    </div>
-  </div>
+  <div class="drawer-body" id="drawerBody"></div>
 </div>
 
 <script>
-// ── CONFIG SUPABASE ──
 const SUPABASE_URL = 'https://lpwqikmnkhsuxozwpakn.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxwd3Fpa21ua2hzdXhvendwYWtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzA0MTIsImV4cCI6MjEwMDQwNjQxMn0.joZibqL1V39S4frmLotygTQohPo_tgfg8sby-S5Fv0k';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Admin emails — adicione os emails da equipe aqui
+const ADMIN_EMAILS = ['matheus.ribeiro@mercadolivre.com', 'joyce@mercadolivre.com'];
 
 const STATUS_MAP = {
   'Em validação':'b-validacao','Documento incorreto':'b-doc','Aprovado':'b-aprovado',
   'Reprovado':'b-reprovado','Pendente GUEP':'b-pendente','Cancelado':'b-cancelado','Licenciamento':'b-licenciamento'
 };
+const STATUS_LIST = ['Em validação','Documento incorreto','Aprovado','Reprovado','Pendente GUEP','Cancelado','Licenciamento'];
 
 let sessao = null;
 let todasIndicacoes = [];
+let todasAdmin = [];
 let emailAtual = '';
 let currentStep = 1;
 let arquivos = { cnh: null, crlv: null };
+let drawerIndicacao = null;
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -527,21 +746,15 @@ function toggleSenha(id, btn) {
 
 function voltarEmail() { showScreen('emailScreen'); }
 
-// ── VERIFICAR EMAIL ──
 async function verificarEmail() {
   const email = document.getElementById('emailInput').value.trim();
   const alertEl = document.getElementById('emailAlert');
   alertEl.classList.remove('show');
-
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    alertEl.textContent = 'Digite um e-mail válido.';
-    alertEl.classList.add('show');
-    return;
+    alertEl.textContent = 'Digite um e-mail válido.'; alertEl.classList.add('show'); return;
   }
-
   emailAtual = email;
   setLoading('btnEmail', true);
-
   try {
     const { data } = await sb.from('usuarios').select('email').eq('email', email).maybeSingle();
     if (data) {
@@ -550,47 +763,28 @@ async function verificarEmail() {
       showScreen('loginScreen');
     } else {
       document.getElementById('cadEmailLabel').textContent = email;
-      document.getElementById('cadNome').value = '';
-      document.getElementById('cadSenha').value = '';
-      document.getElementById('cadConfirma').value = '';
+      ['cadNome','cadSenha','cadConfirma'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('cadEtc').value = '';
       showScreen('cadastroScreen');
     }
-  } catch(e) {
-    alertEl.textContent = 'Erro de conexão. Tente novamente.';
-    alertEl.classList.add('show');
-  }
-
+  } catch(e) { alertEl.textContent = 'Erro de conexão.'; alertEl.classList.add('show'); }
   setLoading('btnEmail', false, 'Continuar');
 }
 
-// ── LOGIN ──
 async function fazerLogin() {
   const senha = document.getElementById('senhaInput').value;
   const alertEl = document.getElementById('loginAlert');
   alertEl.classList.remove('show');
-
   if (!senha) { alertEl.textContent = 'Digite sua senha.'; alertEl.classList.add('show'); return; }
-
   setLoading('btnLogin', true);
-
   try {
     const { data } = await sb.from('usuarios').select('*').eq('email', emailAtual).eq('senha', senha).maybeSingle();
-    if (data) {
-      entrarNoDash(data);
-    } else {
-      alertEl.textContent = 'Senha incorreta. Tente novamente.';
-      alertEl.classList.add('show');
-    }
-  } catch(e) {
-    alertEl.textContent = 'Erro de conexão.';
-    alertEl.classList.add('show');
-  }
-
+    if (data) { entrarNoDash(data); }
+    else { alertEl.textContent = 'Senha incorreta.'; alertEl.classList.add('show'); }
+  } catch(e) { alertEl.textContent = 'Erro de conexão.'; alertEl.classList.add('show'); }
   setLoading('btnLogin', false, 'Entrar');
 }
 
-// ── CADASTRO ──
 async function fazerCadastro() {
   const nome = document.getElementById('cadNome').value.trim();
   const etc = document.getElementById('cadEtc').value;
@@ -598,62 +792,56 @@ async function fazerCadastro() {
   const confirma = document.getElementById('cadConfirma').value;
   const alertEl = document.getElementById('cadAlert');
   alertEl.classList.remove('show');
-
   let ok = true;
   const check = (id, errId, cond) => {
     document.getElementById(id).classList.toggle('error', !cond);
     document.getElementById(errId).classList.toggle('show', !cond);
     if (!cond) ok = false;
   };
-
   check('cadNome','errCadNome', nome !== '');
   check('cadEtc','errCadEtc', etc !== '');
   check('cadSenha','errCadSenha', senha.length >= 6);
   check('cadConfirma','errCadConfirma', senha === confirma && confirma !== '');
   if (!ok) return;
-
   setLoading('btnCadastro', true);
-
   try {
-    const { data, error } = await sb.from('usuarios').insert([{
-      email: emailAtual, nome, etc, senha, ativa: true
-    }]).select().single();
-
+    const { data, error } = await sb.from('usuarios').insert([{ email: emailAtual, nome, etc, senha, ativa: true }]).select().single();
     if (error) throw error;
     entrarNoDash(data);
-  } catch(e) {
-    alertEl.textContent = 'Erro ao criar conta. Tente novamente.';
-    alertEl.classList.add('show');
-  }
-
+  } catch(e) { alertEl.textContent = 'Erro ao criar conta.'; alertEl.classList.add('show'); }
   setLoading('btnCadastro', false, 'Criar conta e entrar');
 }
 
-// ── DASHBOARD ──
 function entrarNoDash(data) {
   sessao = { email: data.email, nome: data.nome, etc: data.etc };
-  document.getElementById('headerEtc').textContent = data.etc;
-  document.getElementById('pageSubNome').textContent = `Olá, ${data.nome} — ${data.etc}`;
-  showScreen('dashScreen');
-  carregarIndicacoes();
+  const isAdmin = ADMIN_EMAILS.includes(data.email.toLowerCase());
+  if (isAdmin) {
+    showScreen('adminScreen');
+    carregarAdmin();
+  } else {
+    document.getElementById('headerEtc').textContent = data.etc;
+    document.getElementById('pageSubNome').textContent = `Olá, ${data.nome} — ${data.etc}`;
+    showScreen('dashScreen');
+    carregarIndicacoes();
+  }
 }
 
 function sair() {
-  sessao = null; todasIndicacoes = []; emailAtual = '';
+  sessao = null; todasIndicacoes = []; todasAdmin = []; emailAtual = '';
   document.getElementById('emailInput').value = '';
   showScreen('emailScreen');
 }
 
+// ── DASHBOARD ETC ──
 async function carregarIndicacoes() {
-  document.getElementById('tableBody').innerHTML = '<div class="loading-state"><div class="spinner"></div><br>Carregando indicações…</div>';
+  document.getElementById('tableBody').innerHTML = '<div class="loading-state"><div class="spinner"></div><br>Carregando…</div>';
   try {
-    const { data, error } = await sb.from('indicacoes').select('*').eq('email_usuario', sessao.email).order('criado_em', { ascending: false });
-    if (error) throw error;
+    const { data } = await sb.from('indicacoes').select('*').eq('email_usuario', sessao.email).order('criado_em', { ascending: false });
     todasIndicacoes = data || [];
     renderTabela(todasIndicacoes);
     atualizarMetricas(todasIndicacoes);
   } catch(e) {
-    document.getElementById('tableBody').innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Erro ao carregar</div><div class="empty-sub">Recarregue a página.</div></div>';
+    document.getElementById('tableBody').innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Erro ao carregar</div></div>';
   }
 }
 
@@ -672,15 +860,14 @@ function renderTabela(lista) {
   }
   const rows = lista.map(r => {
     const status = r.status || '—';
-    const badge = STATUS_MAP[status] || '';
     const data = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '—';
-    return `<tr onclick='abrirDrawer(${JSON.stringify(r).replace(/'/g,"&#39;")})'>
+    return `<tr onclick='abrirDrawer(${JSON.stringify(r).replace(/'/g,"&#39;")}, false)'>
       <td><strong>${r.nome_motorista||'—'}</strong><br><span style="font-size:11px;color:var(--muted)">${r.cidade||'—'}</span></td>
       <td><span class="cpf-chip">${r.cpf||'—'}</span></td>
       <td>${r.tipo_veiculo||'—'}</td>
       <td>${r.tipo_operacao||'—'}</td>
       <td style="color:var(--muted);font-size:12px">${data}</td>
-      <td><span class="badge ${badge}">${status}</span></td>
+      <td><span class="badge ${STATUS_MAP[status]||''}">${status}</span></td>
     </tr>`;
   }).join('');
   document.getElementById('tableBody').innerHTML =
@@ -694,23 +881,130 @@ function filtrar(q) {
   document.getElementById('countBadge').textContent = `${f.length} indicações`;
 }
 
+// ── ADMIN ──
+async function carregarAdmin() {
+  document.getElementById('adminTableBody').innerHTML = '<div class="loading-state"><div class="spinner"></div><br>Carregando…</div>';
+  try {
+    const { data } = await sb.from('indicacoes').select('*').order('criado_em', { ascending: false });
+    todasAdmin = data || [];
+    // popular filtro de ETCs
+    const etcs = [...new Set(todasAdmin.map(r => r.etc).filter(Boolean))].sort();
+    const sel = document.getElementById('filtroEtc');
+    sel.innerHTML = '<option value="">Todas as ETCs</option>' + etcs.map(e => `<option>${e}</option>`).join('');
+    atualizarMetricasAdmin(todasAdmin);
+    renderAdmin(todasAdmin);
+  } catch(e) {
+    document.getElementById('adminTableBody').innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Erro ao carregar</div></div>';
+  }
+}
+
+function atualizarMetricasAdmin(lista) {
+  document.getElementById('amValidacao').textContent = lista.filter(i => i.status === 'Em validação').length;
+  document.getElementById('amAprovado').textContent = lista.filter(i => i.status === 'Aprovado').length;
+  document.getElementById('amPendente').textContent = lista.filter(i => ['Pendente GUEP','Documento incorreto','Licenciamento'].includes(i.status)).length;
+  document.getElementById('amReprovado').textContent = lista.filter(i => i.status === 'Reprovado').length;
+  document.getElementById('adminTotal').textContent = `${lista.length} indicações no total`;
+  document.getElementById('adminCount').textContent = `${lista.length} indicações`;
+}
+
+function filtrarAdmin() {
+  const etc = document.getElementById('filtroEtc').value;
+  const status = document.getElementById('filtroStatus').value;
+  const q = document.getElementById('adminSearch').value.toLowerCase();
+  const f = todasAdmin.filter(r =>
+    (!etc || r.etc === etc) &&
+    (!status || r.status === status) &&
+    (!q || (r.nome_motorista||'').toLowerCase().includes(q) || (r.cpf||'').includes(q))
+  );
+  renderAdmin(f);
+  document.getElementById('adminCount').textContent = `${f.length} indicações`;
+}
+
+function renderAdmin(lista) {
+  if (!lista.length) {
+    document.getElementById('adminTableBody').innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Nenhuma indicação encontrada</div></div>';
+    return;
+  }
+  const rows = lista.map(r => {
+    const status = r.status || '—';
+    const data = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '—';
+    return `<tr onclick='abrirDrawer(${JSON.stringify(r).replace(/'/g,"&#39;")}, true)'>
+      <td><strong>${r.nome_motorista||'—'}</strong><br><span style="font-size:11px;color:var(--muted)">${r.cidade||'—'}</span></td>
+      <td><span style="font-size:12px;color:var(--muted)">${r.etc||'—'}</span></td>
+      <td><span class="cpf-chip">${r.cpf||'—'}</span></td>
+      <td>${r.tipo_veiculo||'—'}</td>
+      <td style="color:var(--muted);font-size:12px">${data}</td>
+      <td><span class="badge ${STATUS_MAP[status]||''}">${status}</span></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('adminTableBody').innerHTML =
+    `<table><thead><tr><th>Motorista</th><th>ETC</th><th>CPF</th><th>Veículo</th><th>Data</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
 // ── DRAWER ──
-function abrirDrawer(r) {
+function abrirDrawer(r, isAdmin) {
+  drawerIndicacao = r;
   const status = r.status || '—';
   document.getElementById('dNome').textContent = r.nome_motorista || '—';
   document.getElementById('dBadge').innerHTML = `<span class="badge ${STATUS_MAP[status]||''}">${status}</span>`;
-  document.getElementById('dCpf').textContent = r.cpf || '—';
-  document.getElementById('dEmail').textContent = r.email_motorista || '—';
-  document.getElementById('dTel').textContent = r.telefone || '—';
-  document.getElementById('dCidade').textContent = r.cidade || '—';
-  document.getElementById('dVeiculo').textContent = r.tipo_veiculo || '—';
-  document.getElementById('dPlaca').textContent = r.placa || '—';
-  document.getElementById('dOp').textContent = `${r.tipo_operacao||'—'} — ${r.operacao_preferencia||'—'}`;
-  document.getElementById('dData').textContent = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '—';
-  document.getElementById('dLinkCnh').href = r.cnh_link || '#';
-  document.getElementById('dLinkCrlv').href = r.crlv_link || '#';
+  const data = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '—';
+
+  let adminSection = '';
+  if (isAdmin) {
+    const opts = STATUS_LIST.map(s => `<option ${s===r.status?'selected':''}>${s}</option>`).join('');
+    adminSection = `
+      <div class="detail-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <span class="detail-key">Atualizar status</span>
+        <select class="status-select-inline" id="drawerStatus" style="width:100%">${opts}</select>
+      </div>
+      <div class="detail-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <span class="detail-key">Observações</span>
+        <textarea class="obs-input" id="drawerObs">${r.observacoes||''}</textarea>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key"></span>
+        <button class="save-btn" onclick="salvarStatus('${r.id}')">Salvar alterações</button>
+      </div>`;
+  }
+
+  document.getElementById('drawerBody').innerHTML = `
+    ${isAdmin ? `<div class="detail-row"><span class="detail-key">ETC</span><span class="detail-val">${r.etc||'—'}</span></div>` : ''}
+    <div class="detail-row"><span class="detail-key">CPF</span><span class="detail-val"><span class="cpf-chip">${r.cpf||'—'}</span></span></div>
+    <div class="detail-row"><span class="detail-key">E-mail</span><span class="detail-val">${r.email_motorista||'—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Telefone</span><span class="detail-val">${r.telefone||'—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Cidade</span><span class="detail-val">${r.cidade||'—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Veículo</span><span class="detail-val">${r.tipo_veiculo||'—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Placa</span><span class="detail-val">${r.placa||'—'}</span></div>
+    <div class="detail-row"><span class="detail-key">CNH</span><span class="detail-val">Cat. ${r.cnh_categoria||'—'} • Val. ${r.cnh_validade||'—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Operação</span><span class="detail-val">${r.tipo_operacao||'—'}<br><span style="color:var(--muted);font-size:11px">${r.operacao_preferencia||'—'}</span></span></div>
+    <div class="detail-row"><span class="detail-key">Data</span><span class="detail-val">${data}</span></div>
+    <div class="detail-row">
+      <span class="detail-key">Documentos</span>
+      <span class="detail-val" style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        <a href="${r.cnh_link||'#'}" target="_blank" class="doc-link">📄 Ver CNH</a>
+        <a href="${r.crlv_link||'#'}" target="_blank" class="doc-link">🚐 Ver CRLV</a>
+      </span>
+    </div>
+    ${adminSection}
+  `;
+
   document.getElementById('drawerOv').classList.add('active');
   document.getElementById('drawer').classList.add('active');
+}
+
+async function salvarStatus(id) {
+  const novoStatus = document.getElementById('drawerStatus').value;
+  const obs = document.getElementById('drawerObs').value;
+  try {
+    const { error } = await sb.from('indicacoes').update({ status: novoStatus, observacoes: obs, atualizado_em: new Date() }).eq('id', id);
+    if (error) throw error;
+    // atualiza local
+    todasAdmin = todasAdmin.map(r => r.id === id ? {...r, status: novoStatus, observacoes: obs} : r);
+    atualizarMetricasAdmin(todasAdmin);
+    filtrarAdmin();
+    fecharDrawer();
+    alert('Status atualizado com sucesso!');
+  } catch(e) { alert('Erro ao salvar: ' + e.message); }
 }
 
 function fecharDrawer() {
@@ -724,19 +1018,10 @@ function fecharForm() { document.getElementById('formOverlay').classList.remove(
 
 function resetForm() {
   currentStep = 1; arquivos = { cnh: null, crlv: null };
-  ['fNome','fCpf','fTel','fEmail','fCidade','fCnhNum','fCnhVal','fPlaca'].forEach(id => {
-    const el = document.getElementById(id); if(el){el.value='';el.classList.remove('error');}
-  });
-  ['fCnhCat','fTipoVei','fTipoOp','fOpPref'].forEach(id => {
-    const el = document.getElementById(id); if(el){el.value='';el.classList.remove('error');}
-  });
+  ['fNome','fCpf','fTel','fEmail','fCidade','fCnhNum','fCnhVal','fPlaca'].forEach(id => { const el=document.getElementById(id); if(el){el.value='';el.classList.remove('error');} });
+  ['fCnhCat','fTipoVei','fTipoOp','fOpPref'].forEach(id => { const el=document.getElementById(id); if(el){el.value='';el.classList.remove('error');} });
   document.querySelectorAll('.f-err').forEach(e => e.classList.remove('show'));
-  ['Cnh','Crlv'].forEach(t => {
-    document.getElementById('area'+t).classList.remove('error');
-    document.getElementById('area'+t).style.display='';
-    document.getElementById('done'+t).classList.remove('show');
-    document.getElementById('file'+t).value='';
-  });
+  ['Cnh','Crlv'].forEach(t => { document.getElementById('area'+t).classList.remove('error'); document.getElementById('area'+t).style.display=''; document.getElementById('done'+t).classList.remove('show'); document.getElementById('file'+t).value=''; });
   document.getElementById('stepsBar').style.display='flex';
   document.getElementById('formFooter').style.display='flex';
   document.getElementById('successScreen').classList.remove('active');
@@ -761,13 +1046,7 @@ function atualizarSteps() {
 
 function validarStep(step) {
   let ok=true;
-  const req=(id,errId,fn)=>{
-    const el=document.getElementById(id);
-    const v=fn?fn(el.value):el.value.trim()!=='';
-    el.classList.toggle('error',!v);
-    document.getElementById(errId).classList.toggle('show',!v);
-    if(!v) ok=false;
-  };
+  const req=(id,errId,fn)=>{ const el=document.getElementById(id); const v=fn?fn(el.value):el.value.trim()!==''; el.classList.toggle('error',!v); document.getElementById(errId).classList.toggle('show',!v); if(!v) ok=false; };
   if(step===1){req('fNome','errNome');req('fCpf','errCpf',v=>validarCpf(v));req('fTel','errTel',v=>v.replace(/\D/g,'').length>=10);req('fEmail','errEmail',v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));req('fCidade','errCidade');}
   if(step===2){req('fCnhNum','errCnhNum',v=>v.replace(/\D/g,'').length>=9);req('fCnhCat','errCnhCat');req('fCnhVal','errCnhVal',v=>v&&new Date(v)>new Date());if(!arquivos.cnh){document.getElementById('areaCnh').classList.add('error');document.getElementById('errCnh').classList.add('show');ok=false;}}
   if(step===3){req('fTipoVei','errTipoVei');req('fPlaca','errPlaca',v=>/^[A-Za-z]{3}[\s-]?\d[A-Za-z0-9]\d{2}$/.test(v.trim()));if(!arquivos.crlv){document.getElementById('areaCrlv').classList.add('error');document.getElementById('errCrlv').classList.add('show');ok=false;}}
@@ -783,9 +1062,8 @@ function preencherRevisao(){
   document.getElementById('reviewGrid').innerHTML=items.map(([k,v])=>`<div class="review-item"><span>${k}</span><strong>${v}</strong></div>`).join('');
 }
 
-// ── UPLOAD ──
 function handleUpload(tipo,input){
-  const file=input.files[0];if(!file)return;
+  const file=input.files[0]; if(!file)return;
   if(file.size>10*1024*1024){alert('Arquivo muito grande. Máximo 10MB.');input.value='';return;}
   arquivos[tipo]=file;
   const T=tipo==='cnh'?'Cnh':'Crlv';
@@ -804,43 +1082,38 @@ function removerUpload(tipo){
   document.getElementById('area'+T).style.display='';
 }
 
-// ── ENVIAR ──
 async function enviarIndicacao(){
   document.getElementById('submittingOv').classList.add('show');
   try {
-    // Upload CNH
-    const cnhExt = arquivos.cnh.name.split('.').pop();
-    const cnhPath = `${sessao.etc}/${Date.now()}_cnh.${cnhExt}`;
-    const { error: cnhErr } = await sb.storage.from('documentos').upload(cnhPath, arquivos.cnh);
+    const cnhExt=arquivos.cnh.name.split('.').pop();
+    const cnhPath=`${sessao.etc.replace(/[^a-zA-Z0-9]/g,'_')}/${Date.now()}_cnh.${cnhExt}`;
+    const {error:cnhErr}=await sb.storage.from('documentos').upload(cnhPath,arquivos.cnh);
     if(cnhErr) throw cnhErr;
-    const { data: cnhUrl } = sb.storage.from('documentos').getPublicUrl(cnhPath);
+    const {data:cnhUrl}=sb.storage.from('documentos').getPublicUrl(cnhPath);
 
-    // Upload CRLV
-    const crlvExt = arquivos.crlv.name.split('.').pop();
-    const crlvPath = `${sessao.etc}/${Date.now()}_crlv.${crlvExt}`;
-    const { error: crlvErr } = await sb.storage.from('documentos').upload(crlvPath, arquivos.crlv);
+    const crlvExt=arquivos.crlv.name.split('.').pop();
+    const crlvPath=`${sessao.etc.replace(/[^a-zA-Z0-9]/g,'_')}/${Date.now()}_crlv.${crlvExt}`;
+    const {error:crlvErr}=await sb.storage.from('documentos').upload(crlvPath,arquivos.crlv);
     if(crlvErr) throw crlvErr;
-    const { data: crlvUrl } = sb.storage.from('documentos').getPublicUrl(crlvPath);
+    const {data:crlvUrl}=sb.storage.from('documentos').getPublicUrl(crlvPath);
 
-    // Inserir indicação
-    const { error: insErr } = await sb.from('indicacoes').insert([{
-      email_usuario: sessao.email,
-      etc: sessao.etc,
-      nome_motorista: document.getElementById('fNome').value,
-      cpf: document.getElementById('fCpf').value,
-      email_motorista: document.getElementById('fEmail').value,
-      telefone: document.getElementById('fTel').value,
-      cidade: document.getElementById('fCidade').value,
-      cnh_numero: document.getElementById('fCnhNum').value,
-      cnh_categoria: document.getElementById('fCnhCat').value,
-      cnh_validade: document.getElementById('fCnhVal').value,
-      cnh_link: cnhUrl.publicUrl,
-      tipo_veiculo: document.getElementById('fTipoVei').value,
-      placa: document.getElementById('fPlaca').value.toUpperCase(),
-      crlv_link: crlvUrl.publicUrl,
-      tipo_operacao: document.getElementById('fTipoOp').value,
-      operacao_preferencia: document.getElementById('fOpPref').value,
-      status: 'Em validação'
+    const {error:insErr}=await sb.from('indicacoes').insert([{
+      email_usuario:sessao.email, etc:sessao.etc,
+      nome_motorista:document.getElementById('fNome').value,
+      cpf:document.getElementById('fCpf').value,
+      email_motorista:document.getElementById('fEmail').value,
+      telefone:document.getElementById('fTel').value,
+      cidade:document.getElementById('fCidade').value,
+      cnh_numero:document.getElementById('fCnhNum').value,
+      cnh_categoria:document.getElementById('fCnhCat').value,
+      cnh_validade:document.getElementById('fCnhVal').value,
+      cnh_link:cnhUrl.publicUrl,
+      tipo_veiculo:document.getElementById('fTipoVei').value,
+      placa:document.getElementById('fPlaca').value.toUpperCase(),
+      crlv_link:crlvUrl.publicUrl,
+      tipo_operacao:document.getElementById('fTipoOp').value,
+      operacao_preferencia:document.getElementById('fOpPref').value,
+      status:'Em validação'
     }]);
     if(insErr) throw insErr;
 
@@ -851,13 +1124,9 @@ async function enviarIndicacao(){
     document.getElementById('protocoloChip').textContent='MELI-'+new Date().getFullYear()+'-'+Date.now().toString().slice(-4);
     document.getElementById('successScreen').classList.add('active');
     carregarIndicacoes();
-  } catch(e) {
-    document.getElementById('submittingOv').classList.remove('show');
-    alert('Erro ao enviar: '+e.message);
-  }
+  } catch(e) { document.getElementById('submittingOv').classList.remove('show'); alert('Erro: '+e.message); }
 }
 
-// ── UTILS ──
 function fmtCpf(input){let v=input.value.replace(/\D/g,'').slice(0,11);if(v.length>9)v=v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/,'$1.$2.$3-$4');else if(v.length>6)v=v.replace(/(\d{3})(\d{3})(\d{1,3})/,'$1.$2.$3');else if(v.length>3)v=v.replace(/(\d{3})(\d{1,3})/,'$1.$2');input.value=v;}
 function fmtTel(input){let v=input.value.replace(/\D/g,'').slice(0,11);if(v.length>10)v=v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3');else if(v.length>6)v=v.replace(/(\d{2})(\d{4,5})(\d{0,4})/,'($1) $2-$3');else if(v.length>2)v=v.replace(/(\d{2})(\d+)/,'($1) $2');input.value=v;}
 function validarCpf(cpf){const n=cpf.replace(/\D/g,'');if(n.length!==11||/^(\d)\1+$/.test(n))return false;let s=0;for(let i=0;i<9;i++)s+=parseInt(n[i])*(10-i);let r=(s*10)%11;if(r===10||r===11)r=0;if(r!==parseInt(n[9]))return false;s=0;for(let i=0;i<10;i++)s+=parseInt(n[i])*(11-i);r=(s*10)%11;if(r===10||r===11)r=0;return r===parseInt(n[10]);}
