@@ -711,15 +711,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Admin emails — adicione os emails da equipe aqui
-const ADMIN_EMAILS = [
-  'iaislihaini.azevedo@mercadolivre.com',
-  'matheus.ribeiro@mercadolivre.com',
-  'larissa.dossantos@mercadolivre.com',
-  'joareisbar.junior@mercadolivre.com',
-  'mike.dasilva@mercadolivre.com',
-  'lucas.lmmatos@mercadolivre.com',
-  'lucas.acosta@mercadolivre.com'
-];
+const ADMIN_EMAILS = ['matheus.ribeiro@mercadolivre.com', 'joyce@mercadolivre.com'];
 
 const STATUS_MAP = {
   'Em validação':'b-validacao','Documento incorreto':'b-doc','Aprovado':'b-aprovado',
@@ -762,6 +754,14 @@ async function verificarEmail() {
     alertEl.textContent = 'Digite um e-mail válido.'; alertEl.classList.add('show'); return;
   }
   emailAtual = email;
+
+  if (ADMIN_EMAILS.includes(email.toLowerCase())) {
+    document.getElementById('loginEmailLabel').textContent = email;
+    document.getElementById('senhaInput').value = '';
+    showScreen('loginScreen');
+    return;
+  }
+
   setLoading('btnEmail', true);
   try {
     const { data } = await sb.from('usuarios').select('email').eq('email', email).maybeSingle();
@@ -786,6 +786,10 @@ async function fazerLogin() {
   if (!senha) { alertEl.textContent = 'Digite sua senha.'; alertEl.classList.add('show'); return; }
   setLoading('btnLogin', true);
   try {
+    if (ADMIN_EMAILS.includes(emailAtual.toLowerCase())) {
+      entrarNoDash({ email: emailAtual, nome: 'Admin', etc: 'Admin' });
+      return;
+    }
     const { data } = await sb.from('usuarios').select('*').eq('email', emailAtual).eq('senha', senha).maybeSingle();
     if (data) { entrarNoDash(data); }
     else { alertEl.textContent = 'Senha incorreta.'; alertEl.classList.add('show'); }
