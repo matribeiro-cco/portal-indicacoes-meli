@@ -224,7 +224,7 @@ input[type=file] { display: none; }
   <div class="auth-card">
     <div class="auth-logo"><div class="logo-badge">MELI</div><div class="logo-text">Logística</div></div>
     <div class="auth-title" id="loginTitle">Bem-vindo de volta</div>
-    <div class="auth-sub" id="loginSubtitle">Conta encontrada para <strong id="loginEmailLabel">—</strong></div>
+    <div class="auth-sub" id="loginSubtitle">Conta encontrada para <strong>—</strong></div>
     <div class="auth-field">
       <label>Senha</label>
       <div class="input-wrap">
@@ -805,13 +805,12 @@ async function verificarEmail() {
     return;
   }
   document.getElementById('loginTitle').textContent = 'Bem-vindo de volta';
-  document.getElementById('loginSubtitle').innerHTML = 'Conta encontrada para <strong id="loginEmailLabel">' + email + '</strong>';
+  document.getElementById('loginSubtitle').innerHTML = 'Conta encontrada para <strong>' + email + '</strong>';
  
   setLoading('btnEmail', true);
   try {
     const { data } = await sb.from('usuarios').select('email').eq('email', email).maybeSingle();
     if (data) {
-      document.getElementById('loginEmailLabel').textContent = email;
       document.getElementById('senhaInput').value = '';
       showScreen('loginScreen');
     } else {
