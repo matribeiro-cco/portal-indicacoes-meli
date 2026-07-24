@@ -224,7 +224,7 @@ input[type=file] { display: none; }
   <div class="auth-card">
     <div class="auth-logo"><div class="logo-badge">MELI</div><div class="logo-text">Logística</div></div>
     <div class="auth-title" id="loginTitle">Bem-vindo de volta</div>
-    <div class="auth-sub" id="loginSubtitle">Conta encontrada para <strong>—</strong></div>
+    <div class="auth-sub" id="loginSubtitle">—</div>
     <div class="auth-field">
       <label>Senha</label>
       <div class="input-wrap">
@@ -791,35 +791,33 @@ async function verificarEmail() {
   const alertEl = document.getElementById('emailAlert');
   alertEl.classList.remove('show');
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    alertEl.textContent = 'Digite um e-mail válido.'; alertEl.classList.add('show'); return;
+    alertEl.textContent = 'Digite um e-mail valido.'; alertEl.classList.add('show'); return;
   }
   emailAtual = email;
  
- if (ADMIN_EMAILS.includes(email.toLowerCase())) {
+  if (ADMIN_EMAILS.includes(email.toLowerCase())) {
     document.getElementById('loginTitle').textContent = 'Acesso da equipe Meli';
-    document.getElementById('loginSubtitle').innerHTML = '🔐 Portal administrativo — <strong>' + email + '</strong>';
-    document.getElementById('loginEmailLabel').textContent = email;
+    document.getElementById('loginSubtitle').textContent = 'Portal administrativo: ' + email;
     document.getElementById('senhaInput').value = '';
-    setLoading('btnEmail', false, 'Continuar');
     showScreen('loginScreen');
     return;
   }
-  document.getElementById('loginTitle').textContent = 'Bem-vindo de volta';
-  document.getElementById('loginSubtitle').innerHTML = 'Conta encontrada para <strong>' + email + '</strong>';
  
   setLoading('btnEmail', true);
   try {
     const { data } = await sb.from('usuarios').select('email').eq('email', email).maybeSingle();
     if (data) {
+      document.getElementById('loginTitle').textContent = 'Bem-vindo de volta';
+      document.getElementById('loginSubtitle').textContent = 'Conta encontrada para ' + email;
       document.getElementById('senhaInput').value = '';
       showScreen('loginScreen');
     } else {
       document.getElementById('cadEmailLabel').textContent = email;
-      ['cadNome','cadSenha','cadConfirma'].forEach(id => document.getElementById(id).value = '');
+      ['cadNome','cadSenha','cadConfirma'].forEach(function(id) { document.getElementById(id).value = ''; });
       document.getElementById('cadEtc').value = '';
       showScreen('cadastroScreen');
     }
-  } catch(e) { alertEl.textContent = 'Erro de conexão.'; alertEl.classList.add('show'); }
+  } catch(e) { alertEl.textContent = 'Erro de conexao.'; alertEl.classList.add('show'); }
   setLoading('btnEmail', false, 'Continuar');
 }
  
