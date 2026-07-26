@@ -354,15 +354,41 @@ input[type=file] { display: none; }
     <!-- PAINEL ADMIN -->
     <div id="adminPanel">
       <div class="page-header">
-        <div><div class="page-title">Todas as indicações</div><div class="page-sub" id="adminTotal">—</div></div>
-        <button class="btn btn-ghost" onclick="carregarAdmin()">↻ Atualizar</button>
+        <div><div class="page-title">Painel de indicações</div><div class="page-sub" id="adminTotal">—</div></div>
+        <div style="display:flex;gap:8px">
+          <button class="export-btn" onclick="exportarExcel()">📥 Exportar Excel</button>
+          <button class="btn btn-ghost" onclick="carregarAdmin()">↻ Atualizar</button>
+        </div>
       </div>
-      <div class="metrics-grid">
+ 
+      <!-- MÉTRICAS EXPANDIDAS -->
+      <div class="dashboard-grid">
         <div class="metric-card blue"><div class="metric-value" style="color:var(--blue)" id="amValidacao">—</div><div class="metric-label">Em validação</div></div>
         <div class="metric-card green"><div class="metric-value" style="color:var(--green)" id="amAprovado">—</div><div class="metric-label">Aprovados</div></div>
         <div class="metric-card amber"><div class="metric-value" style="color:var(--amber)" id="amPendente">—</div><div class="metric-label">Pendências</div></div>
         <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="amReprovado">—</div><div class="metric-label">Reprovados</div></div>
+        <div class="metric-card-sm yellow"><div class="metric-value" style="color:var(--yellow);font-size:22px" id="amHoje">—</div><div class="metric-label">Hoje</div></div>
+        <div class="metric-card-sm purple"><div class="metric-value" style="color:var(--purple);font-size:22px" id="amTaxa">—</div><div class="metric-label">Taxa aprovação</div></div>
       </div>
+ 
+      <!-- GRÁFICO PARETO -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Indicações por ETC — Pareto com taxa de aprovação</div>
+          <div class="chart-filters">
+            <label style="font-size:12px;color:var(--muted)">De:</label>
+            <input type="date" class="period-input" id="chartDe" onchange="renderChart()">
+            <label style="font-size:12px;color:var(--muted)">Até:</label>
+            <input type="date" class="period-input" id="chartAte" onchange="renderChart()">
+            <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="limparPeriodo()">Limpar</button>
+          </div>
+        </div>
+        <div style="position:relative;height:320px">
+          <canvas id="paretoChart"></canvas>
+        </div>
+      </div>
+ 
+      <!-- TABELA COM FILTROS -->
       <div class="table-card">
         <div class="table-toolbar">
           <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Indicações</span><span class="count-badge" id="adminCount">—</span></div>
@@ -373,7 +399,16 @@ input[type=file] { display: none; }
               <option>Em validação</option><option>Documento incorreto</option><option>Aprovado</option>
               <option>Reprovado</option><option>Pendente GUEP</option><option>Cancelado</option><option>Licenciamento</option>
             </select>
-            <input class="search-input" type="text" placeholder="Buscar motorista…" oninput="filtrarAdmin()" id="adminSearch" style="width:180px">
+            <select class="filter-select" id="filtroOperacao" onchange="filtrarAdmin()">
+              <option value="">Todas as operações</option>
+              <option>Last Mile</option><option>First Mile</option>
+            </select>
+            <select class="filter-select" id="filtroVeiculo" onchange="filtrarAdmin()">
+              <option value="">Todos os veículos</option>
+              <option>VUC</option><option>Van</option><option>Utilitário</option><option>Truck</option>
+              <option>Toco</option><option>Passeio</option><option>Médio</option><option>HR</option><option>Carreta</option>
+            </select>
+            <input class="search-input" type="text" placeholder="Buscar motorista…" oninput="filtrarAdmin()" id="adminSearch" style="width:160px">
           </div>
         </div>
         <div id="adminTableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando…</div></div>
@@ -737,6 +772,49 @@ input[type=file] { display: none; }
   <div class="drawer-body" id="drawerBody"></div>
 </div>
  
+<!-- REENVIO MODAL -->
+<div class="overlay" id="reenvioOverlay">
+  <div class="form-modal" style="max-width:480px">
+    <div class="form-header">
+      <div>
+        <div class="form-title">Reenviar documentos</div>
+        <div class="form-subtitle" id="reenvioNome">—</div>
+      </div>
+      <button class="close-btn" onclick="fecharReenvio()">x</button>
+    </div>
+    <input type="hidden" id="reenvioId">
+    <div class="form-body">
+      <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--amber);margin-bottom:20px">
+        Envie os documentos corrigidos. So envie o que precisa ser substituido.
+      </div>
+      <div class="field" style="margin-bottom:16px">
+        <label class="f-label">Nova CNH (opcional)</label>
+        <input type="file" id="reenvioFileCnh" accept=".jpg,.jpeg,.png,.pdf" onchange="handleReenvioUpload('cnh',this)">
+        <div class="upload-area" id="renvAreaCnh" onclick="document.getElementById('reenvioFileCnh').click()">
+          <div style="font-size:24px;margin-bottom:6px">📄</div>
+          <div style="font-size:13px;font-weight:500">Clique para enviar a CNH</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">JPG, PNG ou PDF - max. 10MB</div>
+        </div>
+        <div class="upload-done" id="renvDoneCnh"><span id="renvDoneCnhName">—</span></div>
+      </div>
+      <div class="field" style="margin-bottom:24px">
+        <label class="f-label">Novo CRLV (opcional)</label>
+        <input type="file" id="reenvioFileCrlv" accept=".jpg,.jpeg,.png,.pdf" onchange="handleReenvioUpload('crlv',this)">
+        <div class="upload-area" id="renvAreaCrlv" onclick="document.getElementById('reenvioFileCrlv').click()">
+          <div style="font-size:24px;margin-bottom:6px">🚐</div>
+          <div style="font-size:13px;font-weight:500">Clique para enviar o CRLV</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">JPG, PNG ou PDF - max. 10MB</div>
+        </div>
+        <div class="upload-done" id="renvDoneCrlv"><span id="renvDoneCrlvName">—</span></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" style="flex:1" onclick="fecharReenvio()">Cancelar</button>
+        <button class="btn btn-yellow" style="flex:2" onclick="enviarReenvio()">Enviar documentos</button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
 <script>
 const SUPABASE_URL = 'https://lpwqikmnkhsuxozwpakn.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxwd3Fpa21ua2hzdXhvendwYWtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzA0MTIsImV4cCI6MjEwMDQwNjQxMn0.joZibqL1V39S4frmLotygTQohPo_tgfg8sby-S5Fv0k';
@@ -916,20 +994,24 @@ function renderTabela(lista) {
     document.getElementById('tableBody').innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Nenhuma indicação ainda</div><div class="empty-sub">Clique em "Indicar motorista" para começar.</div></div>';
     return;
   }
+  const agora = new Date();
   const rows = lista.map(r => {
     const status = r.status || '—';
-    const data = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '—';
-    return `<tr onclick='abrirDrawer(${JSON.stringify(r).replace(/'/g,"&#39;")}, false)'>
-      <td><strong>${r.nome_motorista||'—'}</strong><br><span style="font-size:11px;color:var(--muted)">${r.cidade||'—'}</span></td>
-      <td><span class="cpf-chip">${r.cpf||'—'}</span></td>
-      <td>${r.tipo_veiculo||'—'}</td>
-      <td>${r.tipo_operacao||'—'}</td>
-      <td style="color:var(--muted);font-size:12px">${data}</td>
-      <td><span class="badge ${STATUS_MAP[status]||''}">${status}</span></td>
-    </tr>`;
+    const dataCriacao = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '—';
+    const dataAtualizacao = r.atualizado_em ? new Date(r.atualizado_em) : null;
+    const isNovo = dataAtualizacao && (agora - dataAtualizacao) < 48 * 60 * 60 * 1000 && r.status !== 'Em validação';
+    const novoBadge = isNovo ? '<span class="new-badge">NOVO</span>' : '';
+    return '<tr onclick='abrirDrawer(' + JSON.stringify(r).replace(/'/g,"&#39;") + ', false)'>' +
+      '<td><strong>' + (r.nome_motorista||'—') + '</strong>' + novoBadge + '<br><span style="font-size:11px;color:var(--muted)">' + (r.cidade||'—') + '</span></td>' +
+      '<td><span class="cpf-chip">' + (r.cpf||'—') + '</span></td>' +
+      '<td>' + (r.tipo_veiculo||'—') + '</td>' +
+      '<td>' + (r.tipo_operacao||'—') + '</td>' +
+      '<td style="color:var(--muted);font-size:12px">' + dataCriacao + '</td>' +
+      '<td><span class="badge ' + (STATUS_MAP[status]||'') + '">' + status + '</span></td>' +
+      '</tr>';
   }).join('');
   document.getElementById('tableBody').innerHTML =
-    `<table><thead><tr><th>Motorista</th><th>CPF</th><th>Veículo</th><th>Operação</th><th>Data</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+    '<table><thead><tr><th>Motorista</th><th>CPF</th><th>Veiculo</th><th>Operacao</th><th>Data</th><th>Status</th></tr></thead><tbody>' + rows + '</tbody></table>';
 }
  
 function filtrar(q) {
@@ -941,37 +1023,52 @@ function filtrar(q) {
  
 // ── ADMIN ──
 async function carregarAdmin() {
-  document.getElementById('adminTableBody').innerHTML = '<div class="loading-state"><div class="spinner"></div><br>Carregando…</div>';
+  document.getElementById('adminTableBody').innerHTML = '<div class="loading-state"><div class="spinner"></div><br>Carregando...</div>';
   try {
     const { data } = await sb.from('indicacoes').select('*').order('criado_em', { ascending: false });
     todasAdmin = data || [];
-    // popular filtro de ETCs
     const etcs = [...new Set(todasAdmin.map(r => r.etc).filter(Boolean))].sort();
     const sel = document.getElementById('filtroEtc');
-    sel.innerHTML = '<option value="">Todas as ETCs</option>' + etcs.map(e => `<option>${e}</option>`).join('');
+    sel.innerHTML = '<option value="">Todas as ETCs</option>' + etcs.map(e => '<option>' + e + '</option>').join('');
     atualizarMetricasAdmin(todasAdmin);
     renderAdmin(todasAdmin);
+    renderChart();
   } catch(e) {
-    document.getElementById('adminTableBody').innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Erro ao carregar</div></div>';
+    document.getElementById('adminTableBody').innerHTML = '<div class="empty-state"><div class="empty-icon">error</div><div class="empty-title">Erro ao carregar</div></div>';
   }
 }
  
 function atualizarMetricasAdmin(lista) {
+  const aprovados = lista.filter(i => i.status === 'Aprovado').length;
+  const total = lista.length;
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  const novasHoje = lista.filter(i => {
+    if (!i.criado_em) return false;
+    return new Date(i.criado_em).toLocaleDateString('pt-BR') === hoje;
+  }).length;
+  const taxa = total > 0 ? Math.round((aprovados / total) * 100) : 0;
+ 
   document.getElementById('amValidacao').textContent = lista.filter(i => i.status === 'Em validação').length;
-  document.getElementById('amAprovado').textContent = lista.filter(i => i.status === 'Aprovado').length;
+  document.getElementById('amAprovado').textContent = aprovados;
   document.getElementById('amPendente').textContent = lista.filter(i => ['Pendente GUEP','Documento incorreto','Licenciamento'].includes(i.status)).length;
   document.getElementById('amReprovado').textContent = lista.filter(i => i.status === 'Reprovado').length;
-  document.getElementById('adminTotal').textContent = `${lista.length} indicações no total`;
-  document.getElementById('adminCount').textContent = `${lista.length} indicações`;
+  document.getElementById('amHoje').textContent = novasHoje;
+  document.getElementById('amTaxa').textContent = taxa + '%';
+  document.getElementById('adminTotal').textContent = total + ' indicacoes no total';
+  document.getElementById('adminCount').textContent = total + ' indicacoes';
 }
  
 function filtrarAdmin() {
   const etc = document.getElementById('filtroEtc').value;
   const status = document.getElementById('filtroStatus').value;
+  const operacao = document.getElementById('filtroOperacao').value;
+  const veiculo = document.getElementById('filtroVeiculo').value;
   const q = document.getElementById('adminSearch').value.toLowerCase();
   const f = todasAdmin.filter(r =>
     (!etc || r.etc === etc) &&
     (!status || r.status === status) &&
+    (!operacao || r.tipo_operacao === operacao) &&
+    (!veiculo || r.tipo_veiculo === veiculo) &&
     (!q || (r.nome_motorista||'').toLowerCase().includes(q) || (r.cpf||'').includes(q))
   );
   renderAdmin(f);
@@ -1009,42 +1106,52 @@ function abrirDrawer(r, isAdmin) {
  
   let adminSection = '';
   if (isAdmin) {
-    const opts = STATUS_LIST.map(s => `<option ${s===r.status?'selected':''}>${s}</option>`).join('');
+    const opts = STATUS_LIST.map(s => '<option ' + (s===r.status?'selected':'') + '>' + s + '</option>').join('');
     adminSection = `
-      <div class="detail-row" style="flex-direction:column;align-items:flex-start;gap:8px">
-        <span class="detail-key">Atualizar status</span>
-        <select class="status-select-inline" id="drawerStatus" style="width:100%">${opts}</select>
-      </div>
-      <div class="detail-row" style="flex-direction:column;align-items:flex-start;gap:8px">
-        <span class="detail-key">Observações</span>
-        <textarea class="obs-input" id="drawerObs">${r.observacoes||''}</textarea>
-      </div>
-      <div class="detail-row">
-        <span class="detail-key"></span>
-        <button class="save-btn" onclick="salvarStatus('${r.id}')">Salvar alterações</button>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+        <div style="font-size:11px;color:var(--yellow);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Atualizar caso</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div>
+            <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Status</label>
+            <select class="status-select-inline" id="drawerStatus" style="width:100%">${opts}</select>
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Assistente responsavel</label>
+            <input type="text" class="obs-input" id="drawerAssistente" value="${r.assistente||sessao.nome||''}" style="min-height:auto;resize:none;padding:8px 10px">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Observacoes</label>
+            <textarea class="obs-input" id="drawerObs">${r.observacoes||''}</textarea>
+          </div>
+          <button class="save-btn" style="width:100%;padding:10px" onclick="salvarStatus('${r.id}')">Salvar alteracoes</button>
+        </div>
       </div>`;
   }
  
-  document.getElementById('drawerBody').innerHTML = `
-    ${isAdmin ? `<div class="detail-row"><span class="detail-key">ETC</span><span class="detail-val">${r.etc||'—'}</span></div>` : ''}
-    <div class="detail-row"><span class="detail-key">CPF</span><span class="detail-val"><span class="cpf-chip">${r.cpf||'—'}</span></span></div>
-    <div class="detail-row"><span class="detail-key">E-mail</span><span class="detail-val">${r.email_motorista||'—'}</span></div>
-    <div class="detail-row"><span class="detail-key">Telefone</span><span class="detail-val">${r.telefone||'—'}</span></div>
-    <div class="detail-row"><span class="detail-key">Cidade</span><span class="detail-val">${r.cidade||'—'}</span></div>
-    <div class="detail-row"><span class="detail-key">Veículo</span><span class="detail-val">${r.tipo_veiculo||'—'}</span></div>
-    <div class="detail-row"><span class="detail-key">Placa</span><span class="detail-val">${r.placa||'—'}</span></div>
-    <div class="detail-row"><span class="detail-key">CNH</span><span class="detail-val">Cat. ${r.cnh_categoria||'—'} • Val. ${r.cnh_validade||'—'}</span></div>
-    <div class="detail-row"><span class="detail-key">Operação</span><span class="detail-val">${r.tipo_operacao||'—'}<br><span style="color:var(--muted);font-size:11px">${r.operacao_preferencia||'—'}</span></span></div>
-    <div class="detail-row"><span class="detail-key">Data</span><span class="detail-val">${data}</span></div>
-    <div class="detail-row">
-      <span class="detail-key">Documentos</span>
-      <span class="detail-val" style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
-        <a href="${r.cnh_link||'#'}" target="_blank" class="doc-link">📄 Ver CNH</a>
-        <a href="${r.crlv_link||'#'}" target="_blank" class="doc-link">🚐 Ver CRLV</a>
-      </span>
-    </div>
-    ${adminSection}
-  `;
+  const reenvioSection = (!isAdmin && r.status === 'Documento incorreto') ?
+    '<div style="margin-top:16px;padding:14px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:10px">' +
+    '<div style="font-size:12px;color:var(--amber);font-weight:600;margin-bottom:8px">Documento incorreto</div>' +
+    '<div style="font-size:12px;color:var(--muted);margin-bottom:10px">Um ou mais documentos precisam ser reenviados.</div>' +
+    '<button class="reenvio-btn" onclick="abrirReenvio('' + r.id + '')">Reenviar documentos</button></div>' : '';
+ 
+  document.getElementById('drawerBody').innerHTML =
+    (isAdmin ? '<div class="detail-row"><span class="detail-key">ETC</span><span class="detail-val">' + (r.etc||'—') + '</span></div>' : '') +
+    '<div class="detail-row"><span class="detail-key">CPF</span><span class="detail-val"><span class="cpf-chip">' + (r.cpf||'—') + '</span></span></div>' +
+    '<div class="detail-row"><span class="detail-key">E-mail</span><span class="detail-val">' + (r.email_motorista||'—') + '</span></div>' +
+    '<div class="detail-row"><span class="detail-key">Telefone</span><span class="detail-val">' + (r.telefone||'—') + '</span></div>' +
+    '<div class="detail-row"><span class="detail-key">Cidade</span><span class="detail-val">' + (r.cidade||'—') + '</span></div>' +
+    '<div class="detail-row"><span class="detail-key">Veiculo</span><span class="detail-val">' + (r.tipo_veiculo||'—') + '</span></div>' +
+    '<div class="detail-row"><span class="detail-key">Placa</span><span class="detail-val">' + (r.placa||'—') + '</span></div>' +
+    '<div class="detail-row"><span class="detail-key">CNH</span><span class="detail-val">Cat. ' + (r.cnh_categoria||'—') + ' - Val. ' + (r.cnh_validade||'—') + '</span></div>' +
+    '<div class="detail-row"><span class="detail-key">Operacao</span><span class="detail-val">' + (r.tipo_operacao||'—') + '<br><span style="color:var(--muted);font-size:11px">' + (r.operacao_preferencia||'—') + '</span></span></div>' +
+    '<div class="detail-row"><span class="detail-key">Data</span><span class="detail-val">' + data + '</span></div>' +
+    (r.assistente ? '<div class="detail-row"><span class="detail-key">Assistente</span><span class="detail-val">' + r.assistente + '</span></div>' : '') +
+    '<div class="detail-row"><span class="detail-key">Documentos</span><span class="detail-val" style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">' +
+    '<a href="' + (r.cnh_link||'#') + '" target="_blank" class="doc-link">Ver CNH</a>' +
+    '<a href="' + (r.crlv_link||'#') + '" target="_blank" class="doc-link">Ver CRLV</a>' +
+    '</span></div>' +
+    reenvioSection +
+    adminSection;
  
   document.getElementById('drawerOv').classList.add('active');
   document.getElementById('drawer').classList.add('active');
@@ -1053,21 +1160,101 @@ function abrirDrawer(r, isAdmin) {
 async function salvarStatus(id) {
   const novoStatus = document.getElementById('drawerStatus').value;
   const obs = document.getElementById('drawerObs').value;
+  const assistente = document.getElementById('drawerAssistente') ? document.getElementById('drawerAssistente').value : sessao.nome;
+  const indicacaoAtual = todasAdmin.find(r => r.id === id);
+  const statusAnterior = indicacaoAtual ? indicacaoAtual.status : null;
   try {
-    const { error } = await sb.from('indicacoes').update({ status: novoStatus, observacoes: obs, atualizado_em: new Date() }).eq('id', id);
+    const { error } = await sb.from('indicacoes').update({
+      status: novoStatus, observacoes: obs, assistente: assistente, atualizado_em: new Date()
+    }).eq('id', id);
     if (error) throw error;
-    // atualiza local
-    todasAdmin = todasAdmin.map(r => r.id === id ? {...r, status: novoStatus, observacoes: obs} : r);
+ 
+    // Gravar historico
+    await sb.from('historico_status').insert([{
+      indicacao_id: id,
+      status_anterior: statusAnterior,
+      status_novo: novoStatus,
+      assistente: assistente,
+      observacao: obs
+    }]);
+ 
+    todasAdmin = todasAdmin.map(r => r.id === id ? {...r, status: novoStatus, observacoes: obs, assistente: assistente} : r);
     atualizarMetricasAdmin(todasAdmin);
     filtrarAdmin();
+    renderChart();
     fecharDrawer();
-    alert('Status atualizado com sucesso!');
+    alert('Status atualizado!');
   } catch(e) { alert('Erro ao salvar: ' + e.message); }
 }
  
 function fecharDrawer() {
   document.getElementById('drawerOv').classList.remove('active');
   document.getElementById('drawer').classList.remove('active');
+}
+ 
+function abrirReenvio(id) {
+  drawerIndicacao = todasIndicacoes.find(r => r.id === id) || drawerIndicacao;
+  fecharDrawer();
+  document.getElementById('reenvioOverlay').classList.add('active');
+  document.getElementById('reenvioId').value = id;
+  document.getElementById('reenvioNome').textContent = drawerIndicacao ? drawerIndicacao.nome_motorista : '';
+}
+ 
+function fecharReenvio() {
+  document.getElementById('reenvioOverlay').classList.remove('active');
+  document.getElementById('reenvioFileCnh').value = '';
+  document.getElementById('reenvioFileCrlv').value = '';
+  document.getElementById('renvDoneCnh').classList.remove('show');
+  document.getElementById('renvDoneCrlv').classList.remove('show');
+  document.getElementById('renvAreaCnh').style.display = '';
+  document.getElementById('renvAreaCrlv').style.display = '';
+  arquivosReenvio = { cnh: null, crlv: null };
+}
+ 
+let arquivosReenvio = { cnh: null, crlv: null };
+ 
+function handleReenvioUpload(tipo, input) {
+  const file = input.files[0]; if (!file) return;
+  if (file.size > 10*1024*1024) { alert('Arquivo muito grande. Maximo 10MB.'); input.value = ''; return; }
+  arquivosReenvio[tipo] = file;
+  const T = tipo === 'cnh' ? 'Cnh' : 'Crlv';
+  document.getElementById('renvArea' + T).style.display = 'none';
+  document.getElementById('renvDone' + T).classList.add('show');
+  document.getElementById('renvDone' + T + 'Name').textContent = file.name;
+}
+ 
+async function enviarReenvio() {
+  const id = document.getElementById('reenvioId').value;
+  const indicacao = todasIndicacoes.find(r => r.id === id);
+  if (!indicacao) return;
+ 
+  const updates = {};
+  try {
+    if (arquivosReenvio.cnh) {
+      const ext = arquivosReenvio.cnh.name.split('.').pop();
+      const path = sessao.etc.replace(/[^a-zA-Z0-9]/g,'_') + '/' + Date.now() + '_cnh.' + ext;
+      const { error } = await sb.storage.from('documentos').upload(path, arquivosReenvio.cnh);
+      if (error) throw error;
+      const { data } = sb.storage.from('documentos').getPublicUrl(path);
+      updates.cnh_link = data.publicUrl;
+    }
+    if (arquivosReenvio.crlv) {
+      const ext = arquivosReenvio.crlv.name.split('.').pop();
+      const path = sessao.etc.replace(/[^a-zA-Z0-9]/g,'_') + '/' + Date.now() + '_crlv.' + ext;
+      const { error } = await sb.storage.from('documentos').upload(path, arquivosReenvio.crlv);
+      if (error) throw error;
+      const { data } = sb.storage.from('documentos').getPublicUrl(path);
+      updates.crlv_link = data.publicUrl;
+    }
+    if (Object.keys(updates).length === 0) { alert('Selecione pelo menos um documento.'); return; }
+    updates.status = 'Em validacao';
+    updates.atualizado_em = new Date();
+    const { error } = await sb.from('indicacoes').update(updates).eq('id', id);
+    if (error) throw error;
+    fecharReenvio();
+    carregarIndicacoes();
+    alert('Documentos reenviados! Status alterado para Em validacao.');
+  } catch(e) { alert('Erro: ' + e.message); }
 }
  
 // ── FORM ──
@@ -1250,6 +1437,155 @@ function filtrarEtcAdmin(q) {
   const f = todasAdmin.filter(r => (r.nome_motorista||'').toLowerCase().includes(t) || (r.cpf||'').includes(t));
   renderEtcAdmin(f);
   document.getElementById('etcAmCount').textContent = f.length + ' indicações';
+}
+ 
+let paretoChartInstance = null;
+ 
+function renderChart() {
+  const de = document.getElementById('chartDe') ? document.getElementById('chartDe').value : '';
+  const ate = document.getElementById('chartAte') ? document.getElementById('chartAte').value : '';
+ 
+  let lista = todasAdmin;
+  if (de) lista = lista.filter(r => r.criado_em && new Date(r.criado_em) >= new Date(de));
+  if (ate) lista = lista.filter(r => r.criado_em && new Date(r.criado_em) <= new Date(ate + 'T23:59:59'));
+ 
+  // Count by ETC
+  const etcMap = {};
+  lista.forEach(r => {
+    const etc = r.etc || 'Sem ETC';
+    if (!etcMap[etc]) etcMap[etc] = { total: 0, aprovados: 0 };
+    etcMap[etc].total++;
+    if (r.status === 'Aprovado') etcMap[etc].aprovados++;
+  });
+ 
+  // Sort by total desc, take top 15
+  const sorted = Object.entries(etcMap).sort((a,b) => b[1].total - a[1].total).slice(0, 15);
+  const labels = sorted.map(([k]) => k.length > 20 ? k.substring(0,20) + '...' : k);
+  const totais = sorted.map(([,v]) => v.total);
+  const taxas = sorted.map(([,v]) => v.total > 0 ? Math.round((v.aprovados / v.total) * 100) : 0);
+ 
+  // Cumulative for pareto line
+  const totalGeral = totais.reduce((a,b) => a+b, 0);
+  let acum = 0;
+  const acumulado = totais.map(v => { acum += v; return totalGeral > 0 ? Math.round((acum/totalGeral)*100) : 0; });
+ 
+  const canvas = document.getElementById('paretoChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+ 
+  if (paretoChartInstance) { paretoChartInstance.destroy(); }
+ 
+  paretoChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Total indicacoes',
+          data: totais,
+          backgroundColor: 'rgba(59,130,246,0.7)',
+          borderColor: 'rgba(59,130,246,1)',
+          borderWidth: 1,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Acumulado %',
+          data: acumulado,
+          type: 'line',
+          borderColor: '#FFE600',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          pointBackgroundColor: '#FFE600',
+          pointRadius: 3,
+          yAxisID: 'y2',
+          tension: 0.3
+        },
+        {
+          label: 'Taxa aprovacao %',
+          data: taxas,
+          type: 'line',
+          borderColor: '#10B981',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          pointBackgroundColor: '#10B981',
+          pointRadius: 3,
+          yAxisID: 'y2',
+          tension: 0.3,
+          borderDash: [5,3]
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#7A8BA8', font: { size: 11 } } },
+        tooltip: { mode: 'index', intersect: false }
+      },
+      scales: {
+        x: { ticks: { color: '#7A8BA8', font: { size: 10 } }, grid: { color: '#1E2D45' } },
+        y: { ticks: { color: '#7A8BA8' }, grid: { color: '#1E2D45' }, title: { display: true, text: 'Indicacoes', color: '#7A8BA8', font: { size: 11 } } },
+        y2: { position: 'right', min: 0, max: 100, ticks: { color: '#7A8BA8', callback: v => v + '%' }, grid: { drawOnChartArea: false }, title: { display: true, text: '%', color: '#7A8BA8', font: { size: 11 } } }
+      }
+    }
+  });
+}
+ 
+function limparPeriodo() {
+  document.getElementById('chartDe').value = '';
+  document.getElementById('chartAte').value = '';
+  renderChart();
+}
+ 
+function exportarExcel() {
+  const etc = document.getElementById('filtroEtc').value;
+  const status = document.getElementById('filtroStatus').value;
+  const operacao = document.getElementById('filtroOperacao').value;
+  const veiculo = document.getElementById('filtroVeiculo').value;
+  const q = document.getElementById('adminSearch').value.toLowerCase();
+ 
+  const lista = todasAdmin.filter(r =>
+    (!etc || r.etc === etc) &&
+    (!status || r.status === status) &&
+    (!operacao || r.tipo_operacao === operacao) &&
+    (!veiculo || r.tipo_veiculo === veiculo) &&
+    (!q || (r.nome_motorista||'').toLowerCase().includes(q) || (r.cpf||'').includes(q))
+  );
+ 
+  const rows = lista.map(r => ({
+    'Data': r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '',
+    'ETC': r.etc || '',
+    'Nome Motorista': r.nome_motorista || '',
+    'CPF': r.cpf || '',
+    'Email': r.email_motorista || '',
+    'Telefone': r.telefone || '',
+    'Cidade': r.cidade || '',
+    'Tipo Veiculo': r.tipo_veiculo || '',
+    'Placa': r.placa || '',
+    'CNH Numero': r.cnh_numero || '',
+    'CNH Categoria': r.cnh_categoria || '',
+    'CNH Validade': r.cnh_validade || '',
+    'Tipo Operacao': r.tipo_operacao || '',
+    'Operacao Preferencia': r.operacao_preferencia || '',
+    'Status': r.status || '',
+    'Assistente': r.assistente || '',
+    'Observacoes': r.observacoes || '',
+    'CNH Link': r.cnh_link || '',
+    'CRLV Link': r.crlv_link || ''
+  }));
+ 
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Indicacoes');
+  const hoje = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+  XLSX.writeFile(wb, 'indicacoes_' + hoje + '.xlsx');
+}
+ 
+async function carregarHistorico(indicacaoId) {
+  try {
+    const { data } = await sb.from('historico_status').select('*').eq('indicacao_id', indicacaoId).order('criado_em', { ascending: false });
+    return data || [];
+  } catch(e) { return []; }
 }
  
 function fmtCpf(input){let v=input.value.replace(/\D/g,'').slice(0,11);if(v.length>9)v=v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/,'$1.$2.$3-$4');else if(v.length>6)v=v.replace(/(\d{3})(\d{3})(\d{1,3})/,'$1.$2.$3');else if(v.length>3)v=v.replace(/(\d{3})(\d{1,3})/,'$1.$2');input.value=v;}
