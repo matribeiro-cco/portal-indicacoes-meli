@@ -355,44 +355,12 @@ input[type=file] { display: none; }
     <!-- PAINEL ADMIN -->
     <div id="adminPanel">
       <div class="page-header">
-        <div><div class="page-title">Painel de indicacoes</div><div class="page-sub" id="adminTotal">—</div></div>
-        <div style="display:flex;gap:8px">
-          <button class="export-btn" onclick="exportarExcel()">📥 Exportar Excel</button>
-          <button class="btn btn-ghost" onclick="carregarAdmin()">↻ Atualizar</button>
-        </div>
+        <div><div class="page-title">Tratativas</div><div class="page-sub" id="adminTotal">—</div></div>
+        <button class="btn btn-ghost" onclick="carregarAdmin()">Atualizar</button>
       </div>
-
-      <!-- MÉTRICAS EXPANDIDAS -->
-      <div class="dashboard-grid">
-        <div class="metric-card blue"><div class="metric-value" style="color:var(--blue)" id="amValidacao">—</div><div class="metric-label">Em validacao</div></div>
-        <div class="metric-card green"><div class="metric-value" style="color:var(--green)" id="amAprovado">—</div><div class="metric-label">Aprovados</div></div>
-        <div class="metric-card amber"><div class="metric-value" style="color:var(--amber)" id="amPendente">—</div><div class="metric-label">Pendências</div></div>
-        <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="amReprovado">—</div><div class="metric-label">Reprovados</div></div>
-        <div class="metric-card-sm yellow"><div class="metric-value" style="color:var(--yellow);font-size:22px" id="amHoje">—</div><div class="metric-label">Hoje</div></div>
-        <div class="metric-card-sm purple"><div class="metric-value" style="color:var(--purple);font-size:22px" id="amTaxa">—</div><div class="metric-label">Taxa aprovação</div></div>
-      </div>
-
-      <!-- GRÁFICO PARETO -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <div class="chart-title">Indicações por ETC — Pareto com taxa de aprovação</div>
-          <div class="chart-filters">
-            <label style="font-size:12px;color:var(--muted)">De:</label>
-            <input type="date" class="period-input" id="chartDe" onchange="renderChart()">
-            <label style="font-size:12px;color:var(--muted)">Até:</label>
-            <input type="date" class="period-input" id="chartAte" onchange="renderChart()">
-            <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="limparPeriodo()">Limpar</button>
-          </div>
-        </div>
-        <div style="position:relative;height:320px">
-          <canvas id="paretoChart"></canvas>
-        </div>
-      </div>
-
-      <!-- TABELA COM FILTROS -->
       <div class="table-card">
         <div class="table-toolbar">
-          <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Indicações</span><span class="count-badge" id="adminCount">—</span></div>
+          <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Indicacoes</span><span class="count-badge" id="adminCount">—</span></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <select class="filter-select" id="filtroEtc" onchange="filtrarAdmin()"><option value="">Todas as ETCs</option></select>
             <select class="filter-select" id="filtroStatus" onchange="filtrarAdmin()">
@@ -401,15 +369,15 @@ input[type=file] { display: none; }
               <option>Reprovado</option><option>Pendente GUEP</option><option>Cancelado</option><option>Licenciamento</option>
             </select>
             <select class="filter-select" id="filtroOperacao" onchange="filtrarAdmin()">
-              <option value="">Todas as operações</option>
+              <option value="">Todas as operacoes</option>
               <option>Last Mile</option><option>First Mile</option>
             </select>
             <select class="filter-select" id="filtroVeiculo" onchange="filtrarAdmin()">
-              <option value="">Todos os veículos</option>
-              <option>VUC</option><option>Van</option><option>Utilitário</option><option>Truck</option>
-              <option>Toco</option><option>Passeio</option><option>Médio</option><option>HR</option><option>Carreta</option>
+              <option value="">Todos os veiculos</option>
+              <option>VUC</option><option>Van</option><option>Utilitario</option><option>Truck</option>
+              <option>Toco</option><option>Passeio</option><option>Medio</option><option>HR</option><option>Carreta</option>
             </select>
-            <input class="search-input" type="text" placeholder="Buscar motorista…" oninput="filtrarAdmin()" id="adminSearch" style="width:160px">
+            <input class="search-input" type="text" placeholder="Buscar motorista..." oninput="filtrarAdmin()" id="adminSearch" style="width:160px">
           </div>
         </div>
         <div id="adminTableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando...</div></div>
