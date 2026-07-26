@@ -995,23 +995,24 @@ function renderTabela(lista) {
     return;
   }
   const agora = new Date();
-  const rows = lista.map(r => {
+  const tb1 = document.createElement('tbody');
+  lista.forEach(function(r) {
     const status = r.status || '';
-    const dataCriacao = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '';
-    const dataAtualizacao = r.atualizado_em ? new Date(r.atualizado_em) : null;
-    const isNovo = dataAtualizacao && (agora - dataAtualizacao) < 48 * 60 * 60 * 1000 && r.status !== 'Em validacao';
-    const novoBadge = isNovo ? '<span class="new-badge">NOVO</span>' : '';
-    return '<tr onclick='abrirDrawer(' + JSON.stringify(r).replace(/'/g,"&#39;") + ', false)'>' +
-      '<td><strong>' + (r.nome_motorista||'') + '</strong>' + novoBadge + '<br><span style="font-size:11px;color:var(--muted)">' + (r.cidade||'') + '</span></td>' +
-      '<td><span class="cpf-chip">' + (r.cpf||'') + '</span></td>' +
-      '<td>' + (r.tipo_veiculo||'') + '</td>' +
-      '<td>' + (r.tipo_operacao||'') + '</td>' +
-      '<td style="color:var(--muted);font-size:12px">' + dataCriacao + '</td>' +
-      '<td><span class="badge ' + (STATUS_MAP[status]||'') + '">' + status + '</span></td>' +
-      '</tr>';
-  }).join('');
-  document.getElementById('tableBody').innerHTML =
-    '<table><thead><tr><th>Motorista</th><th>CPF</th><th>Veiculo</th><th>Operacao</th><th>Data</th><th>Status</th></tr></thead><tbody>' + rows + '</tbody></table>';
+    const dt = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '';
+    const tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.addEventListener('click', (function(x){return function(){abrirDrawer(x,false);};})(r));
+    tr.innerHTML = '<td><strong>'+(r.nome_motorista||'')+'</strong><br><span style="font-size:11px;color:var(--muted)">'+(r.cidade||'')+'</span></td>'+
+      '<td><span class="cpf-chip">'+(r.cpf||'')+'</span></td>'+
+      '<td>'+(r.tipo_veiculo||'')+'</td>'+
+      '<td>'+(r.tipo_operacao||'')+'</td>'+
+      '<td style="color:var(--muted);font-size:12px">'+dt+'</td>'+
+      '<td><span class="badge '+(STATUS_MAP[status]||'')+'">'+status+'</span></td>';
+    tb1.appendChild(tr);
+  });
+  const t_tb1 = document.createElement('table');
+    t_tb1.innerHTML = '<thead><tr><th>Motorista</th><th>CPF</th><th>Veiculo</th><th>Operacao</th><th>Data</th><th>Status</th></tr></thead>';
+
 }
 
 function filtrar(q) {
@@ -1132,7 +1133,7 @@ function abrirDrawer(r, isAdmin) {
     '<div style="margin-top:16px;padding:14px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:10px">' +
     '<div style="font-size:12px;color:var(--amber);font-weight:600;margin-bottom:8px">Documento incorreto</div>' +
     '<div style="font-size:12px;color:var(--muted);margin-bottom:10px">Um ou mais documentos precisam ser reenviados.</div>' +
-    '<button class="reenvio-btn" onclick="abrirReenvio('' + r.id + '')">Reenviar documentos</button></div>' : '';
+    '<button class="reenvio-btn" id="btnRenv">Reenviar documentos</button></div>' : '';
 
   document.getElementById('drawerBody').innerHTML =
     (isAdmin ? '<div class="detail-row"><span class="detail-key">ETC</span><span class="detail-val">' + (r.etc||'') + '</span></div>' : '') +
@@ -1155,6 +1156,8 @@ function abrirDrawer(r, isAdmin) {
 
   document.getElementById('drawerOv').classList.add('active');
   document.getElementById('drawer').classList.add('active');
+  var rb = document.getElementById('btnRenv');
+  if (rb) { rb.onclick = function() { abrirReenvio(r.id); }; }
 }
 
 async function salvarStatus(id) {
