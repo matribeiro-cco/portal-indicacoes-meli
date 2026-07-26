@@ -415,7 +415,36 @@ input[type=file] { display: none; }
       </div>
     </div>
 
-    <!-- PAINEL TRANSPORTADORAS (visão admin) -->
+    <!-- ABA DASHBOARD -->
+    <div id="dashPanel" style="display:none">
+      <div class="page-header">
+        <div><div class="page-title">Dashboard</div><div class="page-sub">Visao geral das indicacoes</div></div>
+        <button class="export-btn" onclick="exportarExcel()">Exportar Excel</button>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-card blue"><div class="metric-value" style="color:var(--blue)" id="amValidacao">0</div><div class="metric-label">Em validacao</div></div>
+        <div class="metric-card green"><div class="metric-value" style="color:var(--green)" id="amAprovado">0</div><div class="metric-label">Aprovados</div></div>
+        <div class="metric-card amber"><div class="metric-value" style="color:var(--amber)" id="amPendente">0</div><div class="metric-label">Pendencias</div></div>
+        <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="amReprovado">0</div><div class="metric-label">Reprovados</div></div>
+        <div class="metric-card" style="border-top-color:var(--yellow)"><div class="metric-value" style="color:var(--yellow)" id="amHoje">0</div><div class="metric-label">Hoje</div></div>
+        <div class="metric-card" style="border-top-color:var(--purple)"><div class="metric-value" style="color:var(--purple)" id="amTaxa">0%</div><div class="metric-label">Taxa aprovacao</div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Indicacoes por ETC com taxa de aprovacao</div>
+          <div class="chart-filters">
+            <label style="font-size:12px;color:var(--muted)">De:</label>
+            <input type="date" class="period-input" id="chartDe" onchange="renderChart()">
+            <label style="font-size:12px;color:var(--muted)">Ate:</label>
+            <input type="date" class="period-input" id="chartAte" onchange="renderChart()">
+            <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="limparPeriodo()">Limpar</button>
+          </div>
+        </div>
+        <div style="position:relative;height:360px"><canvas id="paretoChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- PAINEL TRANSPORTADORAS (visao admin) -->
     <div id="etcPanel" style="display:none">
       <div class="page-header">
         <div><div class="page-title">Indicar motorista</div><div class="page-sub">Envio de indicacoes como equipe Meli</div></div>
@@ -1376,24 +1405,26 @@ async function enviarIndicacao(){
 }
 
 function switchTab(tab) {
-  const adminPanel = document.getElementById('adminPanel');
-  const etcPanel = document.getElementById('etcPanel');
-  const tabAdmin = document.getElementById('tabAdmin');
-  const tabEtc = document.getElementById('tabEtc');
-  const sub = document.getElementById('adminHeaderSub');
-
+  document.getElementById('adminPanel').style.display = 'none';
+  document.getElementById('dashPanel').style.display = 'none';
+  document.getElementById('etcPanel').style.display = 'none';
+  document.getElementById('tabAdmin').classList.remove('active');
+  document.getElementById('tabDash').classList.remove('active');
+  document.getElementById('tabEtc').classList.remove('active');
   if (tab === 'admin') {
-    adminPanel.style.display = '';
-    etcPanel.style.display = 'none';
-    tabAdmin.classList.add('active');
-    tabEtc.classList.remove('active');
-    sub.textContent = 'Painel Administrativo';
+    document.getElementById('adminPanel').style.display = '';
+    document.getElementById('tabAdmin').classList.add('active');
+    document.getElementById('adminHeaderSub').textContent = 'Tratativas';
+  } else if (tab === 'dash') {
+    document.getElementById('dashPanel').style.display = '';
+    document.getElementById('tabDash').classList.add('active');
+    document.getElementById('adminHeaderSub').textContent = 'Dashboard';
+    atualizarMetricasAdmin(todasAdmin);
+    renderChart();
   } else {
-    adminPanel.style.display = 'none';
-    etcPanel.style.display = '';
-    tabAdmin.classList.remove('active');
-    tabEtc.classList.add('active');
-    sub.textContent = 'Visao Transportadoras';
+    document.getElementById('etcPanel').style.display = '';
+    document.getElementById('tabEtc').classList.add('active');
+    document.getElementById('adminHeaderSub').textContent = 'Transportadoras';
     carregarEtcAdmin();
   }
 }
