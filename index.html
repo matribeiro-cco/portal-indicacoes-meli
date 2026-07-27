@@ -1040,8 +1040,11 @@ function renderTabela(lista) {
     tb1.appendChild(tr);
   });
   const t_tb1 = document.createElement('table');
-    t_tb1.innerHTML = '<thead><tr><th>Motorista</th><th>CPF</th><th>Veiculo</th><th>Operacao</th><th>Data</th><th>Status</th></tr></thead>';
-
+  t_tb1.innerHTML = '<thead><tr><th>Motorista</th><th>CPF</th><th>Veiculo</th><th>Operacao</th><th>Data</th><th>Status</th></tr></thead>';
+  t_tb1.appendChild(tb1);
+  const tbEl = document.getElementById('tableBody');
+  tbEl.innerHTML = '';
+  tbEl.appendChild(t_tb1);
 }
 
 function filtrar(q) {
