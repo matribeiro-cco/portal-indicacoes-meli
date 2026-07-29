@@ -1639,24 +1639,33 @@ async function carregarEtcAdmin() {
 }
 
 function renderEtcAdmin(lista) {
-  if (!lista.length) {
-    document.getElementById('etcAmTableBody').innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Nenhuma indicacao</div></div>';
+  if (lista.length === 0) {
+    document.getElementById('etcAmTableBody').innerHTML = '<div class="empty-state"><div class="empty-icon">\u{1F4CB}</div><div class="empty-title">Nenhuma indicacao</div></div>';
     return;
   }
-  const rows = lista.map(r => {
-    const status = r.status || '';
-    const data = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '';
-    return `<tr onclick='abrirDrawer(${JSON.stringify(r).replace(/'/g,"&#39;")}, false)'>
-      <td><strong>${r.nome_motorista||''}</strong><br><span style="font-size:11px;color:var(--muted)">${r.cidade||''}</span></td>
-      <td><span style="font-size:12px;color:var(--muted)">${r.etc||''}</span></td>
-      <td><span class="cpf-chip">${r.cpf||''}</span></td>
-      <td>${r.tipo_veiculo||''}</td>
-      <td style="color:var(--muted);font-size:12px">${data}</td>
-      <td><span class="badge ${STATUS_MAP[status]||''}">${status}</span></td>
-    </tr>`;
-  }).join('');
-  document.getElementById('etcAmTableBody').innerHTML =
-    `<table><thead><tr><th>Motorista</th><th>ETC</th><th>CPF</th><th>Veiculo</th><th>Data</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+  var tbody = document.createElement('tbody');
+  lista.forEach(function(r) {
+    var status = r.status || '';
+    var data = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '';
+    var tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.addEventListener('click', (function(row) { return function() { abrirDrawer(row, false); }; })(r));
+    tr.innerHTML =
+      '<td><strong>' + (r.nome_motorista||'') + '</strong><br><span style="font-size:11px;color:var(--muted)">' + (r.cidade||'') + '</span></td>' +
+      '<td><span style="font-size:12px;color:var(--muted)">' + (r.etc||'') + '</span></td>' +
+      '<td><span class="cpf-chip">' + (r.cpf||'') + '</span></td>' +
+      '<td>' + (r.tipo_veiculo||'') + '</td>' +
+      '<td style="font-size:12px;font-family:monospace;color:var(--yellow)">' + (r.placa||'') + '</td>' +
+      '<td style="font-size:12px">' + data + '</td>' +
+      '<td><span class="badge ' + (STATUS_MAP[status]||'') + '">' + status + '</span></td>';
+    tbody.appendChild(tr);
+  });
+  var tbl = document.createElement('table');
+  tbl.innerHTML = '<thead><tr><th>Motorista</th><th>ETC</th><th>CPF</th><th>Veiculo</th><th>Placa</th><th>Data</th><th>Status</th></tr></thead>';
+  tbl.appendChild(tbody);
+  var el = document.getElementById('etcAmTableBody');
+  el.innerHTML = '';
+  el.appendChild(tbl);
 }
 
 function filtrarEtcAdmin(q) { filtrarEtcAdmin2(); }
