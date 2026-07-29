@@ -1284,17 +1284,7 @@ function abrirDrawer(r, isAdmin) {
   const data = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '';
 
   let adminSection = '';
-  let editSection = '<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">' +
-    '<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Corrigir dados</div>' +
-    '<div style="display:flex;flex-direction:column;gap:8px">' +
-    '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">TELEFONE</label>' +
-    '<input type="text" id="editTel" value="' + (r.telefone||'') + '" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;padding:8px 10px;width:100%;font-family:inherit"></div>' +
-    '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">EMAIL</label>' +
-    '<input type="text" id="editEmail" value="' + (r.email_motorista||'') + '" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;padding:8px 10px;width:100%;font-family:inherit"></div>' +
-    '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">CIDADE</label>' +
-    '<input type="text" id="editCidade" value="' + (r.cidade||'') + '" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;padding:8px 10px;width:100%;font-family:inherit"></div>' +
-    '<button id="btnEditSave" style="background:var(--blue);color:#fff;border:none;border-radius:6px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;width:100%;font-family:inherit;margin-top:4px">Salvar correcao</button>' +
-    '</div></div>';
+
   if (isAdmin) {
     const opts = STATUS_LIST.map(s => '<option ' + (s===r.status?'selected':'') + '>' + s + '</option>').join('');
     adminSection = `
@@ -1318,6 +1308,19 @@ function abrirDrawer(r, isAdmin) {
       </div>`;
   }
 
+  const edicaoSection = !isAdmin ?
+    '<div style="margin-top:16px;padding:14px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.3);border-radius:10px">' +
+    '<div style="font-size:12px;color:var(--blue);font-weight:600;margin-bottom:8px">Corrigir dados do motorista</div>' +
+    '<div style="display:flex;flex-direction:column;gap:8px">' +
+    '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">TELEFONE</label>' +
+    '<input type="text" id="editTel" value="' + (r.telefone||'') + '" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;padding:8px 10px;width:100%;font-family:inherit"></div>' +
+    '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">EMAIL</label>' +
+    '<input type="text" id="editEmail" value="' + (r.email_motorista||'') + '" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;padding:8px 10px;width:100%;font-family:inherit"></div>' +
+    '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">CIDADE</label>' +
+    '<input type="text" id="editCidade" value="' + (r.cidade||'') + '" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;padding:8px 10px;width:100%;font-family:inherit"></div>' +
+    '<button id="btnEditSave" style="background:var(--blue);color:#fff;border:none;border-radius:6px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;width:100%;font-family:inherit;margin-top:4px">Salvar correcao</button>' +
+    '</div></div>' : '';
+
   const reenvioSection = (!isAdmin && r.status === 'Documento incorreto') ?
     '<div style="margin-top:16px;padding:14px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:10px">' +
     '<div style="font-size:12px;color:var(--amber);font-weight:600;margin-bottom:8px">Documento incorreto</div>' +
@@ -1340,18 +1343,19 @@ function abrirDrawer(r, isAdmin) {
     '<a href="' + (r.cnh_link||'#') + '" target="_blank" class="doc-link">Ver CNH</a>' +
     '<a href="' + (r.crlv_link||'#') + '" target="_blank" class="doc-link">Ver CRLV</a>' +
     '</span></div>' +
+    edicaoSection +
     reenvioSection +
-    adminSection +
-    (isAdmin ? editSection : '');
+    adminSection;
 
   document.getElementById('drawerOv').classList.add('active');
   document.getElementById('drawer').classList.add('active');
   var assistEl = document.getElementById('assistenteDisplay');
   if (assistEl) { assistEl.textContent = r.assistente || sessao.nome || sessao.email || ''; }
-  var btnEdit = document.getElementById('btnEditSave');
-  if (btnEdit) { btnEdit.addEventListener('click', (function(id){ return function(){ salvarEdicao(id); }; })(r.id)); }
+
   var rb = document.getElementById('btnRenv');
   if (rb) { rb.onclick = function() { abrirReenvio(r.id); }; }
+  var btnEdit = document.getElementById('btnEditSave');
+  if (btnEdit) { btnEdit.addEventListener('click', (function(id){ return function(){ salvarEdicao(id); }; })(r.id)); }
 }
 
 async function salvarStatus(id) {
