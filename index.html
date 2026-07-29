@@ -334,7 +334,7 @@ input[type=file] { display: none; }
             <option value="">Todos os status</option>
             <option>Em validacao</option><option>Documento incorreto</option><option>Aprovado</option>
             <option>Reprovado</option><option>Pendente GUEP</option><option>Cancelado</option>
-            <option>Licenciamento</option><option>Declinio</option><option>Em treinamento</option><option>Liberado</option>
+            <option>Licenciamento</option><option>Declinio</option><option>Em treinamento</option><option>Liberado</option><option>Contato realizado</option>
           </select>
           <input type="date" class="filter-select" id="filtroDeEtc" onchange="filtrarEtc()" style="color-scheme:dark;cursor:pointer">
           <input type="date" class="filter-select" id="filtroAteEtc" onchange="filtrarEtc()" style="color-scheme:dark;cursor:pointer">
@@ -379,7 +379,7 @@ input[type=file] { display: none; }
               <option value="">Todos os status</option>
               <option>Em validacao</option><option>Documento incorreto</option><option>Aprovado</option>
               <option>Reprovado</option><option>Pendente GUEP</option><option>Cancelado</option><option>Licenciamento</option>
-              <option>Declinio</option><option>Em treinamento</option><option>Liberado</option>
+              <option>Declinio</option><option>Em treinamento</option><option>Liberado</option><option>Contato realizado</option>
             </select>
             <select class="filter-select" id="filtroOperacao" onchange="filtrarAdmin()">
               <option value="">Todas as operacoes</option>
@@ -475,7 +475,7 @@ input[type=file] { display: none; }
               <option value="">Todos os status</option>
               <option>Em validacao</option><option>Documento incorreto</option><option>Aprovado</option>
               <option>Reprovado</option><option>Pendente GUEP</option><option>Cancelado</option>
-              <option>Licenciamento</option><option>Declinio</option><option>Em treinamento</option><option>Liberado</option>
+              <option>Licenciamento</option><option>Declinio</option><option>Em treinamento</option><option>Liberado</option><option>Contato realizado</option>
             </select>
             <input type="date" class="filter-select" id="filtroDeEtcAm" onchange="filtrarEtcAdmin2()" style="color-scheme:dark;cursor:pointer">
             <input type="date" class="filter-select" id="filtroAteEtcAm" onchange="filtrarEtcAdmin2()" style="color-scheme:dark;cursor:pointer">
@@ -1019,9 +1019,9 @@ const ADMIN_EMAILS = [
 
 const STATUS_MAP = {
   'Em validacao':'b-validacao','Documento incorreto':'b-doc','Aprovado':'b-aprovado',
-  'Reprovado':'b-reprovado','Pendente GUEP':'b-pendente','Cancelado':'b-cancelado','Licenciamento':'b-licenciamento','Declinio':'b-reprovado','Em treinamento':'b-pendente','Liberado':'b-aprovado'
+  'Reprovado':'b-reprovado','Pendente GUEP':'b-pendente','Cancelado':'b-cancelado','Licenciamento':'b-licenciamento','Declinio':'b-reprovado','Em treinamento':'b-pendente','Liberado':'b-aprovado','Contato realizado':'b-validacao'
 };
-const STATUS_LIST = ['Em validacao','Documento incorreto','Aprovado','Reprovado','Pendente GUEP','Cancelado','Licenciamento','Declinio','Em treinamento','Liberado'];
+const STATUS_LIST = ['Em validacao','Documento incorreto','Aprovado','Reprovado','Pendente GUEP','Cancelado','Licenciamento','Declinio','Em treinamento','Liberado','Contato realizado'];
 
 let sessao = null;
 let todasIndicacoes = [];
