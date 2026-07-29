@@ -456,7 +456,9 @@ input[type=file] { display: none; }
             </select>
             <input type="date" class="filter-select" id="filtroDeEtcAm" onchange="filtrarEtcAdmin2()" style="color-scheme:dark;cursor:pointer">
             <input type="date" class="filter-select" id="filtroAteEtcAm" onchange="filtrarEtcAdmin2()" style="color-scheme:dark;cursor:pointer">
-            <input class="search-input" type="text" id="buscaEtcAm" placeholder="Buscar por nome ou CPF..." oninput="filtrarEtcAdmin2()" style="width:180px">
+            <input class="search-input" type="text" id="buscaEtcAm" placeholder="Buscar nome ou CPF..." oninput="filtrarEtcAdmin2()" style="width:160px">
+            <input class="search-input" type="text" id="buscaPlacaEtcAm" placeholder="Placa..." oninput="filtrarEtcAdmin2()" style="width:90px;text-transform:uppercase">
+            <button class="btn btn-ghost" style="padding:7px 14px;font-size:13px" onclick="exportarCSVEtcAdmin()">CSV</button>
           </div>
         </div>
         <div id="etcAmTableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando...</div></div>
