@@ -1284,6 +1284,17 @@ function abrirDrawer(r, isAdmin) {
   const data = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '';
 
   let adminSection = '';
+  let editSection = '<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">' +
+    '<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Corrigir dados</div>' +
+    '<div style="display:flex;flex-direction:column;gap:8px">' +
+    '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">TELEFONE</label>' +
+    '<input type="text" id="editTel" value="' + (r.telefone||'') + '" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;padding:8px 10px;width:100%;font-family:inherit"></div>' +
+    '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">EMAIL</label>' +
+    '<input type="text" id="editEmail" value="' + (r.email_motorista||'') + '" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;padding:8px 10px;width:100%;font-family:inherit"></div>' +
+    '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">CIDADE</label>' +
+    '<input type="text" id="editCidade" value="' + (r.cidade||'') + '" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;padding:8px 10px;width:100%;font-family:inherit"></div>' +
+    '<button id="btnEditSave" style="background:var(--blue);color:#fff;border:none;border-radius:6px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;width:100%;font-family:inherit;margin-top:4px">Salvar correcao</button>' +
+    '</div></div>';
   if (isAdmin) {
     const opts = STATUS_LIST.map(s => '<option ' + (s===r.status?'selected':'') + '>' + s + '</option>').join('');
     adminSection = `
@@ -1330,12 +1341,15 @@ function abrirDrawer(r, isAdmin) {
     '<a href="' + (r.crlv_link||'#') + '" target="_blank" class="doc-link">Ver CRLV</a>' +
     '</span></div>' +
     reenvioSection +
-    adminSection;
+    adminSection +
+    (isAdmin ? editSection : '');
 
   document.getElementById('drawerOv').classList.add('active');
   document.getElementById('drawer').classList.add('active');
   var assistEl = document.getElementById('assistenteDisplay');
   if (assistEl) { assistEl.textContent = r.assistente || sessao.nome || sessao.email || ''; }
+  var btnEdit = document.getElementById('btnEditSave');
+  if (btnEdit) { btnEdit.addEventListener('click', (function(id){ return function(){ salvarEdicao(id); }; })(r.id)); }
   var rb = document.getElementById('btnRenv');
   if (rb) { rb.onclick = function() { abrirReenvio(r.id); }; }
 }
@@ -1771,6 +1785,36 @@ async function carregarHistorico(indicacaoId) {
     const { data } = await sb.from('historico_status').select('*').eq('indicacao_id', indicacaoId).order('criado_em', { ascending: false });
     return data || [];
   } catch(e) { return []; }
+}
+
+async function salvarEdicao(id) {
+  const tel = document.getElementById('editTel').value;
+  const email = document.getElementById('editEmail').value;
+  const cidade = document.getElementById('editCidade').value;
+  try {
+    const { error } = await sb.from('indicacoes').update({
+      telefone: tel,
+      email_motorista: email,
+      cidade: cidade,
+      status: 'Em validacao',
+      atualizado_em: new Date()
+    }).eq('id', id);
+    if (error) throw error;
+
+    await sb.from('historico_status').insert([{
+      indicacao_id: id,
+      status_anterior: 'correcao de dados',
+      status_novo: 'Em validacao',
+      assistente: sessao.nome || sessao.email,
+      observacao: 'Dados corrigidos: telefone, email ou cidade'
+    }]);
+
+    todasAdmin = todasAdmin.map(r => r.id === id ? {...r, telefone: tel, email_motorista: email, cidade: cidade, status: 'Em validacao'} : r);
+    atualizarMetricasAdmin(todasAdmin);
+    filtrarAdmin();
+    fecharDrawer();
+    alert('Dados corrigidos! Status voltou para Em validacao.');
+  } catch(e) { alert('Erro: ' + e.message); }
 }
 
 function fmtCpf(input){let v=input.value.replace(/\D/g,'').slice(0,11);if(v.length>9)v=v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/,'$1.$2.$3-$4');else if(v.length>6)v=v.replace(/(\d{3})(\d{3})(\d{1,3})/,'$1.$2.$3');else if(v.length>3)v=v.replace(/(\d{3})(\d{1,3})/,'$1.$2');input.value=v;}
