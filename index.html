@@ -491,7 +491,143 @@ input[type=file] { display: none; }
             <div class="field"><label class="f-label">CPF <span class="req">*</span></label><input class="f-input" id="fCpf" type="text" placeholder="000.000.000-00" oninput="fmtCpf(this)" maxlength="14"><span class="f-err" id="errCpf">CPF inválido</span></div>
             <div class="field"><label class="f-label">Telefone <span class="req">*</span></label><input class="f-input" id="fTel" type="text" placeholder="(11) 99999-9999" oninput="fmtTel(this)" maxlength="15"><span class="f-err" id="errTel">Campo obrigatório</span></div>
             <div class="field span2"><label class="f-label">E-mail <span class="req">*</span></label><input class="f-input" id="fEmail" type="email" placeholder="motorista@email.com"><span class="f-err" id="errEmail">E-mail inválido</span></div>
-            <div class="field span2"><label class="f-label">Cidade <span class="req">*</span></label><input class="f-input" id="fCidade" type="text" placeholder="Ex: São Paulo"><span class="f-err" id="errCidade">Campo obrigatório</span></div>
+            <div class="field span2"><label class="f-label">Cidade <span class="req">*</span></label><select class="f-select" id="fCidade"><option value="">Selecione a cidade...</option>
+<option>Alegrete</option>
+<option>Aracaju</option>
+<option>Aracariguama</option>
+<option>Aracatuba</option>
+<option>Araucaria</option>
+<option>Atibaia</option>
+<option>Avare</option>
+<option>Barra Mansa</option>
+<option>Barretos</option>
+<option>Barueri</option>
+<option>Bauru</option>
+<option>Belem</option>
+<option>Benevides</option>
+<option>Betim</option>
+<option>Biguacu</option>
+<option>Brasilia</option>
+<option>Cabo de Santo Agostinho</option>
+<option>Cacapava</option>
+<option>Cachoeiro de Itapemirim</option>
+<option>Cajamar</option>
+<option>Campina Grande do Sul</option>
+<option>Campinas</option>
+<option>Campo Grande</option>
+<option>Campos dos Goytacazes</option>
+<option>Caraguatatuba</option>
+<option>Cascavel</option>
+<option>Caxias do Sul</option>
+<option>Chapeco</option>
+<option>Conde</option>
+<option>Contagem</option>
+<option>Cotia</option>
+<option>Cravinhos</option>
+<option>Cubatao</option>
+<option>Cuiaba</option>
+<option>Curitiba</option>
+<option>Divinopolis</option>
+<option>Dourados</option>
+<option>Embu Das Artes</option>
+<option>Estrela</option>
+<option>Extrema</option>
+<option>Feira de Santana</option>
+<option>Fortaleza</option>
+<option>Franca</option>
+<option>Franco da Rocha</option>
+<option>Gaspar</option>
+<option>Goiania</option>
+<option>Governador Celso Ramos</option>
+<option>Guarapuava</option>
+<option>Guarulhos</option>
+<option>Hidrolandia</option>
+<option>Ijui</option>
+<option>Ipatinga</option>
+<option>Itaborai</option>
+<option>Itaitinga</option>
+<option>Itajai</option>
+<option>Itaperuna</option>
+<option>Itapetininga</option>
+<option>Itupeva</option>
+<option>Jaboatao dos Guararapes</option>
+<option>Jales</option>
+<option>Joao Pessoa</option>
+<option>Joinville</option>
+<option>Juiz de Fora</option>
+<option>Jundiai</option>
+<option>Lages</option>
+<option>Lauro de Freitas</option>
+<option>Limeira</option>
+<option>Londrina</option>
+<option>Lorena</option>
+<option>Macae</option>
+<option>Macapa</option>
+<option>Maceio</option>
+<option>Manaus</option>
+<option>Marilia</option>
+<option>Maringa</option>
+<option>Maua</option>
+<option>Mogi Mirim</option>
+<option>Montes Claros</option>
+<option>Morro da Fumaca</option>
+<option>Nossa Senhora do Socorro</option>
+<option>Nova Lima</option>
+<option>Palmas</option>
+<option>Parque Novo Mundo</option>
+<option>Passo Fundo</option>
+<option>Pato Branco</option>
+<option>Patos de Minas</option>
+<option>Pelotas</option>
+<option>Perus</option>
+<option>Petropolis</option>
+<option>Piracicaba</option>
+<option>Pocos de Caldas</option>
+<option>Ponta Grossa</option>
+<option>Porto Alegre</option>
+<option>Porto Feliz</option>
+<option>Porto Velho</option>
+<option>Pouso Alegre</option>
+<option>Presidente Prudente</option>
+<option>Queimados</option>
+<option>Recife</option>
+<option>Ribeirao Preto</option>
+<option>Rio Largo</option>
+<option>Rio Verde</option>
+<option>Rio de Janeiro</option>
+<option>Salvador</option>
+<option>Santa Maria</option>
+<option>Santa Rita</option>
+<option>Santo Andre</option>
+<option>Santos</option>
+<option>Sao Bernardo do Campo</option>
+<option>Sao Carlos</option>
+<option>Sao Goncalo do Amarante</option>
+<option>Sao Joao de Meriti</option>
+<option>Sao Jose de Mipibu</option>
+<option>Sao Jose do Rio Preto</option>
+<option>Sao Luis</option>
+<option>Sao Paulo</option>
+<option>Sao Pedro da Aldeia</option>
+<option>Sao Vicente</option>
+<option>Sapucaia do Sul</option>
+<option>Serra</option>
+<option>Simoes Filho</option>
+<option>Sinop</option>
+<option>Sooretama</option>
+<option>Sorocaba</option>
+<option>Sumare</option>
+<option>Suzano</option>
+<option>Teofilo Otoni</option>
+<option>Teresina</option>
+<option>Uberaba</option>
+<option>Uberlandia</option>
+<option>Varginha</option>
+<option>Varzea Grande</option>
+<option>Vespasiano</option>
+<option>Vitoria</option>
+<option>Vitoria da Conquista</option>
+</select><span class="f-err" id="errCidade">Campo obrigatório</span></div>
           </div>
         </div>
         <div class="form-section" id="step2">
