@@ -1664,7 +1664,7 @@ function filtrarEtcAdmin2() {
   const q = document.getElementById('buscaEtcAm') ? document.getElementById('buscaEtcAm').value.toLowerCase() : '';
   const f = todasAdmin.filter(r => {
     const matchStatus = !status || r.status === status;
-    const matchQ = !q || (r.nome_motorista||'').toLowerCase().includes(q) || (r.cpf||'').includes(q);
+    const matchQ = !q || (r.nome_motorista||'').toLowerCase().includes(q) || (r.cpf||'').includes(q) || (r.telefone||'').includes(q);
     const dataItem = r.criado_em ? new Date(r.criado_em) : null;
     const matchDe = !de || (dataItem && dataItem >= new Date(de));
     const matchAte = !ate || (dataItem && dataItem <= new Date(ate + 'T23:59:59'));
@@ -1683,7 +1683,7 @@ function filtrarEtcAdmin2() {
 
   const f = todasAdmin.filter(r => {
     const matchStatus = !status || r.status === status;
-    const matchQ = !q || (r.nome_motorista||'').toLowerCase().includes(q) || (r.cpf||'').includes(q);
+    const matchQ = !q || (r.nome_motorista||'').toLowerCase().includes(q) || (r.cpf||'').includes(q) || (r.telefone||'').includes(q);
     const dataItem = r.criado_em ? new Date(r.criado_em) : null;
     const matchDe = !de || (dataItem && dataItem >= new Date(de));
     const matchAte = !ate || (dataItem && dataItem <= new Date(ate + 'T23:59:59'));
