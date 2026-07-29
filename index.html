@@ -338,7 +338,9 @@ input[type=file] { display: none; }
           </select>
           <input type="date" class="filter-select" id="filtroDeEtc" onchange="filtrarEtc()" style="color-scheme:dark;cursor:pointer">
           <input type="date" class="filter-select" id="filtroAteEtc" onchange="filtrarEtc()" style="color-scheme:dark;cursor:pointer">
-          <input class="search-input" type="text" id="buscaEtc" placeholder="Buscar por nome ou CPF..." oninput="filtrarEtc()" style="width:180px">
+          <input class="search-input" type="text" id="buscaEtc" placeholder="Buscar nome ou CPF..." oninput="filtrarEtc()" style="width:160px">
+          <input class="search-input" type="text" id="buscaPlacaEtc" placeholder="Placa..." oninput="filtrarEtc()" style="width:90px;text-transform:uppercase">
+          <button class="btn btn-ghost" style="padding:7px 14px;font-size:13px" onclick="exportarCSVEtc()">CSV</button>
         </div>
       </div>
       <div id="tableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando...</div></div>
