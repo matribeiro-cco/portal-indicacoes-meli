@@ -1662,6 +1662,24 @@ function filtrarEtcAdmin2() {
   const de = document.getElementById('filtroDeEtcAm') ? document.getElementById('filtroDeEtcAm').value : '';
   const ate = document.getElementById('filtroAteEtcAm') ? document.getElementById('filtroAteEtcAm').value : '';
   const q = document.getElementById('buscaEtcAm') ? document.getElementById('buscaEtcAm').value.toLowerCase() : '';
+  const f = todasAdmin.filter(r => {
+    const matchStatus = !status || r.status === status;
+    const matchQ = !q || (r.nome_motorista||'').toLowerCase().includes(q) || (r.cpf||'').includes(q);
+    const dataItem = r.criado_em ? new Date(r.criado_em) : null;
+    const matchDe = !de || (dataItem && dataItem >= new Date(de));
+    const matchAte = !ate || (dataItem && dataItem <= new Date(ate + 'T23:59:59'));
+    return matchStatus && matchQ && matchDe && matchAte;
+  });
+  renderEtcAdmin(f);
+  document.getElementById('etcAmCount').textContent = f.length + ' indicacoes';
+}
+
+
+function filtrarEtcAdmin2() {
+  const status = document.getElementById('filtroStatusEtcAm') ? document.getElementById('filtroStatusEtcAm').value : '';
+  const de = document.getElementById('filtroDeEtcAm') ? document.getElementById('filtroDeEtcAm').value : '';
+  const ate = document.getElementById('filtroAteEtcAm') ? document.getElementById('filtroAteEtcAm').value : '';
+  const q = document.getElementById('buscaEtcAm') ? document.getElementById('buscaEtcAm').value.toLowerCase() : '';
 
   const f = todasAdmin.filter(r => {
     const matchStatus = !status || r.status === status;
