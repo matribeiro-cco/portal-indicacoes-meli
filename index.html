@@ -1114,23 +1114,32 @@ function renderAdmin(lista) {
     document.getElementById('adminTableBody').innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Nenhuma indicacao encontrada</div></div>';
     return;
   }
-  const rows = lista.map(r => {
+  const tbody = document.createElement('tbody');
+  lista.forEach(function(r) {
     const status = r.status || '';
     const data = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '';
-    return `<tr onclick='abrirDrawer(${JSON.stringify(r).replace(/'/g,"&#39;")}, true)'>
-      <td><strong>${r.nome_motorista||''}</strong><br><span style="font-size:11px;color:var(--muted)">${r.cidade||''}</span></td>
-      <td><span style="font-size:12px;color:var(--muted)">${r.etc||''}</span></td>
-      <td><span class="cpf-chip">${r.cpf||''}</span></td>
-      <td>${r.tipo_veiculo||''}</td>
-      <td style="color:var(--muted);font-size:12px">${data}</td>
-      <td><span class="badge ${STATUS_MAP[status]||''}">${status}</span></td>
-    </tr>`;
-  }).join('');
-  document.getElementById('adminTableBody').innerHTML =
-    `<table><thead><tr><th>Motorista</th><th>ETC</th><th>CPF</th><th>Veiculo</th><th>Data</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+    const tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.addEventListener('click', (function(row) { return function() { abrirDrawer(row, true); }; })(r));
+    tr.innerHTML =
+      '<td><strong>' + (r.nome_motorista||'') + '</strong></td>' +
+      '<td><span style="font-size:12px;color:var(--muted)">' + (r.etc||'') + '</span></td>' +
+      '<td><span class="cpf-chip">' + (r.cpf||'') + '</span></td>' +
+      '<td style="font-size:12px">' + (r.cidade||'') + '</td>' +
+      '<td>' + (r.tipo_veiculo||'') + '</td>' +
+      '<td style="font-size:12px">' + (r.tipo_operacao||'') + '<br><span style="color:var(--muted);font-size:11px">' + (r.operacao_preferencia||'') + '</span></td>' +
+      '<td style="color:var(--muted);font-size:12px">' + data + '</td>' +
+      '<td><span class="badge ' + (STATUS_MAP[status]||'') + '">' + status + '</span></td>';
+    tbody.appendChild(tr);
+  });
+  const tbl = document.createElement('table');
+  tbl.innerHTML = '<thead><tr><th>Motorista</th><th>ETC</th><th>CPF</th><th>Cidade</th><th>Veiculo</th><th>Operacao</th><th>Data</th><th>Status</th></tr></thead>';
+  tbl.appendChild(tbody);
+  const el = document.getElementById('adminTableBody');
+  el.innerHTML = '';
+  el.appendChild(tbl);
 }
 
-// DRAWER
 function abrirDrawer(r, isAdmin) {
   drawerIndicacao = r;
   const status = r.status || '';
