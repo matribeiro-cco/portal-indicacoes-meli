@@ -1036,20 +1036,17 @@ function atualizarMetricasAdmin(lista) {
 }
 
 function filtrarAdmin() {
-  const etc = document.getElementById('filtroEtc').value;
-  const status = document.getElementById('filtroStatus').value;
-  const operacao = document.getElementById('filtroOperacao').value;
-  const veiculo = document.getElementById('filtroVeiculo').value;
-  const q = document.getElementById('adminSearch').value.toLowerCase();
-  const f = todasAdmin.filter(r =>
-    (!etc || r.etc === etc) &&
-    (!status || r.status === status) &&
-    (!operacao || r.tipo_operacao === operacao) &&
-    (!veiculo || r.tipo_veiculo === veiculo) &&
-    (!q || (r.nome_motorista||'').toLowerCase().includes(q) || (r.cpf||'').includes(q))
-  );
+  var etc = document.getElementById('filtroEtc').value;
+  var status = document.getElementById('filtroStatus').value;
+  var operacao = document.getElementById('filtroOperacao').value;
+  var veiculo = document.getElementById('filtroVeiculo').value;
+  var q = document.getElementById('adminSearch').value.toLowerCase();
+  var hub = document.getElementById('adminHub') ? document.getElementById('adminHub').value : '';
+  var f = todasAdmin.filter(function(r) {
+  });
   renderAdmin(f);
   document.getElementById('adminCount').textContent = f.length + ' indicacoes';
+  document.getElementById('adminTotal').textContent = todasAdmin.length + ' indicacoes no total';
 }
 
 function renderAdmin(lista) {
