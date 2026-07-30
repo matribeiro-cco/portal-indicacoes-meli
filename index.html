@@ -675,234 +675,168 @@ input[type=file] { display: none; }
             <div class="field span2"><label class="f-label">Tipo de operação <span class="req">*</span></label><select class="f-select" id="fTipoOp"><option value="">Selecione…</option><option>Last Mile</option><option>First Mile</option></select><span class="f-err" id="errTipoOp">Campo obrigatório</span></div>
             <div class="field span2">
               <label class="f-label">Operação de preferência <span class="req">*</span></label>
-              <select class="f-select" id="fOpPref">
-                <option value="">Selecione…</option>
-                <option>BRAAL1 - Rio Largo</option>
-                <option>BRAAM1 - Manaus</option>
-                <option>BRABA1 - Salvador</option>
-                <option>BRACE1 - Fortaleza</option>
-                <option>BRADF1 - Brasília</option>
-                <option>BRAES1 - Vitória</option>
-                <option>BRAGO1 - Goiânia</option>
-                <option>BRAJP1 - João Pessoa</option>
-                <option>BRAMA1 - São Luís</option>
-                <option>BRAMT1 - Várzea Grande</option>
-                <option>BRAPA1 - Belém</option>
-                <option>BRAPE1 - Recife</option>
-                <option>BRAPI1 - Teresina</option>
-                <option>BRARN1 - São Gonçalo do Amarante</option>
-                <option>BRARS1 - Porto Alegre</option>
-                <option>BRARS2 - Caxias do Sul</option>
-                <option>BRASE1 - Aracaju</option>
-                <option>BRASP1 - Guarulhos</option>
-                <option>BRASP2 - Campinas</option>
-                <option>BRASP3 - São Paulo</option>
-                <option>BRBA01 - Lauro de Freitas</option>
-                <option>BRCE01 - Itaitinga</option>
-                <option>BRDF01 - Brasília</option>
-                <option>BRMG01 - Extrema</option>
-                <option>BRMG02 - Betim</option>
-                <option>BRMG03 - Extrema</option>
-                <option>BRPE01 - Cabo de Santo Agostinho</option>
-                <option>BRRJ01 - Rio de Janeiro</option>
-                <option>BRRJ02 - São João de Meriti</option>
-                <option>BRRS01 - Sapucaia do Sul</option>
-                <option>BRSC01 - SC</option>
-                <option>BRSC02 - SC</option>
-                <option>BRSP02 - Cajamar</option>
-                <option>BRSP04 - Cajamar</option>
-                <option>BRSP05 - Franco da Rocha</option>
-                <option>BRSP06 - Araçariguama</option>
-                <option>BRSP08 - Cajamar</option>
-                <option>BRSP09 - Cajamar</option>
-                <option>BRSP10 - Franco da Rocha</option>
-                <option>BRSP11 - PRU</option>
-                <option>BRSP14 - Cajamar</option>
-                <option>BRSP15 - Cajamar</option>
-                <option>BRRC01 - Perus</option>
-                <option>BRRC02 - Sumaré</option>
-                <option>BRRC03 - EMBU</option>
-                <option>SAL1 - Maceió</option>
-                <option>SAM1 - Manaus</option>
-                <option>SAP1 - Macapá</option>
-                <option>SBA1 - Salvador</option>
-                <option>SBA2 - Feira de Santana</option>
-                <option>SBA3 - Vitória da Conquista</option>
-                <option>SBA4 - Feira de Santana</option>
-                <option>SBA6 - Salvador</option>
-                <option>SBA7 - Vitória da Conquista</option>
-                <option>SBA9 - Simões Filho</option>
-                <option>SCE1 - Fortaleza</option>
-                <option>SCE2 - Fortaleza</option>
-                <option>SDF1 - Brasília</option>
-                <option>SDF2 - Brasília 2</option>
-                <option>SES1 - Vitória</option>
-                <option>SES2 - Cachoeiro do Itapemirim</option>
-                <option>SES3 - Linhares</option>
-                <option>SFC1 - Feira de Santana</option>
-                <option>SFC2 - Feira de Santana</option>
-                <option>SFC3 - Feira de Santana</option>
-                <option>SFC6 - Feira de Santana</option>
-                <option>SFN1 - Guarulhos</option>
-                <option>SGO1 - Goiânia</option>
-                <option>SGO2 - Rio Verde</option>
-                <option>SGO3 - Hidrolândia</option>
-                <option>SJP1 - João Pessoa</option>
-                <option>SMG1 - Contagem</option>
-                <option>SMG2 - Juiz de Fora</option>
-                <option>SMG3 - Pouso Alegre</option>
-                <option>SMG4 - Ipatinga</option>
-                <option>SMG5 - Poços de Caldas</option>
-                <option>SMG6 - Uberlândia</option>
-                <option>SMG7 - Montes Claros</option>
-                <option>SMG8 - Vespasiano</option>
-                <option>SMG9 - Varginha</option>
-                <option>SMG10 - Divinópolis</option>
-                <option>SMG11 - Patos de Minas</option>
-                <option>SMG12 - Uberaba</option>
-                <option>SMG13 - Teófilo Otoni</option>
-                <option>SMG14 - Nova Lima</option>
-                <option>SMG15 - Contagem</option>
-                <option>SMG18 - Contagem</option>
-                <option>SMN1 - São Luís</option>
-                <option>SMR1 - Cuiabá</option>
-                <option>SMR2 - Sinop</option>
-                <option>SMS1 - Campo Grande</option>
-                <option>SMS2 - Dourados</option>
-                <option>SPA1 - Belém</option>
-                <option>SPA2 - Benevides</option>
-                <option>SPE1 - Recife</option>
-                <option>SPI1 - Teresina</option>
-                <option>SPR1 - Curitiba</option>
-                <option>SPR2 - Londrina</option>
-                <option>SPR3 - Cascavel</option>
-                <option>SPR4 - Pato Branco</option>
-                <option>SPR5 - Guarapuava</option>
-                <option>SPR6 - Maringá</option>
-                <option>SPR7 - Ponta Grossa</option>
-                <option>SPR8 - Campina Grande do Sul</option>
-                <option>SPR9 - Cascavel</option>
-                <option>SPR10 - Campina Grande do Sul</option>
-                <option>SPR11 - Araucária</option>
-                <option>SRD1 - Porto Velho</option>
-                <option>SRD2 - Porto Velho</option>
-                <option>SRJ1 - Cordovil</option>
-                <option>SRJ2 - Queimados</option>
-                <option>SRJ3 - Volta Redonda</option>
-                <option>SRJ4 - Campos dos Goytacazes</option>
-                <option>SRJ5 - Petrópolis</option>
-                <option>SRJ6 - Mendanha</option>
-                <option>SRJ7 - Macaé</option>
-                <option>SRJ8 - Niterói</option>
-                <option>SRJ9 - Cabo Frio</option>
-                <option>SRJ10 - RJ Barra</option>
-                <option>SRJ12 - Itaperuna</option>
-                <option>SRJ13 - Meriti</option>
-                <option>SRJ14 - Rio de Janeiro</option>
-                <option>SRN1 - Natal</option>
-                <option>SRS1 - Porto Alegre</option>
-                <option>SRS2 - Pelotas</option>
-                <option>SRS3 - Santa Maria</option>
-                <option>SRS4 - Caxias do Sul</option>
-                <option>SRS5 - Passo Fundo</option>
-                <option>SRS6 - Alegrete</option>
-                <option>SRS7 - Ijuí</option>
-                <option>SRS8 - Sapucaia do Sul</option>
-                <option>SRS9 - Santa Rita</option>
-                <option>SRS10 - Lajeado</option>
-                <option>SSC1 - Joinville</option>
-                <option>SSC2 - Florianópolis</option>
-                <option>SSC3 - Gaspar</option>
-                <option>SSC4 - Chapecó</option>
-                <option>SSC5 - Criciúma</option>
-                <option>SSC7 - Lages</option>
-                <option>SSC8 - Itajaí</option>
-                <option>SSC9 - Governador Celso Ramos</option>
-                <option>SSE1 - Aracaju</option>
-                <option>SSP3 - Campinas</option>
-                <option>SSP4 - Ribeirão Preto</option>
-                <option>SSP5 - ARE</option>
-                <option>SSP6 - ZL</option>
-                <option>SSP7 - ZO</option>
-                <option>SSP8 - SJC</option>
-                <option>SSP9 - Limeira</option>
-                <option>SSP10 - Araçatuba</option>
-                <option>SSP11 - PRU</option>
-                <option>SSP12 - SJRP</option>
-                <option>SSP13 - MAR</option>
-                <option>SSP14 - BAU</option>
-                <option>SSP15 - Santos</option>
-                <option>SSP16 - Caraguatatuba</option>
-                <option>SSP17 - SBC</option>
-                <option>SSP18 - Jundiaí</option>
-                <option>SSP19 - Guarulhos</option>
-                <option>SSP20 - Sorocaba</option>
-                <option>SSP21 - Mooca</option>
-                <option>SSP22 - São Carlos</option>
-                <option>SSP23 - Mogi das Cruzes</option>
-                <option>SSP24 - Avaré</option>
-                <option>SSP25 - Atibaia</option>
-                <option>SSP26 - Franca</option>
-                <option>SSP27 - Itapetininga</option>
-                <option>SSP28 - Jales</option>
-                <option>SSP29 - Mogi Mirim</option>
-                <option>SSP30 - GRU</option>
-                <option>SSP31 - Barretos</option>
-                <option>SSP32 - Franco da Rocha</option>
-                <option>SSP34 - Cotia</option>
-                <option>SSP35 - Cubatão</option>
-                <option>SSP36 - Piracicaba</option>
-                <option>SSP38 - Itupeva</option>
-                <option>SSP39 - Lorena</option>
-                <option>SSP40 - ZN</option>
-                <option>SSP44 - São Paulo</option>
-                <option>SSP45 - Itaquera</option>
-                <option>SSP46 - Santos 2</option>
-                <option>SSP48 - Jaguaré</option>
-                <option>SSP49 - Zona Norte</option>
-                <option>SSP50 - Santo André</option>
-                <option>SSP51 - Porto Feliz</option>
-                <option>SSP52 - SBC</option>
-                <option>SSP55 - Ribeirão Preto</option>
-                <option>SSP1 - ZS</option>
-                <option>SC_VG - São Paulo</option>
-                <option>SC_ZS - São Paulo</option>
-                <option>STO1 - Palmas</option>
-                <option>STO2 - Palmas</option>
-                <option>ARENA - Arena</option>
-                <option>BRXBA1 - Simões Filho</option>
-                <option>BRXCE1 - Itaitinga</option>
-                <option>BRXES1 - ES</option>
-                <option>BRXGO1 - Goiânia</option>
-                <option>BRXMG2 - Uberlândia</option>
-                <option>BRXMG3 - Pouso Alegre</option>
-                <option>BRXPE1 - Jaboatão dos Guararapes</option>
-                <option>BRXPR2 - Londrina</option>
-                <option>BRXPR3 - Cascavel</option>
-                <option>BRXPR4 - Maringá</option>
-                <option>BRXRJ1 - RJ</option>
-                <option>BRXRS1 - RS</option>
-                <option>BRXSC2 - SC</option>
-                <option>BRXSP4 - SBC</option>
-                <option>BRXSP5 - RAO</option>
-                <option>BRXSP6 - GRU I</option>
-                <option>BRXSP7 - BAU</option>
-                <option>BRXSP8 - FRC</option>
-                <option>BRXSP9 - Cajamar</option>
-                <option>BRXSP10 - GRU II</option>
-                <option>BRXSP11 - PRU</option>
-                <option>BRXSP12 - Araçatuba</option>
-                <option>BRXSP14 - MAR</option>
-                <option>BRXSP16 - SP</option>
-                <option>BRXSP18 - Santo André</option>
-                <option>VILA_GUILHERME - São Paulo</option>
-                <option>XMG1 - MG</option>
-                <option>XPR1 - Curitiba</option>
-                <option>XRJ1 - RJ</option>
-                <option>XSP4 - SBC</option>
-                <option>CAMPINAS - Campinas</option>
-                <option>BRPR01 - PR</option>
-              </select>
+              <select class="f-select" id="fOpPref"><option value="">Selecione...</option>
+<option>BRBA01 - Lauro de Freitas</option>
+<option>BRBA02 - Salvador</option>
+<option>BRMG01 - Extrema</option>
+<option>BRMG02 - Betim</option>
+<option>BRRC01 - Perus</option>
+<option>BRRJ01 - Rio de Janeiro</option>
+<option>BRSC02 - Governador Celso Ramos</option>
+<option>BRSP02 - Cajamar</option>
+<option>BRSP03 - Cajamar</option>
+<option>BRSP06 - Araçariguama</option>
+<option>BRSP10 - Franco da Rocha</option>
+<option>BRXBA1 - Simões Filho (Salvador)</option>
+<option>BRXCE1 - Itaitinga (Fortaleza)</option>
+<option>BRXES1 - Serra (Vitória)</option>
+<option>BRXGO1 - Goiânia</option>
+<option>BRXMG1 - Contagem (Belo Horizonte)</option>
+<option>BRXMG2 - Uberlandia</option>
+<option>BRXMG3 - Pouso Alegre</option>
+<option>BRXPE1 - Recife</option>
+<option>BRXPR1 - Curitiba</option>
+<option>BRXPR2 - Londrina</option>
+<option>BRXPR3 - Cascavel</option>
+<option>BRXPR4 - Maringá</option>
+<option>BRXRJ1 - RJ Cordovil (Rio de Janeiro)</option>
+<option>BRXRS1 - Porto Alegre (Sapucaia do Sul)</option>
+<option>BRXSC2 - Governador Celso Ramos</option>
+<option>BRXSP1 - Mega Barueri (Arena)</option>
+<option>BRXSP10 - Guarulhos Mega</option>
+<option>BRXSP11 - Presidente Prudente</option>
+<option>BRXSP14 - Marília</option>
+<option>BRXSP16 - Zona Norte</option>
+<option>BRXSP2 - Campinas</option>
+<option>BRXSP4 - São Bernardo do Campo</option>
+<option>BRXSP5 - Ribeirão Preto (Cravinhos)</option>
+<option>BRXSP6 - XD Guarulhos</option>
+<option>BRXSP7 - Bauru</option>
+<option>BRXSP9 - Cajamar (Sortation Center)</option>
+<option>SAL1 - Macéio</option>
+<option>SAM1 - Manaus</option>
+<option>SBA1 - Simões Filho (Salvador)</option>
+<option>SBA2 - Feira de Santana</option>
+<option>SBA3 - Vitória da Conquista</option>
+<option>SBA6 - Salvador 2</option>
+<option>SCE1 - Itaitinga (Fortaleza)</option>
+<option>SDF1 - Brasília</option>
+<option>SDF2 - DF - Santa Maria (Brasília 2)</option>
+<option>SES1 - Serra (Vitória)</option>
+<option>SES2 - Cachoeiro do Itapemirim</option>
+<option>SES3 - Linhares</option>
+<option>SGO1 - Goiânia</option>
+<option>SGO2 - Rio Verde</option>
+<option>SGO3 - Hidrolândia</option>
+<option>SJP1 - João Pessoa</option>
+<option>SMG1 - Contagem (Belo Horizonte)</option>
+<option>SMG10 - Divinópolis</option>
+<option>SMG11 - Patos de Minas</option>
+<option>SMG12 - Uberaba</option>
+<option>SMG13 - Teófilo Otoni</option>
+<option>SMG14 - Nova Lima</option>
+<option>SMG15 - Contagem 2 (BH4)</option>
+<option>SMG2 - Juiz de Fora</option>
+<option>SMG3 - Pouso Alegre</option>
+<option>SMG4 - Ipatinga</option>
+<option>SMG5 - Poços de Caldas</option>
+<option>SMG6 - Uberlândia</option>
+<option>SMG7 - Montes Claros</option>
+<option>SMG8 - Vespasiano (BH Zona Norte)</option>
+<option>SMG9 - Varginha</option>
+<option>SMN1 - São Luís</option>
+<option>SMR1 - Cuiabá</option>
+<option>SMR2 - Sinop</option>
+<option>SMS1 - Campo Grande</option>
+<option>SMS2 - Dourados</option>
+<option>SPA1 - Benevides (Belém)</option>
+<option>SPE1 - Recife</option>
+<option>SPI1 - Teresina</option>
+<option>SPR1 - Curitiba</option>
+<option>SPR11 - Araucária</option>
+<option>SPR2 - Londrina</option>
+<option>SPR3 - Cascável</option>
+<option>SPR4 - Pato Branco</option>
+<option>SPR5 - Guarapuava</option>
+<option>SPR6 - Maringá</option>
+<option>SPR7 - Ponta Grossa</option>
+<option>SPR8 - Campina Grande do Sul</option>
+<option>SRD1 - Porto Velho</option>
+<option>SRJ1 - RJ Cordovil (Rio de Janeiro)</option>
+<option>SRJ10 - RJ Taquara (Barra)</option>
+<option>SRJ12 - Itaperuna</option>
+<option>SRJ13 - São João de Meriti</option>
+<option>SRJ14 - Volumoso Barra</option>
+<option>SRJ2 - Nova Iguaçu (Queimados)</option>
+<option>SRJ3 - Barra Mansa (Volta Redonda)</option>
+<option>SRJ4 - Campos dos Goytacazes</option>
+<option>SRJ5 - Petrópolis</option>
+<option>SRJ6 - RJ Campo Grande (Mendanha)</option>
+<option>SRJ7 - Macaé</option>
+<option>SRJ8 - Itaboraí (Niterói)</option>
+<option>SRJ9 - São Pedro da Aldeia (Cabo Frio)</option>
+<option>SRN1 - Natal</option>
+<option>SRS1 - Porto Alegre</option>
+<option>SRS10 - Lajeado</option>
+<option>SRS2 - Pelotas</option>
+<option>SRS3 - Santa Maria</option>
+<option>SRS4 - Caxias do Sul</option>
+<option>SRS5 - Passo Fundo</option>
+<option>SRS7 - Ijuí</option>
+<option>SRS8 - Sapucaia do Sul</option>
+<option>SRS9 - Nova Santa Rita</option>
+<option>SSC1 - Joinville</option>
+<option>SSC2 - Biguaçu (Florianópolis)</option>
+<option>SSC3 - Gaspar (Blumenau)</option>
+<option>SSC4 - Chapecó</option>
+<option>SSC5 - Morro da Fumaça (Criciúma)</option>
+<option>SSC7 - Lages</option>
+<option>SSC8 - Itajaí</option>
+<option>SSC9 - Governador Celso Ramos</option>
+<option>SSE1 - Aracaju</option>
+<option>SSP1 - Zona Sul</option>
+<option>SSP10 - Araçatuba</option>
+<option>SSP11 - Presidente Prudente</option>
+<option>SSP12 - São José do Rio Preto</option>
+<option>SSP13 - Marília</option>
+<option>SSP14 - Bauru</option>
+<option>SSP15 - São Vicente (Santos)</option>
+<option>SSP16 - Caraguatatuba</option>
+<option>SSP17 - São Bernardo do Campo</option>
+<option>SSP18 - Jundiaí</option>
+<option>SSP20 - Sorocaba</option>
+<option>SSP21 - Mooca</option>
+<option>SSP22 - São Carlos</option>
+<option>SSP23 - Suzano (Mogi das Cruzes)</option>
+<option>SSP24 - Avaré</option>
+<option>SSP25 - Atibaia</option>
+<option>SSP26 - Franca</option>
+<option>SSP27 - Itapetininga</option>
+<option>SSP28 - Jales</option>
+<option>SSP29 - Mogi Mirim</option>
+<option>SSP3 - Campinas</option>
+<option>SSP30 - Guarulhos Mega</option>
+<option>SSP31 - Barretos</option>
+<option>SSP33 - Volumoso Guarulhos Mega</option>
+<option>SSP34 - Cotia</option>
+<option>SSP36 - Piracicaba</option>
+<option>SSP38 - Itupeva</option>
+<option>SSP39 - Lorena (Guaratinguetá)</option>
+<option>SSP4 - Ribeirão Preto</option>
+<option>SSP40 - Zona Norte</option>
+<option>SSP44 - Volumoso Vila Leopoldina</option>
+<option>SSP45 - Itaquera</option>
+<option>SSP46 - São Vicente II</option>
+<option>SSP48 - Jaguaré</option>
+<option>SSP49 - Zona Norte II</option>
+<option>SSP5 - Mega Barueri (Arena)</option>
+<option>SSP6 - Mauá (Zona Leste)</option>
+<option>SSP7 - Zona Oeste</option>
+<option>SSP8 - Caçapava (São José dos Campos)</option>
+<option>SSP9 - Limeira</option>
+<option>STO1 - Palmas</option>
+<option>STO2 - Palmas Virtual</option>
+</select>
               <span class="f-err" id="errOpPref">Campo obrigatório</span>
             </div>
           </div>
