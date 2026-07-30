@@ -1043,6 +1043,12 @@ function filtrarAdmin() {
   var q = document.getElementById('adminSearch').value.toLowerCase();
   var hub = document.getElementById('adminHub') ? document.getElementById('adminHub').value : '';
   var f = todasAdmin.filter(function(r) {
+    return (!etc || r.etc === etc) &&
+    (!status || r.status === status) &&
+    (!operacao || r.tipo_operacao === operacao) &&
+    (!veiculo || r.tipo_veiculo === veiculo) &&
+    (!q || (r.nome_motorista||'').toLowerCase().includes(q) || (r.cpf||'').includes(q) || (r.telefone||'').includes(q)) &&
+    (!hub || (r.operacao_preferencia||'').split(' - ')[0].toUpperCase() === hub.split(' - ')[0].toUpperCase());
   });
   renderAdmin(f);
   document.getElementById('adminCount').textContent = f.length + ' indicacoes';
