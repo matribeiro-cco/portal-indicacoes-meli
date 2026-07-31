@@ -1339,6 +1339,13 @@ function removerUpload(tipo){
 }
 
 async function enviarIndicacao(){
+  // Verificar CPF duplicado
+  const cpfCheck = document.getElementById('fCpf').value;
+  const { data: existing } = await sb.from('indicacoes').select('id').eq('cpf', cpfCheck).eq('etc', sessao.etc).maybeSingle();
+  if (existing) {
+    alert('Este CPF ja foi indicado pela sua transportadora. Verifique suas indicacoes.');
+    return;
+  }
   document.getElementById('submittingOv').classList.add('show');
   try {
     const cnhExt=arquivos.cnh.name.split('.').pop();
