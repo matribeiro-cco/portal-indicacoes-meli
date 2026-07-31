@@ -1131,7 +1131,7 @@ function abrirDrawer(r, isAdmin) {
     '<button id="btnEditSave" style="background:var(--blue);color:#fff;border:none;border-radius:6px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;width:100%;font-family:inherit;margin-top:4px">Salvar correcao</button>' +
     '</div></div>' : '';
 
-  const reenvioSection = (!isAdmin && r.status === 'Documento incorreto') ?
+  const reenvioSection = (!isAdmin) ?
     '<div style="margin-top:16px;padding:14px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:10px">' +
     '<div style="font-size:12px;color:var(--amber);font-weight:600;margin-bottom:8px">Documento incorreto</div>' +
     '<div style="font-size:12px;color:var(--muted);margin-bottom:10px">Um ou mais documentos precisam ser reenviados.</div>' +
