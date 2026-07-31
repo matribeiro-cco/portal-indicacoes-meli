@@ -396,6 +396,7 @@ input[type=file] { display: none; }
           </div>
         </div>
         <div id="adminTableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando...</div></div>
+        <div id="adminPaginacao" style="display:none;gap:8px;padding:16px;justify-content:center;align-items:center"></div>
       </div>
     </div>
 
@@ -1042,17 +1043,54 @@ function filtrarAdmin() {
   var veiculo = document.getElementById('filtroVeiculo').value;
   var q = document.getElementById('adminSearch').value.toLowerCase();
   var hub = document.getElementById('adminHub') ? document.getElementById('adminHub').value : '';
-  var f = todasAdmin.filter(function(r) {
+  _adminFiltrado = todasAdmin.filter(function(r) {
     return (!etc || r.etc === etc) &&
     (!status || r.status === status) &&
     (!operacao || r.tipo_operacao === operacao) &&
     (!veiculo || r.tipo_veiculo === veiculo) &&
-    (!q || (r.nome_motorista||'').toLowerCase().includes(q) || (r.cpf||'').includes(q) || (r.telefone||'').includes(q)) &&
-    (!hub || (r.operacao_preferencia||'').split(' - ')[0].toUpperCase() === hub.split(' - ')[0].toUpperCase());
+    (!q || (r.nome_motorista||''). toLowerCase().includes(q) || (r.cpf||''). includes(q) || (r.telefone||''). includes(q)) &&
+    (!hub || (r.operacao_preferencia||''). split(' - ')[0].toUpperCase() === hub.split(' - ')[0].toUpperCase());
   });
-  renderAdmin(f);
-  document.getElementById('adminCount').textContent = f.length + ' indicacoes';
+  adminPagina = 1;
+  renderPaginaAdmin();
+  document.getElementById('adminCount').textContent = _adminFiltrado.length + ' indicacoes';
   document.getElementById('adminTotal').textContent = todasAdmin.length + ' indicacoes no total';
+}
+
+function renderPaginaAdmin() {
+  var inicio = (adminPagina - 1) * adminPorPagina;
+  var pagina = _adminFiltrado.slice(inicio, inicio + adminPorPagina);
+  renderAdmin(pagina);
+  var total = Math.ceil(_adminFiltrado.length / adminPorPagina);
+  var pagEl = document.getElementById('adminPaginacao');
+  if (pagEl) {
+    if (total > 1) {
+      pagEl.innerHTML = '';
+      pagEl.style.display = 'flex';
+      if (adminPagina > 1) {
+        var bp = document.createElement('button');
+        bp.className = 'btn btn-ghost';
+        bp.style.padding = '6px 14px';
+        bp.textContent = '< Anterior';
+        bp.onclick = function() { adminPagina--; renderPaginaAdmin(); };
+        pagEl.appendChild(bp);
+      }
+      var info = document.createElement('span');
+      info.style.cssText = 'font-size:13px;color:var(--muted);margin:0 8px';
+      info.textContent = 'Pagina ' + adminPagina + ' de ' + total + ' (' + _adminFiltrado.length + ' registros)';
+      pagEl.appendChild(info);
+      if (adminPagina < total) {
+        var bn = document.createElement('button');
+        bn.className = 'btn btn-ghost';
+        bn.style.padding = '6px 14px';
+        bn.textContent = 'Proxima >';
+        bn.onclick = function() { adminPagina++; renderPaginaAdmin(); };
+        pagEl.appendChild(bn);
+      }
+    } else {
+      pagEl.style.display = 'none';
+    }
+  }
 }
 
 function renderAdmin(lista) {
@@ -1600,8 +1638,17 @@ function limparPeriodo() {
 
 function renderAllCharts() { renderChart(); renderStatusChart(); renderTimelineChart(); renderOperacaoChart(); renderVeiculoChart(); renderAssistenteChart(); }
 function filtrarPorStatus(status) { switchTab('admin'); document.getElementById('filtroStatus').value = (status === 'pendencias') ? '' : status; filtrarAdmin(); }
-function getFilteredData() { var de = document.getElementById('chartDe') ? document.getElementById('chartDe').value : ''; var ate = document.getElementById('chartAte') ? document.getElementById('chartAte').value : ''; var lista = todasAdmin; if (de) lista = lista.filter(function(r) { return r.criado_em && new Date(r.criado_em) >= new Date(de); }); if (ate) lista = lista.filter(function(r) { return r.criado_em && new Date(r.criado_em) <= new Date(ate + 'T23:59:59'); }); return lista; }
-var chartInstances = {};
+function getFilteredData() {
+  var de = document.getElementById('chartDe') ? document.getElementById('chartDe').value : '';
+  var ate = document.getElementById('chartAte') ? document.getElementById('chartAte').value : '';
+  var etc = document.getElementById('dashFiltroEtc') ? document.getElementById('dashFiltroEtc').value : '';
+  var lista = todasAdmin;
+  if (etc) lista = lista.filter(function(r) { return r.etc === etc; });
+  if (de) lista = lista.filter(function(r) { return r.criado_em && new Date(r.criado_em) >= new Date(de); });
+  if (ate) lista = lista.filter(function(r) { return r.criado_em && new Date(r.criado_em) <= new Date(ate + 'T23:59:59'); });
+  return lista;
+}
+
 function destroyChart(id) { if (chartInstances[id]) { chartInstances[id].destroy(); chartInstances[id] = null; } }
 function limparPeriodo() { document.getElementById('chartDe').value = ''; document.getElementById('chartAte').value = ''; renderAllCharts(); }
 function renderStatusChart() { var lista = getFilteredData(); var canvas = document.getElementById('statusChart'); if (!canvas) return; destroyChart('status'); var sMap = {}; lista.forEach(function(r) { var s = r.status || 'Sem status'; sMap[s] = (sMap[s]||0) + 1; }); var colors = {'Em validacao':'#3B82F6','Aprovado':'#10B981','Reprovado':'#EF4444','Documento incorreto':'#F59E0B','Pendente GUEP':'#F59E0B','Cancelado':'#7A8BA8','Licenciamento':'#8B5CF6','Declinio':'#EF4444','Em treinamento':'#F59E0B','Liberado':'#10B981','Contato realizado':'#3B82F6'}; chartInstances['status'] = new Chart(canvas.getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(sMap), datasets: [{ data: Object.values(sMap), backgroundColor: Object.keys(sMap).map(function(s) { return colors[s]||'#7A8BA8'; }), borderWidth: 2, borderColor: '#111827' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#7A8BA8', font: { size: 11 }, boxWidth: 12 } } } } }); }
