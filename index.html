@@ -1649,6 +1649,7 @@ function getFilteredData() {
   return lista;
 }
 
+var chartInstances = {};
 function destroyChart(id) { if (chartInstances[id]) { chartInstances[id].destroy(); chartInstances[id] = null; } }
 function limparPeriodo() { document.getElementById('chartDe').value = ''; document.getElementById('chartAte').value = ''; renderAllCharts(); }
 function renderStatusChart() { var lista = getFilteredData(); var canvas = document.getElementById('statusChart'); if (!canvas) return; destroyChart('status'); var sMap = {}; lista.forEach(function(r) { var s = r.status || 'Sem status'; sMap[s] = (sMap[s]||0) + 1; }); var colors = {'Em validacao':'#3B82F6','Aprovado':'#10B981','Reprovado':'#EF4444','Documento incorreto':'#F59E0B','Pendente GUEP':'#F59E0B','Cancelado':'#7A8BA8','Licenciamento':'#8B5CF6','Declinio':'#EF4444','Em treinamento':'#F59E0B','Liberado':'#10B981','Contato realizado':'#3B82F6'}; chartInstances['status'] = new Chart(canvas.getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(sMap), datasets: [{ data: Object.values(sMap), backgroundColor: Object.keys(sMap).map(function(s) { return colors[s]||'#7A8BA8'; }), borderWidth: 2, borderColor: '#111827' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#7A8BA8', font: { size: 11 }, boxWidth: 12 } } } } }); }
