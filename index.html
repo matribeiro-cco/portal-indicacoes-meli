@@ -316,34 +316,51 @@ input[type=file] { display: none; }
     </div>
   </header>
   <main>
-    <div class="page-header">
-      <div><div class="page-title">Suas indicacoes</div><div class="page-sub" id="pageSubNome">—</div></div>
-      <button class="btn btn-yellow" onclick="abrirForm()">+ Indicar motorista</button>
+    <div class="admin-tabs" id="etcMainTabs" style="margin-bottom:20px;width:fit-content">
+      <button class="admin-tab active" id="tabMotoristas" onclick="switchEtcMainTab('motoristas')">Motoristas</button>
+      <button class="admin-tab" id="tabRotasEtc" onclick="switchEtcMainTab('rotas')">Rotas <span id="rotasEtcBadgeCount"></span></button>
     </div>
-    <div class="metrics-grid">
-      <div class="metric-card blue"><div class="metric-value" style="color:var(--blue)" id="mValidacao">—</div><div class="metric-label">Em validacao</div></div>
-      <div class="metric-card green"><div class="metric-value" style="color:var(--green)" id="mAprovado">—</div><div class="metric-label">Aprovados</div></div>
-      <div class="metric-card amber"><div class="metric-value" style="color:var(--amber)" id="mPendente">—</div><div class="metric-label">Pendências</div></div>
-      <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="mReprovado">—</div><div class="metric-label">Reprovados</div></div>
-    </div>
-    <div class="table-card">
-      <div class="table-toolbar">
-        <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Motoristas</span><span class="count-badge" id="countBadge">—</span></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-          <select class="filter-select" id="filtroStatusEtc" onchange="filtrarEtc()">
-            <option value="">Todos os status</option>
-            <option>Em validacao</option><option>Documento incorreto</option><option>Aprovado</option>
-            <option>Reprovado</option><option>Pendente GUEP</option><option>Cancelado</option>
-            <option>Licenciamento</option><option>Declinio</option><option>Em treinamento</option><option>Liberado</option><option>Contato realizado</option>
-          </select>
-          <input type="date" class="filter-select" id="filtroDeEtc" onchange="filtrarEtc()" style="color-scheme:dark;cursor:pointer">
-          <input type="date" class="filter-select" id="filtroAteEtc" onchange="filtrarEtc()" style="color-scheme:dark;cursor:pointer">
-          <input class="search-input" type="text" id="buscaEtc" placeholder="Buscar nome ou CPF..." oninput="filtrarEtc()" style="width:160px">
-          <input class="search-input" type="text" id="buscaPlacaEtc" placeholder="Placa..." oninput="filtrarEtc()" style="width:90px;text-transform:uppercase">
-          <button class="btn btn-ghost" style="padding:7px 14px;font-size:13px" onclick="exportarCSVEtc()">CSV</button>
-        </div>
+
+    <div id="motoristasPanel">
+      <div class="page-header">
+        <div><div class="page-title">Suas indicacoes</div><div class="page-sub" id="pageSubNome">—</div></div>
+        <button class="btn btn-yellow" onclick="abrirForm()">+ Indicar motorista</button>
       </div>
-      <div id="tableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando...</div></div>
+      <div class="metrics-grid">
+        <div class="metric-card blue"><div class="metric-value" style="color:var(--blue)" id="mValidacao">—</div><div class="metric-label">Em validacao</div></div>
+        <div class="metric-card green"><div class="metric-value" style="color:var(--green)" id="mAprovado">—</div><div class="metric-label">Aprovados</div></div>
+        <div class="metric-card amber"><div class="metric-value" style="color:var(--amber)" id="mPendente">—</div><div class="metric-label">Pendências</div></div>
+        <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="mReprovado">—</div><div class="metric-label">Reprovados</div></div>
+      </div>
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Motoristas</span><span class="count-badge" id="countBadge">—</span></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <select class="filter-select" id="filtroStatusEtc" onchange="filtrarEtc()">
+              <option value="">Todos os status</option>
+              <option>Em validacao</option><option>Documento incorreto</option><option>Aprovado</option>
+              <option>Reprovado</option><option>Pendente GUEP</option><option>Cancelado</option>
+              <option>Licenciamento</option><option>Declinio</option><option>Em treinamento</option><option>Liberado</option><option>Contato realizado</option>
+            </select>
+            <input type="date" class="filter-select" id="filtroDeEtc" onchange="filtrarEtc()" style="color-scheme:dark;cursor:pointer">
+            <input type="date" class="filter-select" id="filtroAteEtc" onchange="filtrarEtc()" style="color-scheme:dark;cursor:pointer">
+            <input class="search-input" type="text" id="buscaEtc" placeholder="Buscar nome ou CPF..." oninput="filtrarEtc()" style="width:160px">
+            <input class="search-input" type="text" id="buscaPlacaEtc" placeholder="Placa..." oninput="filtrarEtc()" style="width:90px;text-transform:uppercase">
+            <button class="btn btn-ghost" style="padding:7px 14px;font-size:13px" onclick="exportarCSVEtc()">CSV</button>
+          </div>
+        </div>
+        <div id="tableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando...</div></div>
+      </div>
+    </div>
+
+    <!-- PAINEL ROTAS (visao ETC) -->
+    <div id="rotasEtcPanel" style="display:none">
+      <div class="page-header">
+        <div><div class="page-title">Rotas disponiveis</div><div class="page-sub">Selecione por ordem de chegada e vincule motorista e placa</div></div>
+        <button class="btn btn-ghost" onclick="carregarRotasEtc()">Atualizar</button>
+      </div>
+      <div id="rotasEtcGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px"></div>
+      <div class="empty-state" id="rotasEtcEmpty" style="display:none"><div class="empty-title">Nenhuma rota disponivel no momento</div><div style="color:var(--muted);font-size:13px">A lista atualiza automaticamente.</div></div>
     </div>
   </main>
 </div>
@@ -360,6 +377,7 @@ input[type=file] { display: none; }
         <button class="admin-tab active" id="tabAdmin" onclick="switchTab('admin')">Tratativas</button>
         <button class="admin-tab" id="tabDash" onclick="switchTab('dash')">Dashboard</button>
         <button class="admin-tab" id="tabEtc" onclick="switchTab('etc')">Transportadoras</button>
+        <button class="admin-tab" id="tabRotas" onclick="switchTab('rotas')">Rotas Extras</button>
       </div>
       <span class="admin-badge">👤 Admin</span>
       <button class="btn-sair" onclick="sair()">Sair</button>
@@ -468,7 +486,61 @@ input[type=file] { display: none; }
         <div id="etcAmTableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando...</div></div>
       </div>
     </div>
+
+    <!-- ABA ROTAS EXTRAS (visao admin/operacao) -->
+    <div id="rotasAdminPanel" style="display:none">
+      <div class="page-header">
+        <div><div class="page-title">Rotas Extras</div><div class="page-sub">Publique rotas para os ETCs selecionarem por ordem de chegada</div></div>
+        <button class="btn btn-ghost" onclick="carregarRotasAdmin()">Atualizar</button>
+      </div>
+      <div class="table-card" style="padding:20px;margin-bottom:20px">
+        <div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:14px;text-transform:uppercase;letter-spacing:.4px">Publicar nova rota</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 14px">
+          <div class="field"><label class="f-label">Nome da rota</label><input class="auth-input" id="rNome" placeholder="Ex: Rota SP12 - Tarde" style="margin-bottom:14px"></div>
+          <div class="field"><label class="f-label">Cluster</label><input class="auth-input" id="rCluster" placeholder="Ex: Cluster 3" style="margin-bottom:14px"></div>
+          <div class="field"><label class="f-label">Ponto de coleta</label><input class="auth-input" id="rColeta" placeholder="Ex: CD Guarulhos" style="margin-bottom:14px"></div>
+          <div class="field"><label class="f-label">Unidade</label><input class="auth-input" id="rUnidade" placeholder="Ex: Guarulhos / Zona Norte" style="margin-bottom:14px"></div>
+          <div class="field"><label class="f-label">Vencimento (some do painel apos esse horario)</label><input class="auth-input" type="datetime-local" id="rVencimento" style="margin-bottom:14px;color-scheme:dark"></div>
+          <div class="field"><label class="f-label">Observacao (opcional)</label><input class="auth-input" id="rObs" placeholder="Detalhe adicional" style="margin-bottom:14px"></div>
+        </div>
+        <button class="btn btn-yellow" onclick="publicarRota()">Publicar rota</button>
+      </div>
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Rotas publicadas</span><span class="count-badge" id="rotasAdminCount">—</span></div>
+        </div>
+        <div id="rotasAdminTableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando...</div></div>
+      </div>
+    </div>
   </main>
+</div>
+
+<!-- MODAL SELECIONAR ROTA -->
+<div class="overlay" id="rotaOverlay">
+  <div class="form-modal" style="max-width:400px">
+    <div class="form-header">
+      <div>
+        <div class="form-title">Selecionar rota</div>
+        <div class="form-subtitle" id="rotaModalNome">—</div>
+      </div>
+      <button class="close-btn" onclick="fecharModalRota()">x</button>
+    </div>
+    <div class="form-body">
+      <div class="field" style="margin-bottom:14px">
+        <label class="f-label">Nome do motorista</label>
+        <input class="auth-input" id="rotaMotorista" placeholder="Nome completo">
+      </div>
+      <div class="field" style="margin-bottom:8px">
+        <label class="f-label">Placa do veiculo</label>
+        <input class="auth-input" id="rotaPlaca" placeholder="ABC1D23" style="text-transform:uppercase">
+      </div>
+      <div class="field-err" id="rotaModalErr" style="display:none;margin-bottom:10px"></div>
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <button class="btn btn-ghost" style="flex:1" onclick="fecharModalRota()">Cancelar</button>
+        <button class="btn btn-yellow" style="flex:1" onclick="confirmarSelecaoRota()">Confirmar</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- FORM MODAL -->
@@ -925,6 +997,114 @@ function sair() {
   sessao = null; todasIndicacoes = []; todasAdmin = []; emailAtual = '';
   document.getElementById('emailInput').value = '';
   showScreen('emailScreen');
+}
+
+// ROTAS EXTRAS - visao ETC
+let rotasEtcPollTimer = null;
+let rotaSelecionandoId = null;
+
+function switchEtcMainTab(tab) {
+  document.getElementById('tabMotoristas').classList.remove('active');
+  document.getElementById('tabRotasEtc').classList.remove('active');
+  if (tab === 'motoristas') {
+    document.getElementById('motoristasPanel').style.display = '';
+    document.getElementById('rotasEtcPanel').style.display = 'none';
+    document.getElementById('tabMotoristas').classList.add('active');
+    if (rotasEtcPollTimer) { clearInterval(rotasEtcPollTimer); rotasEtcPollTimer = null; }
+  } else {
+    document.getElementById('motoristasPanel').style.display = 'none';
+    document.getElementById('rotasEtcPanel').style.display = '';
+    document.getElementById('tabRotasEtc').classList.add('active');
+    carregarRotasEtc();
+    if (!rotasEtcPollTimer) { rotasEtcPollTimer = setInterval(carregarRotasEtc, 10000); }
+  }
+}
+
+function tempoRestanteRota(venc) {
+  const diff = new Date(venc).getTime() - Date.now();
+  if (diff <= 0) return null;
+  const min = Math.floor(diff / 60000);
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return (h > 0 ? h + 'h ' : '') + m + 'min restantes';
+}
+
+async function carregarRotasEtc() {
+  const { data } = await sb.from('rotas_extras').select('*')
+    .eq('status', 'Disponivel')
+    .gt('data_vencimento', new Date().toISOString())
+    .order('data_vencimento', { ascending: true })
+    .range(0, 9999);
+  const lista = data || [];
+  document.getElementById('rotasEtcBadgeCount').textContent = lista.length > 0 ? '(' + lista.length + ')' : '';
+  const grid = document.getElementById('rotasEtcGrid');
+  const empty = document.getElementById('rotasEtcEmpty');
+
+  if (lista.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  grid.innerHTML = lista.map(r => {
+    const restante = tempoRestanteRota(r.data_vencimento);
+    const expirando = restante && restante.indexOf('h') === -1;
+    return '<div style="background:var(--surface);border:1px solid var(--border);border-top:3px solid ' + (expirando ? 'var(--amber)' : 'var(--blue)') + ';border-radius:12px;padding:16px">' +
+      '<div style="font-size:15px;font-weight:700;margin-bottom:8px">' + r.nome_rota + '</div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--muted)">Coleta</span><span>' + (r.ponto_coleta || '-') + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--muted)">Cluster</span><span>' + (r.cluster || '-') + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0' + (r.observacao ? ';border-bottom:1px dashed var(--border)' : '') + '"><span style="color:var(--muted)">Unidade</span><span>' + (r.unidade || '-') + '</span></div>' +
+      (r.observacao ? '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0"><span style="color:var(--muted)">Obs</span><span>' + r.observacao + '</span></div>' : '') +
+      '<div style="font-size:11px;margin-top:10px;padding:6px 10px;border-radius:6px;text-align:center;font-weight:700;background:' + (expirando ? 'rgba(245,158,11,.12)' : 'rgba(16,185,129,.12)') + ';color:' + (expirando ? 'var(--amber)' : 'var(--green)') + '">' + (restante || 'Expirando') + '</div>' +
+      '<button class="btn btn-yellow" style="width:100%;margin-top:12px;padding:9px" onclick="abrirModalSelecionarRota(\'' + r.id + '\', \'' + r.nome_rota.replace(/'/g,"\\'") + '\')">Selecionar rota</button>' +
+      '</div>';
+  }).join('');
+}
+
+function abrirModalSelecionarRota(id, nome) {
+  rotaSelecionandoId = id;
+  document.getElementById('rotaModalNome').textContent = nome;
+  document.getElementById('rotaMotorista').value = '';
+  document.getElementById('rotaPlaca').value = '';
+  document.getElementById('rotaModalErr').style.display = 'none';
+  document.getElementById('rotaOverlay').classList.add('active');
+}
+
+function fecharModalRota() {
+  document.getElementById('rotaOverlay').classList.remove('active');
+  rotaSelecionandoId = null;
+}
+
+async function confirmarSelecaoRota() {
+  const motorista = document.getElementById('rotaMotorista').value.trim();
+  const placa = document.getElementById('rotaPlaca').value.trim().toUpperCase();
+  const errEl = document.getElementById('rotaModalErr');
+
+  if (!motorista || !placa) {
+    errEl.textContent = 'Preencha motorista e placa.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const { data, error } = await sb.from('rotas_extras')
+    .update({
+      status: 'Selecionada', etc_selecionado: sessao.etc, motorista_vinculado: motorista,
+      placa_vinculada: placa, selecionado_em: new Date().toISOString()
+    })
+    .eq('id', rotaSelecionandoId)
+    .eq('status', 'Disponivel')
+    .select();
+
+  if (error || !data || data.length === 0) {
+    errEl.textContent = 'Essa rota acabou de ser pega por outro ETC.';
+    errEl.style.display = 'block';
+    carregarRotasEtc();
+    return;
+  }
+
+  fecharModalRota();
+  carregarRotasEtc();
 }
 
 // DASHBOARD ETC
@@ -1440,9 +1620,11 @@ function switchTab(tab) {
   document.getElementById('adminPanel').style.display = 'none';
   document.getElementById('dashPanel').style.display = 'none';
   document.getElementById('etcPanel').style.display = 'none';
+  document.getElementById('rotasAdminPanel').style.display = 'none';
   document.getElementById('tabAdmin').classList.remove('active');
   document.getElementById('tabDash').classList.remove('active');
   document.getElementById('tabEtc').classList.remove('active');
+  document.getElementById('tabRotas').classList.remove('active');
   if (tab === 'admin') {
     document.getElementById('adminPanel').style.display = '';
     document.getElementById('tabAdmin').classList.add('active');
@@ -1453,12 +1635,95 @@ function switchTab(tab) {
     document.getElementById('adminHeaderSub').textContent = 'Dashboard';
     atualizarMetricasAdmin(todasAdmin);
     renderAllCharts();
-  } else {
+  } else if (tab === 'etc') {
     document.getElementById('etcPanel').style.display = '';
     document.getElementById('tabEtc').classList.add('active');
     document.getElementById('adminHeaderSub').textContent = 'Transportadoras';
     carregarEtcAdmin();
+  } else {
+    document.getElementById('rotasAdminPanel').style.display = '';
+    document.getElementById('tabRotas').classList.add('active');
+    document.getElementById('adminHeaderSub').textContent = 'Rotas Extras';
+    carregarRotasAdmin();
   }
+}
+
+function fmtDataRota(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+}
+
+async function publicarRota() {
+  const nome = document.getElementById('rNome').value.trim();
+  const cluster = document.getElementById('rCluster').value.trim();
+  const coleta = document.getElementById('rColeta').value.trim();
+  const unidade = document.getElementById('rUnidade').value.trim();
+  const venc = document.getElementById('rVencimento').value;
+  const obs = document.getElementById('rObs').value.trim();
+
+  if (!nome || !venc) {
+    alert('Preencha ao menos o nome da rota e o vencimento.');
+    return;
+  }
+
+  try {
+    const { error } = await sb.from('rotas_extras').insert([{
+      nome_rota: nome, cluster: cluster, ponto_coleta: coleta, unidade: unidade,
+      data_vencimento: new Date(venc).toISOString(), observacao: obs,
+      status: 'Disponivel', criado_por: sessao.email
+    }]);
+    if (error) throw error;
+    ['rNome','rCluster','rColeta','rUnidade','rVencimento','rObs'].forEach(id => document.getElementById(id).value = '');
+    carregarRotasAdmin();
+  } catch (e) {
+    alert('Erro ao publicar rota.');
+  }
+}
+
+async function carregarRotasAdmin() {
+  document.getElementById('rotasAdminTableBody').innerHTML = '<div class="loading-state"><div class="spinner"></div><br>Carregando...</div>';
+  await sb.from('rotas_extras').update({ status: 'Expirada' })
+    .eq('status', 'Disponivel')
+    .lt('data_vencimento', new Date().toISOString());
+
+  const { data } = await sb.from('rotas_extras').select('*').order('criado_em', { ascending: false }).order('id', { ascending: false }).range(0, 9999);
+  const lista = data || [];
+  document.getElementById('rotasAdminCount').textContent = lista.length + ' rotas';
+  const badgeCor = { 'Disponivel':'var(--green)', 'Selecionada':'var(--blue)', 'Expirada':'var(--red)', 'Cancelada':'var(--muted)' };
+
+  if (lista.length === 0) {
+    document.getElementById('rotasAdminTableBody').innerHTML = '<div class="empty-state"><div class="empty-title">Nenhuma rota publicada ainda</div></div>';
+    return;
+  }
+
+  document.getElementById('rotasAdminTableBody').innerHTML =
+    '<table style="width:100%;border-collapse:collapse">' +
+    '<thead><tr>' +
+    '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Rota</th>' +
+    '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Unidade</th>' +
+    '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Vencimento</th>' +
+    '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Status</th>' +
+    '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">ETC / Motorista</th>' +
+    '<th style="border-bottom:1px solid var(--border)"></th>' +
+    '</tr></thead><tbody>' +
+    lista.map(r => {
+      const etcInfo = r.etc_selecionado ? (r.etc_selecionado + (r.motorista_vinculado ? ' - ' + r.motorista_vinculado + (r.placa_vinculada ? ' (' + r.placa_vinculada + ')' : '') : '')) : '-';
+      const podeCancelar = r.status === 'Disponivel';
+      return '<tr>' +
+        '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + r.nome_rota + '<br><span style="color:var(--muted);font-size:11px">' + (r.ponto_coleta || '') + '</span></td>' +
+        '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + (r.unidade || '-') + '</td>' +
+        '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + fmtDataRota(r.data_vencimento) + '</td>' +
+        '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)"><span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;background:' + badgeCor[r.status] + '22;color:' + badgeCor[r.status] + '">' + r.status + '</span></td>' +
+        '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + etcInfo + '</td>' +
+        '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + (podeCancelar ? '<button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="cancelarRota(\'' + r.id + '\')">Cancelar</button>' : '') + '</td>' +
+        '</tr>';
+    }).join('') +
+    '</tbody></table>';
+}
+
+async function cancelarRota(id) {
+  await sb.from('rotas_extras').update({ status: 'Cancelada' }).eq('id', id).eq('status', 'Disponivel');
+  carregarRotasAdmin();
 }
 
 async function carregarEtcAdmin() {
