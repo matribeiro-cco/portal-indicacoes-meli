@@ -1194,6 +1194,7 @@ function abrirDrawer(r, isAdmin) {
     '<div class="detail-row"><span class="detail-key">Operacao</span><span class="detail-val">' + (r.tipo_operacao||'') + '<br><span style="color:var(--muted);font-size:11px">' + (r.operacao_preferencia||'') + '</span></span></div>' +
     '<div class="detail-row"><span class="detail-key">Data</span><span class="detail-val">' + data + '</span></div>' +
     (r.assistente ? '<div class="detail-row"><span class="detail-key">Assistente</span><span class="detail-val">' + r.assistente + '</span></div>' : '') +
+    (!isAdmin ? '<div class="detail-row"><span class="detail-key">Observacoes</span><span class="detail-val">' + (r.observacoes ? r.observacoes.replace(/</g,'&lt;') : 'Sem observacoes') + '</span></div>' : '') +
     '<div class="detail-row"><span class="detail-key">Documentos</span><span class="detail-val" style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">' +
     '<a href="' + (r.cnh_link||'#') + '" target="_blank" class="doc-link">Ver CNH</a>' +
     '<a href="' + (r.crlv_link||'#') + '" target="_blank" class="doc-link">Ver CRLV</a>' +
