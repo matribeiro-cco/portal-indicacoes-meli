@@ -281,6 +281,39 @@ input[type=file] { display: none; }
   </div>
 </div>
 
+<!-- CADASTRO OPERAÇÃO (emails @mercadolivre.com) -->
+<div id="cadastroOperacaoScreen" class="screen">
+  <div class="auth-card">
+    <div class="auth-logo"><div class="logo-badge">MELI</div><div class="logo-text">Logística</div></div>
+    <div class="auth-title">Criar conta - Operação</div>
+    <div class="auth-sub">Primeiro acesso para <strong id="cadOpEmailLabel">—</strong></div>
+    <div class="auth-field">
+      <label>Nome completo <span style="color:var(--red)">*</span></label>
+      <input class="auth-input" id="cadOpNome" type="text" placeholder="Seu nome completo">
+      <span class="field-err" id="errCadOpNome">Campo obrigatório</span>
+    </div>
+    <div class="auth-field">
+      <label>Criar senha <span style="color:var(--red)">*</span></label>
+      <div class="input-wrap">
+        <input class="auth-input" id="cadOpSenha" type="password" placeholder="Mínimo 6 caracteres">
+        <button class="toggle-senha" onclick="toggleSenha('cadOpSenha',this)" type="button">👁</button>
+      </div>
+      <span class="field-err" id="errCadOpSenha">Mínimo 6 caracteres</span>
+    </div>
+    <div class="auth-field">
+      <label>Confirmar senha <span style="color:var(--red)">*</span></label>
+      <div class="input-wrap">
+        <input class="auth-input" id="cadOpConfirma" type="password" placeholder="Repita a senha" onkeydown="if(event.key==='Enter') fazerCadastroOperacao()">
+        <button class="toggle-senha" onclick="toggleSenha('cadOpConfirma',this)" type="button">👁</button>
+      </div>
+      <span class="field-err" id="errCadOpConfirma">As senhas não coincidem</span>
+    </div>
+    <button class="btn-primary" id="btnCadastroOp" onclick="fazerCadastroOperacao()">Criar conta e entrar</button>
+    <div class="auth-alert error" id="cadOpAlert"></div>
+    <div class="auth-link"><button onclick="voltarEmail()">← Usar outro e-mail</button></div>
+  </div>
+</div>
+
 <!-- DASHBOARD ETC -->
 <div id="dashScreen" class="screen">
   <header>
@@ -898,6 +931,10 @@ async function verificarEmail() {
       document.getElementById('loginSubtitle').textContent = 'Conta encontrada para ' + email;
       document.getElementById('senhaInput').value = '';
       showScreen('loginScreen');
+    } else if (email.toLowerCase().endsWith('@mercadolivre.com')) {
+      document.getElementById('cadOpEmailLabel').textContent = email;
+      ['cadOpNome','cadOpSenha','cadOpConfirma'].forEach(function(id) { document.getElementById(id).value = ''; });
+      showScreen('cadastroOperacaoScreen');
     } else {
       document.getElementById('cadEmailLabel').textContent = email;
       ['cadNome','cadSenha','cadConfirma'].forEach(function(id) { document.getElementById(id).value = ''; });
@@ -957,12 +994,46 @@ async function fazerCadastro() {
   setLoading('btnCadastro', false, 'Criar conta e entrar');
 }
 
+async function fazerCadastroOperacao() {
+  const nome = document.getElementById('cadOpNome').value.trim();
+  const senha = document.getElementById('cadOpSenha').value;
+  const confirma = document.getElementById('cadOpConfirma').value;
+  const alertEl = document.getElementById('cadOpAlert');
+  alertEl.classList.remove('show');
+  let ok = true;
+  const check = (id, errId, cond) => {
+    document.getElementById(id).classList.toggle('error', !cond);
+    document.getElementById(errId).classList.toggle('show', !cond);
+    if (!cond) ok = false;
+  };
+  check('cadOpNome','errCadOpNome', nome !== '');
+  check('cadOpSenha','errCadOpSenha', senha.length >= 6);
+  check('cadOpConfirma','errCadOpConfirma', senha === confirma && confirma !== '');
+  if (!ok) return;
+  setLoading('btnCadastroOp', true);
+  try {
+    const { data, error } = await sb.from('usuarios').insert([{ email: emailAtual, nome, etc: 'Operação (Meli)', senha, ativa: true }]).select().single();
+    if (error) throw error;
+    entrarNoDash(data);
+  } catch(e) { alertEl.textContent = 'Erro ao criar conta.'; alertEl.classList.add('show'); }
+  setLoading('btnCadastroOp', false, 'Criar conta e entrar');
+}
+
 function entrarNoDash(data) {
   sessao = { email: data.email, nome: data.nome, etc: data.etc };
-  const isAdmin = ADMIN_EMAILS.includes(data.email.toLowerCase());
-  if (isAdmin) {
+  const isFullAdmin = ADMIN_EMAILS.includes(data.email.toLowerCase());
+  const isOperacaoLimitada = !isFullAdmin && data.email.toLowerCase().endsWith('@mercadolivre.com');
+
+  if (isFullAdmin) {
+    ['tabAdmin','tabDash','tabEtc','tabRotas'].forEach(function(id) { document.getElementById(id).style.display = ''; });
     showScreen('adminScreen');
     carregarAdmin();
+    switchTab('admin');
+  } else if (isOperacaoLimitada) {
+    ['tabAdmin','tabDash','tabEtc'].forEach(function(id) { document.getElementById(id).style.display = 'none'; });
+    document.getElementById('tabRotas').style.display = '';
+    showScreen('adminScreen');
+    switchTab('rotas');
   } else {
     document.getElementById('headerEtc').textContent = data.etc;
     document.getElementById('pageSubNome').textContent = 'Ola, ' + data.nome + ' - ' + data.etc;
