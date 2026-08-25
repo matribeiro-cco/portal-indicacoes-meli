@@ -375,7 +375,7 @@ input[type=file] { display: none; }
     <!-- PAINEL ROTAS (visao ETC) -->
     <div id="rotasEtcPanel" style="display:none">
       <div class="page-header">
-        <div><div class="page-title">Rotas disponiveis</div><div class="page-sub">Selecione por ordem de chegada e vincule motorista e placa</div></div>
+        <div><div class="page-title">Rotas disponiveis</div><div class="page-sub">Demonstre interesse com motorista e placa - a operacao escolhe o lance</div></div>
         <button class="btn btn-ghost" onclick="carregarRotasEtc()">Atualizar</button>
       </div>
       <div id="rotasEtcGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px"></div>
@@ -509,14 +509,14 @@ input[type=file] { display: none; }
     <!-- ABA ROTAS EXTRAS (visao admin/operacao) -->
     <div id="rotasAdminPanel" style="display:none">
       <div class="page-header">
-        <div><div class="page-title">Rotas Extras</div><div class="page-sub">Publique rotas para os ETCs selecionarem por ordem de chegada</div></div>
+        <div><div class="page-title">Rotas Extras</div><div class="page-sub">Publique rotas e escolha entre os lances das transportadoras</div></div>
         <button class="btn btn-ghost" onclick="carregarRotasAdmin()">Atualizar</button>
       </div>
       <div class="table-card" style="padding:20px;margin-bottom:20px">
         <div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:14px;text-transform:uppercase;letter-spacing:.4px">Publicar nova rota</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 14px">
           <div class="field"><label class="f-label">Nome da rota</label><input class="auth-input" id="rNome" placeholder="Ex: Rota SP12 - Tarde" style="margin-bottom:14px"></div>
-          <div class="field"><label class="f-label">Cluster</label><input class="auth-input" id="rCluster" placeholder="Ex: Cluster 3" style="margin-bottom:14px"></div>
+          <div class="field"><label class="f-label">Região</label><input class="auth-input" id="rCluster" placeholder="Ex: Vila Mariana, Zona Sul" style="margin-bottom:14px"></div>
           <div class="field"><label class="f-label">Unidade</label><select class="auth-select" id="rUnidade" style="margin-bottom:14px">
             <option value="">Selecione a unidade…</option>
             <option>BRMG02 - Betim</option><option>BRRC01 - Perus</option><option>BRRC02 - Sumare</option><option>BRRJ02 - Sao Joao de Meriti</option><option>BRSC02 - SC</option><option>BRSP06 - Aracariguama</option><option>BRSP10 - Franco da Rocha</option><option>BRXBA1 - BA</option><option>BRXBA1 - Simoes Filho</option><option>BRXCE1 - CE</option><option>BRXCE1 - Itaitinga</option><option>BRXES1 - ES</option><option>BRXGO1 - Goiania</option><option>BRXMG1 - Contagem</option><option>BRXMG1 - MG</option><option>BRXMG2 - Uberlandia</option><option>BRXMG3 - Pouso Alegre</option><option>BRXPE1 - Jaboatao dos Guararapes</option><option>BRXPE1 - PE</option><option>BRXPR1 - CWB</option><option>BRXPR2 - Londrina</option><option>BRXPR3 - Cascavel</option><option>BRXPR4 - Maringa</option><option>BRXRJ02 - Sao Joao de Meriti</option><option>BRXRJ1 - RJ</option><option>BRXRS1 - Porto Alegre</option><option>BRXRS1 - RS</option><option>BRXSC2 - SC</option><option>BRXSP1 - ARE</option><option>BRXSP10 - GRU II</option><option>BRXSP11 - PRU</option><option>BRXSP11 - Prudente</option><option>BRXSP14 - MAR</option><option>BRXSP16 - Zona Norte</option><option>BRXSP18 - Santo Andre</option><option>BRXSP2 - CPS</option><option>BRXSP4 - SBC</option><option>BRXSP5 - RAO</option><option>BRXSP6 - GRU I</option><option>BRXSP7 - BAU</option><option>BRXSP7 - Bauru</option><option>BRXSP9 - Cajamar</option><option>SAL1 - Maceio</option><option>SBA1 - Salvador</option><option>SBA2 - Feira De Santana</option><option>SBA3 - Vitoria da Conquista</option><option>SBA4 - Juazeiro</option><option>SBA6 - Salvador 2</option><option>SCE1 - Fortaleza</option><option>SDF1 - Brasilia</option><option>SDF2 - Brasilia 2</option><option>SES1 - Vitoria</option><option>SES2 - Cachoeiro de Itapemirim</option><option>SES3 - Linhares</option><option>SGO1 - Goiania</option><option>SGO2 - Rio Verde</option><option>SJP1 - Joao Pessoa</option><option>SMG1 - Contagem</option><option>SMG10 - Divinopolis</option><option>SMG11 - Patos de Minas</option><option>SMG14 - Nova Lima</option><option>SMG15 - Contagem 2</option><option>SMG2 - Juiz de Fora</option><option>SMG3 - Pouso Alegre</option><option>SMG4 - Ipatinga</option><option>SMG5 - Pocos de Caldas</option><option>SMG6 - Uberlandia</option><option>SMG7 - Montes Claros</option><option>SMG8 - Vespasiano</option><option>SMG9 - Varginha</option><option>SMN1 - Sao Luis</option><option>SMR1 - Cuiaba</option><option>SMR2 - Sinop</option><option>SMS1 - Campo Grande</option><option>SMS2 - Dourados</option><option>SPA1 - Belem</option><option>SPE1 - Recife</option><option>SPI1 - Teresina</option><option>SPR1 - Curitiba</option><option>SPR2 - Londrina</option><option>SPR3 - Cascavel</option><option>SPR4 - Pato Branco</option><option>SPR5 - Guarapuava</option><option>SPR6 - Maringa</option><option>SPR7 - Ponta Grossa</option><option>SPR8 - Campina Grande do Sul</option><option>SRJ1 - Rio de Janeiro</option><option>SRJ10 - Taquara</option><option>SRJ12 - Itaperuna</option><option>SRJ13 - Sao Joao de Meriti</option><option>SRJ2 - Queimados</option><option>SRJ3 - Barra Mansa</option><option>SRJ4 - Campos dos Goytacazes</option><option>SRJ5 - Petropolis</option><option>SRJ7 - Macae</option><option>SRJ8 - Itaborai</option><option>SRJ9 - Sao Pedro da Aldeia</option><option>SRN1 - Natal</option><option>SRS1 - Porto Alegre</option><option>SRS10 - Lajeado</option><option>SRS2 - Pelotas</option><option>SRS3 - Santa Maria</option><option>SRS4 - Caxias do Sul</option><option>SRS5 - Passo Fundo</option><option>SRS7 - Ijui</option><option>SRS8 - Sapucaia do Sul</option><option>SRS9 - Santa Rita</option><option>SSC1 - Joinville</option><option>SSC2 - Biguacu</option><option>SSC3 - Gaspar</option><option>SSC4 - Chapeco</option><option>SSC5 - Morro da Fumaca</option><option>SSC7 - Lages</option><option>SSC8 - Itajai</option><option>SSC9 - Governador Celso Ramos</option><option>SSE1 - Aracaju</option><option>SSP01 - Zona Sul</option><option>SSP10 - Aracatuba</option><option>SSP11 - Prudente</option><option>SSP12 - Sao Jose do Rio Preto</option><option>SSP13 - Marilia</option><option>SSP14 - Bauru</option><option>SSP15 - Santos</option><option>SSP16 - Caraguatatuba</option><option>SSP17 - SBC</option><option>SSP18 - Jundiai</option><option>SSP20 - Sorocaba</option><option>SSP21 - Mooca</option><option>SSP22 - Sao Carlos</option><option>SSP23 - Suzano</option><option>SSP24 - Avare</option><option>SSP25 - Atibaia</option><option>SSP26 - Franca</option><option>SSP27 - Itapetininga</option><option>SSP28 - Jales</option><option>SSP29 - Mogi Mirim</option><option>SSP3 - Campinas</option><option>SSP30 - Guarulhos</option><option>SSP31 - Barretos</option><option>SSP33 - Guarulhos Mega</option><option>SSP34 - Cotia</option><option>SSP36 - Piracicaba</option><option>SSP37 - Campinas 2</option><option>SSP38 - Itupeva</option><option>SSP39 - Lorena</option><option>SSP4 - Ribeirao Preto</option><option>SSP40 - Zona Norte</option><option>SSP44 - Vila Leopoldina</option><option>SSP45 - Itaquera</option><option>SSP46 - Sao Vicente II</option><option>SSP48 - Jaguare</option><option>SSP49 - Zona Norte II</option><option>SSP5 - Arena</option><option>SSP6 - Maua</option><option>SSP7 - Zona Oeste</option><option>SSP8 - Cacapava</option><option>SSP9 - Limeira</option><option>STO1 - Palmas</option><option>XPR1 - CWB</option>
@@ -525,8 +525,8 @@ input[type=file] { display: none; }
             <option value="">Selecione…</option>
             <option>VUC</option><option>Van</option><option>Utilitário</option><option>Truck</option><option>Toco</option><option>Passeio</option><option>Médio</option><option>HR</option><option>Carreta</option>
           </select></div>
-          <div class="field"><label class="f-label">Data de vencimento</label><input class="auth-input" type="date" id="rVencimentoData" style="margin-bottom:14px;color-scheme:dark"></div>
-          <div class="field"><label class="f-label">Horario de vencimento</label><select class="auth-select" id="rVencimentoHora" style="margin-bottom:14px">
+          <div class="field"><label class="f-label">Data de início da rota</label><input class="auth-input" type="date" id="rVencimentoData" style="margin-bottom:14px;color-scheme:dark"></div>
+          <div class="field"><label class="f-label">Horário de execução da rota</label><select class="auth-select" id="rVencimentoHora" style="margin-bottom:14px">
             <option value="">Selecione o horario…</option>
             <option value="00:00">00:00</option><option value="00:30">00:30</option><option value="01:00">01:00</option><option value="01:30">01:30</option><option value="02:00">02:00</option><option value="02:30">02:30</option><option value="03:00">03:00</option><option value="03:30">03:30</option><option value="04:00">04:00</option><option value="04:30">04:30</option><option value="05:00">05:00</option><option value="05:30">05:30</option><option value="06:00">06:00</option><option value="06:30">06:30</option><option value="07:00">07:00</option><option value="07:30">07:30</option><option value="08:00">08:00</option><option value="08:30">08:30</option><option value="09:00">09:00</option><option value="09:30">09:30</option><option value="10:00">10:00</option><option value="10:30">10:30</option><option value="11:00">11:00</option><option value="11:30">11:30</option><option value="12:00">12:00</option><option value="12:30">12:30</option><option value="13:00">13:00</option><option value="13:30">13:30</option><option value="14:00">14:00</option><option value="14:30">14:30</option><option value="15:00">15:00</option><option value="15:30">15:30</option><option value="16:00">16:00</option><option value="16:30">16:30</option><option value="17:00">17:00</option><option value="17:30">17:30</option><option value="18:00">18:00</option><option value="18:30">18:30</option><option value="19:00">19:00</option><option value="19:30">19:30</option><option value="20:00">20:00</option><option value="20:30">20:30</option><option value="21:00">21:00</option><option value="21:30">21:30</option><option value="22:00">22:00</option><option value="22:30">22:30</option><option value="23:00">23:00</option><option value="23:30">23:30</option>
           </select></div>
@@ -539,6 +539,12 @@ input[type=file] { display: none; }
           <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Rotas publicadas</span><span class="count-badge" id="rotasAdminCount">—</span></div>
         </div>
         <div id="rotasAdminTableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando...</div></div>
+      </div>
+      <div class="table-card" style="margin-top:20px">
+        <div class="table-toolbar">
+          <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Declinios por transportadora</span><span class="count-badge" id="declinioCount">—</span></div>
+        </div>
+        <div id="declinioTableBody"><div class="loading-state"><div class="spinner"></div><br>Carregando...</div></div>
       </div>
     </div>
   </main>
@@ -556,18 +562,37 @@ input[type=file] { display: none; }
     </div>
     <div class="form-body">
       <div class="field" style="margin-bottom:14px">
-        <label class="f-label">Nome do motorista</label>
+        <label class="f-label">Nome completo do motorista</label>
         <input class="auth-input" id="rotaMotorista" placeholder="Nome completo">
       </div>
-      <div class="field" style="margin-bottom:8px">
+      <div class="field" style="margin-bottom:14px">
         <label class="f-label">Placa do veiculo</label>
         <input class="auth-input" id="rotaPlaca" placeholder="ABC1D23" style="text-transform:uppercase">
+      </div>
+      <div class="field" style="margin-bottom:8px">
+        <label class="f-label">Observacoes (opcional)</label>
+        <textarea class="auth-input" id="rotaObs" placeholder="Algo que a operacao deva saber sobre esse lance" style="min-height:60px;resize:vertical"></textarea>
       </div>
       <div class="field-err" id="rotaModalErr" style="display:none;margin-bottom:10px"></div>
       <div style="display:flex;gap:10px;margin-top:10px">
         <button class="btn btn-ghost" style="flex:1" onclick="fecharModalRota()">Cancelar</button>
         <button class="btn btn-yellow" style="flex:1" onclick="confirmarSelecaoRota()">Enviar interesse</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LANCES (visao admin) -->
+<div class="overlay" id="lancesOverlay">
+  <div class="form-modal" style="max-width:480px">
+    <div class="form-header">
+      <div>
+        <div class="form-title">Lances das transportadoras</div>
+        <div class="form-subtitle" id="lancesModalRotaNome">—</div>
+      </div>
+      <button class="close-btn" onclick="fecharModalLances()">x</button>
+    </div>
+    <div class="form-body" id="lancesModalBody" style="max-height:60vh;overflow-y:auto">
     </div>
   </div>
 </div>
@@ -1072,6 +1097,8 @@ function sair() {
 // ROTAS EXTRAS - visao ETC
 let rotasEtcPollTimer = null;
 let rotaSelecionandoId = null;
+let interessesCache = {};
+let rotasCache = {};
 
 function switchEtcMainTab(tab) {
   document.getElementById('tabMotoristas').classList.remove('active');
@@ -1145,6 +1172,7 @@ async function carregarRotasEtc() {
       '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--muted)">Motorista</span><span>' + (r.motorista_vinculado || '-') + '</span></div>' +
       '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--muted)">Placa</span><span>' + (r.placa_vinculada || '-') + '</span></div>' +
       '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0"><span style="color:var(--muted)">Unidade</span><span>' + (r.unidade || '-') + '</span></div>' +
+      '<button class="btn btn-ghost" style="width:100%;margin-top:12px;padding:7px;font-size:12px;color:var(--red);border-color:var(--red)" onclick="declinarRota(\'' + r.id + '\')">Nao vou conseguir cumprir</button>' +
       '</div>'
     ).join('');
   }
@@ -1178,6 +1206,7 @@ function abrirModalSelecionarRota(id, nome) {
   document.getElementById('rotaModalNome').textContent = nome;
   document.getElementById('rotaMotorista').value = '';
   document.getElementById('rotaPlaca').value = '';
+  document.getElementById('rotaObs').value = '';
   document.getElementById('rotaModalErr').style.display = 'none';
   document.getElementById('rotaOverlay').classList.add('active');
 }
@@ -1190,6 +1219,7 @@ function fecharModalRota() {
 async function confirmarSelecaoRota() {
   const motorista = document.getElementById('rotaMotorista').value.trim();
   const placa = document.getElementById('rotaPlaca').value.trim().toUpperCase();
+  const obs = document.getElementById('rotaObs').value.trim();
   const errEl = document.getElementById('rotaModalErr');
 
   if (!motorista || !placa) {
@@ -1199,7 +1229,7 @@ async function confirmarSelecaoRota() {
   }
 
   const { error } = await sb.from('rotas_interesses')
-    .upsert([{ rota_id: rotaSelecionandoId, etc: sessao.etc, motorista: motorista, placa: placa }], { onConflict: 'rota_id,etc' });
+    .upsert([{ rota_id: rotaSelecionandoId, etc: sessao.etc, motorista: motorista, placa: placa, observacao: obs }], { onConflict: 'rota_id,etc' });
 
   if (error) {
     errEl.textContent = 'Erro ao enviar interesse. Tente novamente.';
@@ -1208,6 +1238,27 @@ async function confirmarSelecaoRota() {
   }
 
   fecharModalRota();
+  carregarRotasEtc();
+}
+
+async function declinarRota(rotaId) {
+  if (!confirm('Tem certeza que quer declinar essa rota? Isso fica registrado no seu histórico.')) return;
+
+  const rota = rotasCache[rotaId] || (await sb.from('rotas_extras').select('*').eq('id', rotaId).maybeSingle()).data;
+  if (!rota) return;
+
+  await sb.from('rotas_declinios').insert([{
+    rota_id: rotaId, etc: sessao.etc, motorista: rota.motorista_vinculado, placa: rota.placa_vinculada
+  }]);
+
+  await sb.from('rotas_interesses').delete().eq('rota_id', rotaId).eq('etc', sessao.etc);
+
+  await sb.from('rotas_extras')
+    .update({ status: 'Disponivel', etc_selecionado: null, motorista_vinculado: null, placa_vinculada: null, selecionado_em: null })
+    .eq('id', rotaId)
+    .eq('status', 'Confirmada')
+    .eq('etc_selecionado', sessao.etc);
+
   carregarRotasEtc();
 }
 
@@ -1788,6 +1839,7 @@ async function publicarRota() {
 
 async function carregarRotasAdmin() {
   document.getElementById('rotasAdminTableBody').innerHTML = '<div class="loading-state"><div class="spinner"></div><br>Carregando...</div>';
+  carregarDeclinios();
   await sb.from('rotas_extras').update({ status: 'Expirada' })
     .eq('status', 'Disponivel')
     .lt('data_vencimento', new Date().toISOString());
@@ -1812,15 +1864,18 @@ async function carregarRotasAdmin() {
       interessesPorRota[i.rota_id].push(i);
     });
   }
+  interessesCache = interessesPorRota;
+  rotasCache = {};
+  lista.forEach(r => { rotasCache[r.id] = r; });
 
   document.getElementById('rotasAdminTableBody').innerHTML =
     '<table style="width:100%;border-collapse:collapse">' +
     '<thead><tr>' +
     '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Rota</th>' +
     '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Unidade</th>' +
-    '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Vencimento</th>' +
+    '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Inicio da rota</th>' +
     '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Status</th>' +
-    '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Interesses / Confirmado</th>' +
+    '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Lances / Confirmado</th>' +
     '<th style="border-bottom:1px solid var(--border)"></th>' +
     '</tr></thead><tbody>' +
     lista.map(r => {
@@ -1831,16 +1886,9 @@ async function carregarRotasAdmin() {
           (r.motorista_vinculado ? '<br><span style="color:var(--muted);font-size:11px">' + r.motorista_vinculado + (r.placa_vinculada ? ' - ' + r.placa_vinculada : '') + '</span>' : '');
       } else if (r.status === 'Disponivel') {
         const ints = interessesPorRota[r.id] || [];
-        if (ints.length === 0) {
-          infoCol = '<span style="color:var(--muted);font-size:12px">Nenhum interesse ainda</span>';
-        } else {
-          infoCol = ints.map(i =>
-            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">' +
-            '<span style="font-size:12px">' + i.etc + (i.motorista ? ' - ' + i.motorista + (i.placa ? ' (' + i.placa + ')' : '') : '') + '</span>' +
-            '<button class="btn btn-yellow" style="padding:3px 10px;font-size:11px" onclick="confirmarInteresse(\'' + i.id + '\',\'' + r.id + '\')">Confirmar</button>' +
-            '</div>'
-          ).join('');
-        }
+        infoCol = ints.length === 0
+          ? '<span style="color:var(--muted);font-size:12px">Nenhum lance ainda</span>'
+          : '<button class="btn btn-yellow" style="padding:5px 12px;font-size:12px" onclick="abrirModalLances(\'' + r.id + '\')">Ver lances (' + ints.length + ')</button>';
       } else {
         infoCol = '-';
       }
@@ -1854,6 +1902,26 @@ async function carregarRotasAdmin() {
         '</tr>';
     }).join('') +
     '</tbody></table>';
+}
+
+function abrirModalLances(rotaId) {
+  const rota = rotasCache[rotaId];
+  const ints = interessesCache[rotaId] || [];
+  document.getElementById('lancesModalRotaNome').textContent = rota ? rota.nome_rota : '';
+  document.getElementById('lancesModalBody').innerHTML = ints.map(i =>
+    '<div style="border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px">' +
+    '<div style="font-weight:700;font-size:14px;margin-bottom:4px">' + i.etc + '</div>' +
+    '<div style="font-size:12px;color:var(--muted);margin-bottom:2px">Motorista: <span style="color:var(--text)">' + (i.motorista || '-') + '</span></div>' +
+    '<div style="font-size:12px;color:var(--muted);margin-bottom:2px">Placa: <span style="color:var(--text)">' + (i.placa || '-') + '</span></div>' +
+    (i.observacao ? '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">Obs: <span style="color:var(--text)">' + i.observacao + '</span></div>' : '<div style="margin-bottom:8px"></div>') +
+    '<button class="btn btn-yellow" style="width:100%;padding:7px" onclick="confirmarInteresse(\'' + i.id + '\',\'' + rotaId + '\')">Dar aceite para este lance</button>' +
+    '</div>'
+  ).join('') || '<div style="color:var(--muted);font-size:13px">Nenhum lance ainda.</div>';
+  document.getElementById('lancesOverlay').classList.add('active');
+}
+
+function fecharModalLances() {
+  document.getElementById('lancesOverlay').classList.remove('active');
 }
 
 async function confirmarInteresse(interesseId, rotaId) {
@@ -1870,12 +1938,45 @@ async function confirmarInteresse(interesseId, rotaId) {
   if (error || !data || data.length === 0) {
     alert('Essa rota ja foi confirmada ou nao esta mais disponivel.');
   }
+  fecharModalLances();
   carregarRotasAdmin();
 }
 
 async function cancelarRota(id) {
   await sb.from('rotas_extras').update({ status: 'Cancelada' }).eq('id', id).eq('status', 'Disponivel');
   carregarRotasAdmin();
+}
+
+async function carregarDeclinios() {
+  const { data } = await sb.from('rotas_declinios').select('*').order('criado_em', { ascending: false }).range(0, 9999);
+  const lista = data || [];
+  document.getElementById('declinioCount').textContent = lista.length + ' no total';
+
+  if (lista.length === 0) {
+    document.getElementById('declinioTableBody').innerHTML = '<div class="empty-state"><div class="empty-title">Nenhum declinio registrado</div></div>';
+    return;
+  }
+
+  const porEtc = {};
+  lista.forEach(d => { porEtc[d.etc] = (porEtc[d.etc] || 0) + 1; });
+  const ranking = Object.entries(porEtc).sort((a,b) => b[1] - a[1]);
+
+  document.getElementById('declinioTableBody').innerHTML =
+    '<table style="width:100%;border-collapse:collapse">' +
+    '<thead><tr>' +
+    '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Transportadora</th>' +
+    '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Declinios</th>' +
+    '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Ultimo declinio</th>' +
+    '</tr></thead><tbody>' +
+    ranking.map(([etc, count]) => {
+      const ultimo = lista.find(d => d.etc === etc);
+      return '<tr>' +
+        '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + etc + '</td>' +
+        '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)"><span style="font-weight:700;color:var(--red)">' + count + '</span></td>' +
+        '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border);color:var(--muted)">' + fmtDataRota(ultimo.criado_em) + '</td>' +
+        '</tr>';
+    }).join('') +
+    '</tbody></table>';
 }
 
 async function carregarEtcAdmin() {
