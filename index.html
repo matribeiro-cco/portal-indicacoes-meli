@@ -1880,25 +1880,26 @@ async function carregarRotasAdmin() {
     '</tr></thead><tbody>' +
     lista.map(r => {
       const podeCancelar = r.status === 'Disponivel';
+      const ints = interessesPorRota[r.id] || [];
+      const temLances = r.status === 'Disponivel' && ints.length > 0;
       let infoCol;
       if (r.status === 'Confirmada') {
         infoCol = '<span style="color:var(--blue);font-weight:600">' + (r.etc_selecionado || '') + '</span>' +
           (r.motorista_vinculado ? '<br><span style="color:var(--muted);font-size:11px">' + r.motorista_vinculado + (r.placa_vinculada ? ' - ' + r.placa_vinculada : '') + '</span>' : '');
       } else if (r.status === 'Disponivel') {
-        const ints = interessesPorRota[r.id] || [];
         infoCol = ints.length === 0
           ? '<span style="color:var(--muted);font-size:12px">Nenhum lance ainda</span>'
-          : '<button class="btn btn-yellow" style="padding:5px 12px;font-size:12px" onclick="abrirModalLances(\'' + r.id + '\')">Ver lances (' + ints.length + ')</button>';
+          : '<span style="color:var(--yellow);font-weight:700;font-size:12px">' + ints.length + ' lance' + (ints.length > 1 ? 's' : '') + ' - clique na linha</span>';
       } else {
         infoCol = '-';
       }
-      return '<tr>' +
+      return '<tr' + (temLances ? ' style="cursor:pointer" onclick="abrirModalLances(\'' + r.id + '\')"' : '') + '>' +
         '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + r.nome_rota + '<br><span style="color:var(--muted);font-size:11px">' + (r.veiculo_desejado || '') + '</span></td>' +
         '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + (r.unidade || '-') + '</td>' +
         '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + fmtDataRota(r.data_vencimento) + '</td>' +
         '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)"><span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;background:' + badgeCor[r.status] + '22;color:' + badgeCor[r.status] + '">' + r.status + '</span></td>' +
         '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + infoCol + '</td>' +
-        '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + (podeCancelar ? '<button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="cancelarRota(\'' + r.id + '\')">Cancelar</button>' : '') + '</td>' +
+        '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + (podeCancelar ? '<button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();cancelarRota(\'' + r.id + '\')">Cancelar</button>' : '') + '</td>' +
         '</tr>';
     }).join('') +
     '</tbody></table>';
