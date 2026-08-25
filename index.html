@@ -525,7 +525,11 @@ input[type=file] { display: none; }
             <option value="">Selecione…</option>
             <option>VUC</option><option>Van</option><option>Utilitário</option><option>Truck</option><option>Toco</option><option>Passeio</option><option>Médio</option><option>HR</option><option>Carreta</option>
           </select></div>
-          <div class="field"><label class="f-label">Vencimento (some do painel apos esse horario)</label><input class="auth-input" type="datetime-local" id="rVencimento" style="margin-bottom:14px;color-scheme:dark"></div>
+          <div class="field"><label class="f-label">Data de vencimento</label><input class="auth-input" type="date" id="rVencimentoData" style="margin-bottom:14px;color-scheme:dark"></div>
+          <div class="field"><label class="f-label">Horario de vencimento</label><select class="auth-select" id="rVencimentoHora" style="margin-bottom:14px">
+            <option value="">Selecione o horario…</option>
+            <option value="00:00">00:00</option><option value="00:30">00:30</option><option value="01:00">01:00</option><option value="01:30">01:30</option><option value="02:00">02:00</option><option value="02:30">02:30</option><option value="03:00">03:00</option><option value="03:30">03:30</option><option value="04:00">04:00</option><option value="04:30">04:30</option><option value="05:00">05:00</option><option value="05:30">05:30</option><option value="06:00">06:00</option><option value="06:30">06:30</option><option value="07:00">07:00</option><option value="07:30">07:30</option><option value="08:00">08:00</option><option value="08:30">08:30</option><option value="09:00">09:00</option><option value="09:30">09:30</option><option value="10:00">10:00</option><option value="10:30">10:30</option><option value="11:00">11:00</option><option value="11:30">11:30</option><option value="12:00">12:00</option><option value="12:30">12:30</option><option value="13:00">13:00</option><option value="13:30">13:30</option><option value="14:00">14:00</option><option value="14:30">14:30</option><option value="15:00">15:00</option><option value="15:30">15:30</option><option value="16:00">16:00</option><option value="16:30">16:30</option><option value="17:00">17:00</option><option value="17:30">17:30</option><option value="18:00">18:00</option><option value="18:30">18:30</option><option value="19:00">19:00</option><option value="19:30">19:30</option><option value="20:00">20:00</option><option value="20:30">20:30</option><option value="21:00">21:00</option><option value="21:30">21:30</option><option value="22:00">22:00</option><option value="22:30">22:30</option><option value="23:00">23:00</option><option value="23:30">23:30</option>
+          </select></div>
           <div class="field"><label class="f-label">Observacao (opcional)</label><input class="auth-input" id="rObs" placeholder="Detalhe adicional" style="margin-bottom:14px"></div>
         </div>
         <button class="btn btn-yellow" onclick="publicarRota()">Publicar rota</button>
@@ -545,7 +549,7 @@ input[type=file] { display: none; }
   <div class="form-modal" style="max-width:400px">
     <div class="form-header">
       <div>
-        <div class="form-title">Selecionar rota</div>
+        <div class="form-title">Demonstrar interesse</div>
         <div class="form-subtitle" id="rotaModalNome">—</div>
       </div>
       <button class="close-btn" onclick="fecharModalRota()">x</button>
@@ -562,7 +566,7 @@ input[type=file] { display: none; }
       <div class="field-err" id="rotaModalErr" style="display:none;margin-bottom:10px"></div>
       <div style="display:flex;gap:10px;margin-top:10px">
         <button class="btn btn-ghost" style="flex:1" onclick="fecharModalRota()">Cancelar</button>
-        <button class="btn btn-yellow" style="flex:1" onclick="confirmarSelecaoRota()">Confirmar</button>
+        <button class="btn btn-yellow" style="flex:1" onclick="confirmarSelecaoRota()">Enviar interesse</button>
       </div>
     </div>
   </div>
@@ -1096,36 +1100,77 @@ function tempoRestanteRota(venc) {
 }
 
 async function carregarRotasEtc() {
-  const { data } = await sb.from('rotas_extras').select('*')
+  const grid = document.getElementById('rotasEtcGrid');
+  const empty = document.getElementById('rotasEtcEmpty');
+
+  const { data: disponiveis } = await sb.from('rotas_extras').select('*')
     .eq('status', 'Disponivel')
     .gt('data_vencimento', new Date().toISOString())
     .order('data_vencimento', { ascending: true })
     .range(0, 9999);
-  const lista = data || [];
-  document.getElementById('rotasEtcBadgeCount').textContent = lista.length > 0 ? '(' + lista.length + ')' : '';
-  const grid = document.getElementById('rotasEtcGrid');
-  const empty = document.getElementById('rotasEtcEmpty');
 
-  if (lista.length === 0) {
+  const { data: confirmadas } = await sb.from('rotas_extras').select('*')
+    .eq('status', 'Confirmada')
+    .eq('etc_selecionado', sessao.etc)
+    .order('selecionado_em', { ascending: false })
+    .range(0, 9999);
+
+  const listaDisp = disponiveis || [];
+  const listaConf = confirmadas || [];
+
+  // Verifica em quais rotas disponiveis este ETC ja demonstrou interesse
+  let interessesDoEtc = {};
+  if (listaDisp.length > 0) {
+    const { data: meusInteresses } = await sb.from('rotas_interesses').select('*').eq('etc', sessao.etc).in('rota_id', listaDisp.map(r => r.id));
+    (meusInteresses || []).forEach(i => { interessesDoEtc[i.rota_id] = i; });
+  }
+
+  document.getElementById('rotasEtcBadgeCount').textContent = listaDisp.length > 0 ? '(' + listaDisp.length + ')' : '';
+
+  if (listaDisp.length === 0 && listaConf.length === 0) {
     grid.innerHTML = '';
     empty.style.display = '';
     return;
   }
   empty.style.display = 'none';
 
-  grid.innerHTML = lista.map(r => {
-    const restante = tempoRestanteRota(r.data_vencimento);
-    const expirando = restante && restante.indexOf('h') === -1;
-    return '<div style="background:var(--surface);border:1px solid var(--border);border-top:3px solid ' + (expirando ? 'var(--amber)' : 'var(--blue)') + ';border-radius:12px;padding:16px">' +
+  let html = '';
+
+  if (listaConf.length > 0) {
+    html += '<div style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--green);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">Rotas confirmadas para voce</div>';
+    html += listaConf.map(r =>
+      '<div style="background:var(--surface);border:1px solid var(--green);border-top:3px solid var(--green);border-radius:12px;padding:16px">' +
+      '<div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px">✓ CONFIRMADA PARA VOCE</div>' +
       '<div style="font-size:15px;font-weight:700;margin-bottom:8px">' + r.nome_rota + '</div>' +
-      '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--muted)">Veiculo</span><span>' + (r.veiculo_desejado || '-') + '</span></div>' +
-      '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--muted)">Cluster</span><span>' + (r.cluster || '-') + '</span></div>' +
-      '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0' + (r.observacao ? ';border-bottom:1px dashed var(--border)' : '') + '"><span style="color:var(--muted)">Unidade</span><span>' + (r.unidade || '-') + '</span></div>' +
-      (r.observacao ? '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0"><span style="color:var(--muted)">Obs</span><span>' + r.observacao + '</span></div>' : '') +
-      '<div style="font-size:11px;margin-top:10px;padding:6px 10px;border-radius:6px;text-align:center;font-weight:700;background:' + (expirando ? 'rgba(245,158,11,.12)' : 'rgba(16,185,129,.12)') + ';color:' + (expirando ? 'var(--amber)' : 'var(--green)') + '">' + (restante || 'Expirando') + '</div>' +
-      '<button class="btn btn-yellow" style="width:100%;margin-top:12px;padding:9px" onclick="abrirModalSelecionarRota(\'' + r.id + '\', \'' + r.nome_rota.replace(/'/g,"\\'") + '\')">Selecionar rota</button>' +
-      '</div>';
-  }).join('');
+      '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--muted)">Motorista</span><span>' + (r.motorista_vinculado || '-') + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--muted)">Placa</span><span>' + (r.placa_vinculada || '-') + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0"><span style="color:var(--muted)">Unidade</span><span>' + (r.unidade || '-') + '</span></div>' +
+      '</div>'
+    ).join('');
+  }
+
+  if (listaDisp.length > 0) {
+    html += '<div style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted);margin:16px 0 6px;text-transform:uppercase;letter-spacing:.4px">Disponiveis para demonstrar interesse</div>';
+    html += listaDisp.map(r => {
+      const restante = tempoRestanteRota(r.data_vencimento);
+      const expirando = restante && restante.indexOf('h') === -1;
+      const jaInteressado = interessesDoEtc[r.id];
+      const acaoHtml = jaInteressado
+        ? '<div style="font-size:12px;text-align:center;margin-top:12px;padding:9px;border-radius:8px;background:rgba(59,130,246,.12);color:var(--blue);font-weight:700">Interesse enviado - aguardando</div>'
+        : '<button class="btn btn-yellow" style="width:100%;margin-top:12px;padding:9px" onclick="abrirModalSelecionarRota(\'' + r.id + '\', \'' + r.nome_rota.replace(/'/g,"\\'") + '\')">Demonstrar interesse</button>';
+      return '<div style="background:var(--surface);border:1px solid var(--border);border-top:3px solid ' + (expirando ? 'var(--amber)' : 'var(--blue)') + ';border-radius:12px;padding:16px">' +
+        '<div style="font-size:15px;font-weight:700;margin-bottom:8px">' + r.nome_rota + '</div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--muted)">Veiculo</span><span>' + (r.veiculo_desejado || '-') + '</span></div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--muted)">Cluster</span><span>' + (r.cluster || '-') + '</span></div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0' + (r.observacao ? ';border-bottom:1px dashed var(--border)' : '') + '"><span style="color:var(--muted)">Unidade</span><span>' + (r.unidade || '-') + '</span></div>' +
+        (r.observacao ? '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0"><span style="color:var(--muted)">Obs</span><span>' + r.observacao + '</span></div>' : '') +
+        '<div style="font-size:11px;margin-top:10px;padding:6px 10px;border-radius:6px;text-align:center;font-weight:700;background:' + (expirando ? 'rgba(245,158,11,.12)' : 'rgba(16,185,129,.12)') + ';color:' + (expirando ? 'var(--amber)' : 'var(--green)') + '">' + (restante || 'Expirando') + '</div>' +
+        acaoHtml +
+        '</div>';
+    }).join('');
+  }
+
+  grid.innerHTML = html;
 }
 
 function abrirModalSelecionarRota(id, nome) {
@@ -1153,19 +1198,12 @@ async function confirmarSelecaoRota() {
     return;
   }
 
-  const { data, error } = await sb.from('rotas_extras')
-    .update({
-      status: 'Selecionada', etc_selecionado: sessao.etc, motorista_vinculado: motorista,
-      placa_vinculada: placa, selecionado_em: new Date().toISOString()
-    })
-    .eq('id', rotaSelecionandoId)
-    .eq('status', 'Disponivel')
-    .select();
+  const { error } = await sb.from('rotas_interesses')
+    .upsert([{ rota_id: rotaSelecionandoId, etc: sessao.etc, motorista: motorista, placa: placa }], { onConflict: 'rota_id,etc' });
 
-  if (error || !data || data.length === 0) {
-    errEl.textContent = 'Essa rota acabou de ser pega por outro ETC.';
+  if (error) {
+    errEl.textContent = 'Erro ao enviar interesse. Tente novamente.';
     errEl.style.display = 'block';
-    carregarRotasEtc();
     return;
   }
 
@@ -1724,13 +1762,15 @@ async function publicarRota() {
   const cluster = document.getElementById('rCluster').value.trim();
   const unidade = document.getElementById('rUnidade').value;
   const veiculo = document.getElementById('rVeiculo').value;
-  const venc = document.getElementById('rVencimento').value;
+  const vencData = document.getElementById('rVencimentoData').value;
+  const vencHora = document.getElementById('rVencimentoHora').value;
   const obs = document.getElementById('rObs').value.trim();
 
-  if (!nome || !venc) {
-    alert('Preencha ao menos o nome da rota e o vencimento.');
+  if (!nome || !vencData || !vencHora) {
+    alert('Preencha ao menos o nome da rota, a data e o horario de vencimento.');
     return;
   }
+  const venc = vencData + 'T' + vencHora + ':00';
 
   try {
     const { error } = await sb.from('rotas_extras').insert([{
@@ -1739,7 +1779,7 @@ async function publicarRota() {
       status: 'Disponivel', criado_por: sessao.email
     }]);
     if (error) throw error;
-    ['rNome','rCluster','rUnidade','rVeiculo','rVencimento','rObs'].forEach(id => document.getElementById(id).value = '');
+    ['rNome','rCluster','rUnidade','rVeiculo','rVencimentoData','rVencimentoHora','rObs'].forEach(id => document.getElementById(id).value = '');
     carregarRotasAdmin();
   } catch (e) {
     alert('Erro ao publicar rota.');
@@ -1755,11 +1795,22 @@ async function carregarRotasAdmin() {
   const { data } = await sb.from('rotas_extras').select('*').order('criado_em', { ascending: false }).order('id', { ascending: false }).range(0, 9999);
   const lista = data || [];
   document.getElementById('rotasAdminCount').textContent = lista.length + ' rotas';
-  const badgeCor = { 'Disponivel':'var(--green)', 'Selecionada':'var(--blue)', 'Expirada':'var(--red)', 'Cancelada':'var(--muted)' };
+  const badgeCor = { 'Disponivel':'var(--green)', 'Confirmada':'var(--blue)', 'Expirada':'var(--red)', 'Cancelada':'var(--muted)' };
 
   if (lista.length === 0) {
     document.getElementById('rotasAdminTableBody').innerHTML = '<div class="empty-state"><div class="empty-title">Nenhuma rota publicada ainda</div></div>';
     return;
+  }
+
+  // Busca todos os interesses das rotas ainda disponiveis, para exibir por rota
+  const idsDisponiveis = lista.filter(r => r.status === 'Disponivel').map(r => r.id);
+  let interessesPorRota = {};
+  if (idsDisponiveis.length > 0) {
+    const { data: interesses } = await sb.from('rotas_interesses').select('*').in('rota_id', idsDisponiveis).order('criado_em', { ascending: true });
+    (interesses || []).forEach(i => {
+      if (!interessesPorRota[i.rota_id]) interessesPorRota[i.rota_id] = [];
+      interessesPorRota[i.rota_id].push(i);
+    });
   }
 
   document.getElementById('rotasAdminTableBody').innerHTML =
@@ -1769,22 +1820,57 @@ async function carregarRotasAdmin() {
     '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Unidade</th>' +
     '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Vencimento</th>' +
     '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Status</th>' +
-    '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">ETC / Motorista</th>' +
+    '<th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--border)">Interesses / Confirmado</th>' +
     '<th style="border-bottom:1px solid var(--border)"></th>' +
     '</tr></thead><tbody>' +
     lista.map(r => {
-      const etcInfo = r.etc_selecionado ? (r.etc_selecionado + (r.motorista_vinculado ? ' - ' + r.motorista_vinculado + (r.placa_vinculada ? ' (' + r.placa_vinculada + ')' : '') : '')) : '-';
       const podeCancelar = r.status === 'Disponivel';
+      let infoCol;
+      if (r.status === 'Confirmada') {
+        infoCol = '<span style="color:var(--blue);font-weight:600">' + (r.etc_selecionado || '') + '</span>' +
+          (r.motorista_vinculado ? '<br><span style="color:var(--muted);font-size:11px">' + r.motorista_vinculado + (r.placa_vinculada ? ' - ' + r.placa_vinculada : '') + '</span>' : '');
+      } else if (r.status === 'Disponivel') {
+        const ints = interessesPorRota[r.id] || [];
+        if (ints.length === 0) {
+          infoCol = '<span style="color:var(--muted);font-size:12px">Nenhum interesse ainda</span>';
+        } else {
+          infoCol = ints.map(i =>
+            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">' +
+            '<span style="font-size:12px">' + i.etc + (i.motorista ? ' - ' + i.motorista + (i.placa ? ' (' + i.placa + ')' : '') : '') + '</span>' +
+            '<button class="btn btn-yellow" style="padding:3px 10px;font-size:11px" onclick="confirmarInteresse(\'' + i.id + '\',\'' + r.id + '\')">Confirmar</button>' +
+            '</div>'
+          ).join('');
+        }
+      } else {
+        infoCol = '-';
+      }
       return '<tr>' +
         '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + r.nome_rota + '<br><span style="color:var(--muted);font-size:11px">' + (r.veiculo_desejado || '') + '</span></td>' +
         '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + (r.unidade || '-') + '</td>' +
         '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + fmtDataRota(r.data_vencimento) + '</td>' +
         '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)"><span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;background:' + badgeCor[r.status] + '22;color:' + badgeCor[r.status] + '">' + r.status + '</span></td>' +
-        '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + etcInfo + '</td>' +
+        '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + infoCol + '</td>' +
         '<td style="font-size:13px;padding:10px 8px;border-bottom:1px solid var(--border)">' + (podeCancelar ? '<button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="cancelarRota(\'' + r.id + '\')">Cancelar</button>' : '') + '</td>' +
         '</tr>';
     }).join('') +
     '</tbody></table>';
+}
+
+async function confirmarInteresse(interesseId, rotaId) {
+  const { data: interesse } = await sb.from('rotas_interesses').select('*').eq('id', interesseId).maybeSingle();
+  if (!interesse) { alert('Interesse nao encontrado.'); return; }
+  const { data, error } = await sb.from('rotas_extras')
+    .update({
+      status: 'Confirmada', etc_selecionado: interesse.etc, motorista_vinculado: interesse.motorista,
+      placa_vinculada: interesse.placa, selecionado_em: new Date().toISOString()
+    })
+    .eq('id', rotaId)
+    .eq('status', 'Disponivel')
+    .select();
+  if (error || !data || data.length === 0) {
+    alert('Essa rota ja foi confirmada ou nao esta mais disponivel.');
+  }
+  carregarRotasAdmin();
 }
 
 async function cancelarRota(id) {
