@@ -1100,7 +1100,7 @@ async function carregarIndicacoes() {
 
 function atualizarMetricas(lista) {
   document.getElementById('mValidacao').textContent = lista.filter(i => i.status === 'Em validacao').length;
-  document.getElementById('mAprovado').textContent = lista.filter(i => i.status === 'Aprovado').length;
+  document.getElementById('mAprovado').textContent = lista.filter(i => i.status === 'Aprovado' || i.status === 'Liberado').length;
   document.getElementById('mPendente').textContent = lista.filter(i => ['Pendente GUEP','Documento incorreto','Licenciamento'].includes(i.status)).length;
   document.getElementById('mReprovado').textContent = lista.filter(i => i.status === 'Reprovado').length;
   document.getElementById('countBadge').textContent = lista.length + ' indicacoes';
@@ -1182,7 +1182,7 @@ async function carregarAdmin() {
 }
 
 function atualizarMetricasAdmin(lista) {
-  const aprovados = lista.filter(i => i.status === 'Aprovado').length;
+  const aprovados = lista.filter(i => i.status === 'Aprovado' || i.status === 'Liberado').length;
   const total = lista.length;
   const hoje = new Date().toLocaleDateString('pt-BR');
   const novasHoje = lista.filter(i => {
@@ -1710,7 +1710,7 @@ async function carregarEtcAdmin() {
     const { data } = await sb.from('indicacoes').select('*').order('criado_em', { ascending: false }).order('id', { ascending: false }).range(0, 19999);
     const lista = data || [];
     document.getElementById('etcAmValidacao').textContent = lista.filter(i => i.status === 'Em validacao').length;
-    document.getElementById('etcAmAprovado').textContent = lista.filter(i => i.status === 'Aprovado').length;
+    document.getElementById('etcAmAprovado').textContent = lista.filter(i => i.status === 'Aprovado' || i.status === 'Liberado').length;
     document.getElementById('etcAmPendente').textContent = lista.filter(i => ['Pendente GUEP','Documento incorreto','Licenciamento'].includes(i.status)).length;
     document.getElementById('etcAmReprovado').textContent = lista.filter(i => i.status === 'Reprovado').length;
     document.getElementById('etcAmCount').textContent = lista.length + ' indicacoes';
@@ -1805,7 +1805,7 @@ function renderChart() {
     const etc = r.etc || 'Sem ETC';
     if (!etcMap[etc]) etcMap[etc] = { total: 0, aprovados: 0 };
     etcMap[etc].total++;
-    if (r.status === 'Aprovado') etcMap[etc].aprovados++;
+    if (r.status === 'Aprovado' || r.status === 'Liberado') etcMap[etc].aprovados++;
   });
 
   // Sort by total desc, take top 15
@@ -1907,7 +1907,7 @@ function renderStatusChart() { var lista = getFilteredData(); var canvas = docum
 function renderTimelineChart() { var lista = getFilteredData(); var canvas = document.getElementById('timelineChart'); if (!canvas) return; destroyChart('timeline'); var dayMap = {}; lista.forEach(function(r) { if (!r.criado_em) return; var day = new Date(r.criado_em).toLocaleDateString('pt-BR'); dayMap[day] = (dayMap[day]||0) + 1; }); var sorted = Object.entries(dayMap).sort(function(a,b) { var pa = a[0].split('/'); var pb = b[0].split('/'); return new Date(pa[2],pa[1]-1,pa[0]) - new Date(pb[2],pb[1]-1,pb[0]); }); chartInstances['timeline'] = new Chart(canvas.getContext('2d'), { type: 'line', data: { labels: sorted.map(function(x){return x[0];}), datasets: [{ label: 'Indicacoes', data: sorted.map(function(x){return x[1];}), borderColor: '#FFE600', backgroundColor: 'rgba(255,230,0,.1)', borderWidth: 2, pointBackgroundColor: '#FFE600', tension: 0.3, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#7A8BA8', font: { size: 10 } }, grid: { color: '#1E2D45' } }, y: { ticks: { color: '#7A8BA8' }, grid: { color: '#1E2D45' } } } } }); }
 function renderOperacaoChart() { var lista = getFilteredData(); var canvas = document.getElementById('operacaoChart'); if (!canvas) return; destroyChart('operacao'); var fm = lista.filter(function(r){return r.tipo_operacao==='First Mile';}).length; var lm = lista.filter(function(r){return r.tipo_operacao==='Last Mile';}).length; chartInstances['operacao'] = new Chart(canvas.getContext('2d'), { type: 'doughnut', data: { labels: ['First Mile','Last Mile'], datasets: [{ data: [fm,lm], backgroundColor: ['#3B82F6','#10B981'], borderWidth: 2, borderColor: '#111827' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#7A8BA8', font: { size: 12 } } } } } }); }
 function renderVeiculoChart() { var lista = getFilteredData(); var canvas = document.getElementById('veiculoChart'); if (!canvas) return; destroyChart('veiculo'); var vMap = {}; lista.forEach(function(r){ var v = r.tipo_veiculo||'Outros'; vMap[v]=(vMap[v]||0)+1; }); var sorted = Object.entries(vMap).sort(function(a,b){return b[1]-a[1];}); chartInstances['veiculo'] = new Chart(canvas.getContext('2d'), { type: 'bar', data: { labels: sorted.map(function(x){return x[0];}), datasets: [{ label: 'Quantidade', data: sorted.map(function(x){return x[1];}), backgroundColor: 'rgba(139,92,246,.7)', borderColor: 'rgba(139,92,246,1)', borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#7A8BA8', font: { size: 11 } }, grid: { color: '#1E2D45' } }, y: { ticks: { color: '#7A8BA8' }, grid: { color: '#1E2D45' } } } } }); }
-function renderAssistenteChart() { var lista = getFilteredData(); var canvas = document.getElementById('assistenteChart'); if (!canvas) return; destroyChart('assistente'); var aMap = {}; lista.forEach(function(r){ var a = r.assistente||'Sem assistente'; if(!aMap[a]) aMap[a]={total:0,aprovados:0}; aMap[a].total++; if(r.status==='Aprovado') aMap[a].aprovados++; }); var sorted = Object.entries(aMap).sort(function(a,b){return b[1].total-a[1].total;}).slice(0,10); chartInstances['assistente'] = new Chart(canvas.getContext('2d'), { type: 'bar', data: { labels: sorted.map(function(x){return x[0].split('@')[0].split('.').slice(0,2).join('.');}), datasets: [{ label: 'Total', data: sorted.map(function(x){return x[1].total;}), backgroundColor: 'rgba(59,130,246,.7)', borderColor: 'rgba(59,130,246,1)', borderWidth: 1, yAxisID: 'y' }, { label: 'Taxa aprov %', data: sorted.map(function(x){return x[1].total>0?Math.round((x[1].aprovados/x[1].total)*100):0;}), type: 'line', borderColor: '#10B981', backgroundColor: 'transparent', borderWidth: 2, pointBackgroundColor: '#10B981', yAxisID: 'y2', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#7A8BA8', font: { size: 10 } } } }, scales: { x: { ticks: { color: '#7A8BA8', font: { size: 10 } }, grid: { color: '#1E2D45' } }, y: { ticks: { color: '#7A8BA8' }, grid: { color: '#1E2D45' } }, y2: { position: 'right', min: 0, max: 100, ticks: { color: '#7A8BA8', callback: function(v){return v+'%';} }, grid: { drawOnChartArea: false } } } } }); }
+function renderAssistenteChart() { var lista = getFilteredData(); var canvas = document.getElementById('assistenteChart'); if (!canvas) return; destroyChart('assistente'); var aMap = {}; lista.forEach(function(r){ var a = r.assistente||'Sem assistente'; if(!aMap[a]) aMap[a]={total:0,aprovados:0}; aMap[a].total++; if(r.status==='Aprovado'||r.status==='Liberado') aMap[a].aprovados++; }); var sorted = Object.entries(aMap).sort(function(a,b){return b[1].total-a[1].total;}).slice(0,10); chartInstances['assistente'] = new Chart(canvas.getContext('2d'), { type: 'bar', data: { labels: sorted.map(function(x){return x[0].split('@')[0].split('.').slice(0,2).join('.');}), datasets: [{ label: 'Total', data: sorted.map(function(x){return x[1].total;}), backgroundColor: 'rgba(59,130,246,.7)', borderColor: 'rgba(59,130,246,1)', borderWidth: 1, yAxisID: 'y' }, { label: 'Taxa aprov %', data: sorted.map(function(x){return x[1].total>0?Math.round((x[1].aprovados/x[1].total)*100):0;}), type: 'line', borderColor: '#10B981', backgroundColor: 'transparent', borderWidth: 2, pointBackgroundColor: '#10B981', yAxisID: 'y2', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#7A8BA8', font: { size: 10 } } } }, scales: { x: { ticks: { color: '#7A8BA8', font: { size: 10 } }, grid: { color: '#1E2D45' } }, y: { ticks: { color: '#7A8BA8' }, grid: { color: '#1E2D45' } }, y2: { position: 'right', min: 0, max: 100, ticks: { color: '#7A8BA8', callback: function(v){return v+'%';} }, grid: { drawOnChartArea: false } } } } }); }
 
 function exportarExcel() {
   const etc = document.getElementById('filtroEtc').value;
