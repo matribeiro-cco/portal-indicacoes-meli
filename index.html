@@ -2382,29 +2382,29 @@ async function salvarEdicao(id) {
   const tel = document.getElementById('editTel').value;
   const email = document.getElementById('editEmail').value;
   const cidade = document.getElementById('editCidade').value;
+  const registroAtual = todasIndicacoes.find(r => r.id === id);
+  const statusAtual = registroAtual ? registroAtual.status : null;
   try {
     const { error } = await sb.from('indicacoes').update({
       telefone: tel,
       email_motorista: email,
       cidade: cidade,
-      status: 'Em validacao',
       atualizado_em: new Date()
     }).eq('id', id);
     if (error) throw error;
 
     await sb.from('historico_status').insert([{
       indicacao_id: id,
-      status_anterior: 'correcao de dados',
-      status_novo: 'Em validacao',
+      status_anterior: statusAtual,
+      status_novo: statusAtual,
       assistente: sessao.nome || sessao.email,
-      observacao: 'Dados corrigidos: telefone, email ou cidade'
+      observacao: 'Dados corrigidos (telefone, email ou cidade) - status mantido'
     }]);
 
-    todasAdmin = todasAdmin.map(r => r.id === id ? {...r, telefone: tel, email_motorista: email, cidade: cidade, status: 'Em validacao'} : r);
-    atualizarMetricasAdmin(todasAdmin);
-    filtrarAdmin();
+    todasIndicacoes = todasIndicacoes.map(r => r.id === id ? {...r, telefone: tel, email_motorista: email, cidade: cidade} : r);
+    filtrarEtc();
     fecharDrawer();
-    alert('Dados corrigidos! Status voltou para Em validacao.');
+    alert('Dados corrigidos!');
   } catch(e) { alert('Erro: ' + e.message); }
 }
 
