@@ -1302,6 +1302,7 @@ function renderTabela(lista) {
   lista.forEach(function(r) {
     const status = r.status || '';
     const dataCriacao = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '';
+    const dataLiberacao = r.data_liberacao ? new Date(r.data_liberacao).toLocaleDateString('pt-BR') : '';
     const dataAtualizacao = r.atualizado_em ? new Date(r.atualizado_em) : null;
     const isNovo = dataAtualizacao && (agora - dataAtualizacao) < 48 * 60 * 60 * 1000 && r.status !== 'Em validacao';
     const tr = document.createElement('tr');
@@ -1314,11 +1315,12 @@ function renderTabela(lista) {
       '<td style="font-size:12px;font-family:monospace;color:var(--yellow)">' + (r.placa||'') + '</td>' +
       '<td>' + (r.tipo_operacao||'') + '</td>' +
       '<td style="color:var(--muted);font-size:12px">' + dataCriacao + '</td>' +
+      '<td style="color:' + (dataLiberacao ? 'var(--green)' : 'var(--muted)') + ';font-size:12px">' + (dataLiberacao || '-') + '</td>' +
       '<td><span class="badge ' + (STATUS_MAP[status]||'') + '">' + status + '</span></td>';
     tbody1.appendChild(tr);
   });
   const tbl1 = document.createElement('table');
-  tbl1.innerHTML = '<thead><tr><th>Motorista</th><th>CPF</th><th>Veiculo</th><th>Placa</th><th>Operacao</th><th>Data</th><th>Status</th></tr></thead>';
+  tbl1.innerHTML = '<thead><tr><th>Motorista</th><th>CPF</th><th>Veiculo</th><th>Placa</th><th>Operacao</th><th>Data</th><th>Data Liberacao</th><th>Status</th></tr></thead>';
   tbl1.appendChild(tbody1);
   const tbEl = document.getElementById('tableBody');
   tbEl.innerHTML = '';
@@ -1340,7 +1342,8 @@ function filtrarEtc() {
     const matchStatus = !status || r.status === status;
     const matchQ = !q || (r.nome_motorista||'').toLowerCase().includes(q) || (r.cpf||'').includes(q);
     const matchPlaca = !placa || (r.placa||'').toUpperCase().includes(placa);
-    const dataItem = r.criado_em ? new Date(r.criado_em) : null;
+    const campoData = (status === 'Liberado' && r.data_liberacao) ? r.data_liberacao : r.criado_em;
+    const dataItem = campoData ? new Date(campoData) : null;
     const matchDe = !de || (dataItem && dataItem >= new Date(de));
     const matchAte = !ate || (dataItem && dataItem <= new Date(ate + 'T23:59:59'));
     return matchStatus && matchQ && matchPlaca && matchDe && matchAte;
@@ -1565,9 +1568,11 @@ async function salvarStatus(id) {
   const indicacaoAtual = todasAdmin.find(r => r.id === id);
   const statusAnterior = indicacaoAtual ? indicacaoAtual.status : null;
   try {
-    const { error } = await sb.from('indicacoes').update({
-      status: novoStatus, observacoes: obs, assistente: assistente, atualizado_em: new Date()
-    }).eq('id', id);
+    const updatePayload = { status: novoStatus, observacoes: obs, assistente: assistente, atualizado_em: new Date() };
+    if (novoStatus === 'Liberado' && statusAnterior !== 'Liberado') {
+      updatePayload.data_liberacao = new Date().toISOString();
+    }
+    const { error } = await sb.from('indicacoes').update(updatePayload).eq('id', id);
     if (error) throw error;
 
     // Gravar historico
@@ -1579,7 +1584,7 @@ async function salvarStatus(id) {
       observacao: obs
     }]);
 
-    todasAdmin = todasAdmin.map(r => r.id === id ? {...r, status: novoStatus, observacoes: obs, assistente: assistente} : r);
+    todasAdmin = todasAdmin.map(r => r.id === id ? {...r, status: novoStatus, observacoes: obs, assistente: assistente, data_liberacao: updatePayload.data_liberacao || r.data_liberacao} : r);
     atualizarMetricasAdmin(todasAdmin);
     filtrarAdmin();
     renderChart();
