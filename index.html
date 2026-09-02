@@ -1494,7 +1494,7 @@ function renderAdmin(lista) {
     tr.style.cursor = 'pointer';
     tr.addEventListener('click', (function(row) { return function() { abrirDrawer(row, true); }; })(r));
     tr.innerHTML =
-      '<td><strong>' + (r.nome_motorista||'') + '</strong></td>' +
+      '<td><strong>' + (r.nome_motorista||'') + '</strong>' + (r.cpf_duplicado_flag ? '<br><span title="' + (r.cpf_duplicado_info||'').replace(/"/g,'&quot;') + '" style="display:inline-block;margin-top:3px;font-size:10px;font-weight:700;color:var(--amber);background:rgba(245,158,11,.12);border:1px solid var(--amber);border-radius:4px;padding:2px 6px">⚠ CPF EM OUTRA ETC</span>' : '') + '</td>' +
       '<td><span style="font-size:12px;color:var(--muted)">' + (r.etc||'') + '</span></td>' +
       '<td><span class="cpf-chip">' + (r.cpf||'') + '</span></td>' +
       '<td style="font-size:12px">' + (r.cidade||'') + '</td>' +
@@ -1516,7 +1516,8 @@ function abrirDrawer(r, isAdmin) {
   drawerIndicacao = r;
   const status = r.status || '';
   document.getElementById('dNome').textContent = r.nome_motorista || '';
-  document.getElementById('dBadge').innerHTML = `<span class="badge ${STATUS_MAP[status]||''}">${status}</span>`;
+  document.getElementById('dBadge').innerHTML = `<span class="badge ${STATUS_MAP[status]||''}">${status}</span>` +
+    (r.cpf_duplicado_flag ? `<div style="margin-top:8px;background:rgba(245,158,11,.12);border:1px solid var(--amber);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--amber)">⚠ <strong>Atencao:</strong> ${(r.cpf_duplicado_info||'CPF ja cadastrado em outra ETC').replace(/</g,'&lt;')}</div>` : '');
   const data = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '';
 
   let adminSection = '';
@@ -1782,13 +1783,16 @@ async function enviarIndicacao(){
   const cpfCheck = document.getElementById('fCpf').value;
   const { data: existingList } = await sb.from('indicacoes').select('id, etc, nome_motorista, status').eq('cpf', cpfCheck).limit(1);
   const existing = existingList && existingList[0];
+  let cpfDuplicadoFlag = false;
+  let cpfDuplicadoInfo = null;
   if (existing) {
     if (existing.etc === sessao.etc) {
       alert('Este CPF ja foi indicado pela sua transportadora (' + existing.nome_motorista + ', status: ' + existing.status + '). Verifique suas indicacoes.');
+      return;
     } else {
-      alert('Este CPF ja esta cadastrado por outra transportadora (' + existing.etc + '). Nao e possivel indicar o mesmo motorista duas vezes.');
+      cpfDuplicadoFlag = true;
+      cpfDuplicadoInfo = 'Ja cadastrado em ' + existing.etc + ' (status: ' + existing.status + ') em ' + (new Date()).toLocaleDateString('pt-BR');
     }
-    return;
   }
   document.getElementById('submittingOv').classList.add('show');
   try {
@@ -1820,7 +1824,9 @@ async function enviarIndicacao(){
       crlv_link:crlvUrl.publicUrl,
       tipo_operacao:document.getElementById('fTipoOp').value,
       operacao_preferencia:document.getElementById('fOpPref').value,
-      status:'Em validacao'
+      status:'Em validacao',
+      cpf_duplicado_flag: cpfDuplicadoFlag,
+      cpf_duplicado_info: cpfDuplicadoInfo
     }]);
     if(insErr) throw insErr;
 
