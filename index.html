@@ -17,17 +17,6 @@
   --red: #EF4444; --purple: #8B5CF6;
 }
 body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
-.truck-bg-layer { position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
-.truck-bg-layer svg { position: absolute; opacity: .07; filter: drop-shadow(0 0 1px rgba(255,230,0,.15)); }
-.truck-lane { position: absolute; width: 220px; animation-name: truckDrive; animation-timing-function: linear; animation-iteration-count: infinite; }
-.truck-lane.rev svg { transform: scaleX(-1); }
-@keyframes truckDrive { from { transform: translateX(-260px); } to { transform: translateX(calc(100vw + 60px)); } }
-@keyframes truckDriveRev { from { transform: translateX(calc(100vw + 60px)) scaleX(-1); } to { transform: translateX(-260px) scaleX(-1); } }
-.truck-lane.rev { animation-name: truckDriveRev; }
-@media (prefers-reduced-motion: reduce) { .truck-bg-layer { display: none; } }
-
-.screen, main, .app-shell, #adminScreen, #dashScreen { position: relative; z-index: 1; }
 .screen { display: none; min-height: 100vh; }
 .screen.active { display: flex; align-items: center; justify-content: center; padding: 24px; }
 #dashScreen, #adminScreen { display: none; flex-direction: column; align-items: stretch; justify-content: flex-start; min-height: 100vh; padding: 0; }
@@ -216,26 +205,6 @@ input[type=file] { display: none; }
 </style>
 </head>
 <body>
-<div class="truck-bg-layer" aria-hidden="true">
-  <div class="truck-lane" style="top:6%;width:150px;animation-duration:26s;animation-delay:-3s">
-    <svg viewBox="0 0 200 90" width="150" height="68" style="fill:var(--yellow)"><rect x="0" y="30" width="130" height="40" rx="4"/><path d="M130 30 h40 l20 25 v15 h-60 z"/><circle cx="35" cy="75" r="12"/><circle cx="100" cy="75" r="12"/><circle cx="165" cy="75" r="12"/></svg>
-  </div>
-  <div class="truck-lane rev" style="top:18%;width:120px;animation-duration:34s;animation-delay:-12s">
-    <svg viewBox="0 0 200 90" width="120" height="54" style="fill:var(--yellow)"><rect x="0" y="30" width="130" height="40" rx="4"/><path d="M130 30 h40 l20 25 v15 h-60 z"/><circle cx="35" cy="75" r="12"/><circle cx="100" cy="75" r="12"/><circle cx="165" cy="75" r="12"/></svg>
-  </div>
-  <div class="truck-lane" style="top:38%;width:190px;animation-duration:21s;animation-delay:-7s">
-    <svg viewBox="0 0 200 90" width="190" height="86" style="fill:var(--yellow)"><rect x="0" y="30" width="130" height="40" rx="4"/><path d="M130 30 h40 l20 25 v15 h-60 z"/><circle cx="35" cy="75" r="12"/><circle cx="100" cy="75" r="12"/><circle cx="165" cy="75" r="12"/></svg>
-  </div>
-  <div class="truck-lane rev" style="top:55%;width:140px;animation-duration:29s;animation-delay:-18s">
-    <svg viewBox="0 0 200 90" width="140" height="63" style="fill:var(--yellow)"><rect x="0" y="30" width="130" height="40" rx="4"/><path d="M130 30 h40 l20 25 v15 h-60 z"/><circle cx="35" cy="75" r="12"/><circle cx="100" cy="75" r="12"/><circle cx="165" cy="75" r="12"/></svg>
-  </div>
-  <div class="truck-lane" style="top:72%;width:165px;animation-duration:24s;animation-delay:-15s">
-    <svg viewBox="0 0 200 90" width="165" height="74" style="fill:var(--yellow)"><rect x="0" y="30" width="130" height="40" rx="4"/><path d="M130 30 h40 l20 25 v15 h-60 z"/><circle cx="35" cy="75" r="12"/><circle cx="100" cy="75" r="12"/><circle cx="165" cy="75" r="12"/></svg>
-  </div>
-  <div class="truck-lane rev" style="top:88%;width:130px;animation-duration:31s;animation-delay:-5s">
-    <svg viewBox="0 0 200 90" width="130" height="59" style="fill:var(--yellow)"><rect x="0" y="30" width="130" height="40" rx="4"/><path d="M130 30 h40 l20 25 v15 h-60 z"/><circle cx="35" cy="75" r="12"/><circle cx="100" cy="75" r="12"/><circle cx="165" cy="75" r="12"/></svg>
-  </div>
-</div>
 
 <!-- TELA EMAIL -->
 <div id="emailScreen" class="screen active">
