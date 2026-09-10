@@ -1928,7 +1928,6 @@ function calcularRecomendacaoRota() {
   if (!totalPacotes) { box.style.display = 'none'; return; }
 
   const { veiculo, pesoEstimado } = calcularVeiculoRecomendado(totalPacotes);
-  document.getElementById('rVeiculo').value = veiculo;
 
   let prioridadeHtml = '';
   if (vencData && vencHora) {
@@ -1938,8 +1937,8 @@ function calcularRecomendacaoRota() {
   }
 
   box.style.display = 'block';
-  box.innerHTML = '<b style="color:var(--yellow)">Veículo recomendado: ' + veiculo + '</b>' +
-    ' <span style="color:var(--muted)">(peso estimado ~' + Math.round(pesoEstimado) + 'kg)</span>' + prioridadeHtml;
+  box.innerHTML = '<b style="color:var(--yellow)">Sugestao de veiculo: ' + veiculo + '</b>' +
+    ' <span style="color:var(--muted)">(peso estimado ~' + Math.round(pesoEstimado) + 'kg — selecione o veiculo manualmente abaixo)</span>' + prioridadeHtml;
 }
 
 async function publicarRota() {
