@@ -956,6 +956,12 @@ const ADMIN_EMAILS = [
   'joyce.martins@mercadolivre.com'
 ];
 
+// E-mails externos (nao @mercadolivre.com) que devem ter o mesmo nivel de acesso
+// de Operacao Limitada (aba Rotas Extras, publicar/gerenciar rotas)
+const OPERACAO_LIMITADA_EXTRA = [
+  'marcelo.axionlog@gmail.com'
+];
+
 const STATUS_MAP = {
   'Em validacao':'b-validacao','Documento incorreto':'b-doc','Aprovado':'b-aprovado',
   'Reprovado':'b-reprovado','Pendente GUEP':'b-pendente','Cancelado':'b-cancelado','Licenciamento':'b-licenciamento','Declinio':'b-reprovado','Em treinamento':'b-pendente','Liberado':'b-aprovado','Contato realizado':'b-validacao'
@@ -1108,7 +1114,7 @@ async function fazerCadastroOperacao() {
 function entrarNoDash(data) {
   sessao = { email: data.email, nome: data.nome, etc: data.etc, unidadesOperacao: data.unidades_operacao || null };
   const isFullAdmin = ADMIN_EMAILS.includes(data.email.toLowerCase());
-  const isOperacaoLimitada = !isFullAdmin && data.email.toLowerCase().endsWith('@mercadolivre.com');
+  const isOperacaoLimitada = !isFullAdmin && (data.email.toLowerCase().endsWith('@mercadolivre.com') || OPERACAO_LIMITADA_EXTRA.includes(data.email.toLowerCase()));
   sessao.isFullAdmin = isFullAdmin;
   sessao.isOperacaoLimitada = isOperacaoLimitada;
 
@@ -1928,6 +1934,7 @@ function calcularRecomendacaoRota() {
   if (!totalPacotes) { box.style.display = 'none'; return; }
 
   const { veiculo, pesoEstimado } = calcularVeiculoRecomendado(totalPacotes);
+  document.getElementById('rVeiculo').value = veiculo;
 
   let prioridadeHtml = '';
   if (vencData && vencHora) {
@@ -1937,8 +1944,8 @@ function calcularRecomendacaoRota() {
   }
 
   box.style.display = 'block';
-  box.innerHTML = '<b style="color:var(--yellow)">Sugestao de veiculo: ' + veiculo + '</b>' +
-    ' <span style="color:var(--muted)">(peso estimado ~' + Math.round(pesoEstimado) + 'kg — selecione o veiculo manualmente abaixo)</span>' + prioridadeHtml;
+  box.innerHTML = '<b style="color:var(--yellow)">Veículo recomendado: ' + veiculo + '</b>' +
+    ' <span style="color:var(--muted)">(peso estimado ~' + Math.round(pesoEstimado) + 'kg)</span>' + prioridadeHtml;
 }
 
 async function publicarRota() {
