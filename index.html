@@ -2000,17 +2000,27 @@ async function carregarRotasAdmin() {
     .eq('status', 'Disponivel')
     .lt('data_vencimento', new Date().toISOString());
 
-  let query = sb.from('rotas_extras').select('*').order('criado_em', { ascending: false }).order('id', { ascending: false }).range(0, 9999);
+  let listaBase = [];
   if (sessao.isOperacaoLimitada) {
-    if (!sessao.unidadesOperacao || sessao.unidadesOperacao.length === 0) {
+    const { data: minhas } = await sb.from('rotas_extras').select('*').eq('criado_por', sessao.email);
+    listaBase = minhas || [];
+
+    if (sessao.unidadesOperacao && sessao.unidadesOperacao.length > 0) {
+      const { data: daUnidade } = await sb.from('rotas_extras').select('*').in('unidade', sessao.unidadesOperacao);
+      (daUnidade || []).forEach(function(r) { if (!listaBase.find(function(x){ return x.id === r.id; })) listaBase.push(r); });
+    }
+
+    if (listaBase.length === 0) {
       document.getElementById('rotasAdminCount').textContent = '0 rotas';
-      document.getElementById('rotasAdminTableBody').innerHTML = '<div class="empty-state"><div class="empty-title">Nenhuma unidade vinculada ao seu usuario. Fale com o administrador.</div></div>';
+      document.getElementById('rotasAdminTableBody').innerHTML = '<div class="empty-state"><div class="empty-title">Nenhuma rota encontrada. Se voce ainda nao publicou nenhuma rota e nao tem unidade vinculada, fale com o administrador.</div></div>';
       return;
     }
-    query = query.in('unidade', sessao.unidadesOperacao);
+    listaBase.sort(function(a,b) { return new Date(b.criado_em) - new Date(a.criado_em); });
+  } else {
+    const { data: todas } = await sb.from('rotas_extras').select('*').order('criado_em', { ascending: false }).order('id', { ascending: false }).range(0, 9999);
+    listaBase = todas || [];
   }
-  const { data } = await query;
-  const lista = data || [];
+  const lista = listaBase;
   document.getElementById('rotasAdminCount').textContent = lista.length + ' rotas';
   const badgeCor = { 'Disponivel':'var(--green)', 'Confirmada':'var(--blue)', 'Expirada':'var(--red)', 'Cancelada':'var(--muted)' };
 
