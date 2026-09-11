@@ -1786,7 +1786,13 @@ function removerUpload(tipo){
   document.getElementById('area'+T).style.display='';
 }
 
+let enviandoIndicacao = false;
 async function enviarIndicacao(){
+  if (enviandoIndicacao) return;
+  enviandoIndicacao = true;
+  const btnEnvio = document.getElementById('nextBtn');
+  if (btnEnvio) { btnEnvio.disabled = true; btnEnvio.style.opacity = '0.6'; btnEnvio.textContent = 'Enviando...'; }
+  try {
   // Verificar CPF duplicado em toda a base (nao so na mesma transportadora)
   const cpfCheck = document.getElementById('fCpf').value;
   const { data: existingList } = await sb.from('indicacoes').select('id, etc, nome_motorista, status').eq('cpf', cpfCheck).limit(1);
@@ -1846,6 +1852,10 @@ async function enviarIndicacao(){
     document.getElementById('successScreen').classList.add('active');
     carregarIndicacoes();
   } catch(e) { document.getElementById('submittingOv').classList.remove('show'); alert('Erro: '+e.message); }
+  } finally {
+    enviandoIndicacao = false;
+    if (btnEnvio) { btnEnvio.disabled = false; btnEnvio.style.opacity = ''; btnEnvio.textContent = 'Próximo →'; }
+  }
 }
 
 function switchTab(tab) {
