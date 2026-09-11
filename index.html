@@ -1851,7 +1851,16 @@ async function enviarIndicacao(){
     document.getElementById('protocoloChip').textContent='MELI-'+new Date().getFullYear()+'-'+Date.now().toString().slice(-4);
     document.getElementById('successScreen').classList.add('active');
     carregarIndicacoes();
-  } catch(e) { document.getElementById('submittingOv').classList.remove('show'); alert('Erro: '+e.message); }
+  } catch(e) {
+    document.getElementById('submittingOv').classList.remove('show');
+    if (e.code === '23505' || (e.message||'').includes('unique_cpf_etc')) {
+      alert('Este CPF ja foi indicado pela sua transportadora. Verifique suas indicacoes antes de tentar novamente.');
+    } else if (e.code === '23514' || (e.message||'').includes('cpf_nao_vazio')) {
+      alert('CPF invalido ou em branco. Preencha o CPF corretamente antes de enviar.');
+    } else {
+      alert('Erro: '+e.message);
+    }
+  }
   } finally {
     enviandoIndicacao = false;
     if (btnEnvio) { btnEnvio.disabled = false; btnEnvio.style.opacity = ''; btnEnvio.textContent = 'Próximo →'; }
