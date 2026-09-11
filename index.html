@@ -2019,7 +2019,6 @@ function calcularRecomendacaoRota() {
   if (!totalPacotes) { box.style.display = 'none'; return; }
 
   const { veiculo, pesoEstimado } = calcularVeiculoRecomendado(totalPacotes);
-  document.getElementById('rVeiculo').value = veiculo;
 
   let prioridadeHtml = '';
   if (vencData && vencHora) {
