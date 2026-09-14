@@ -1651,10 +1651,11 @@ async function salvarEdicaoAdmin(id) {
   const registroAtual = todasAdmin.find(r => r.id === id);
   const antes = registroAtual ? { tipo_operacao: registroAtual.tipo_operacao, operacao_preferencia: registroAtual.operacao_preferencia, tipo_veiculo: registroAtual.tipo_veiculo } : {};
   try {
-    const { error } = await sb.from('indicacoes').update({
+    const { data: updData, error } = await sb.from('indicacoes').update({
       tipo_operacao: novoTipoOp, operacao_preferencia: novoOpPref, tipo_veiculo: novoVeiculo, atualizado_em: new Date()
-    }).eq('id', id);
+    }).eq('id', id).select();
     if (error) throw error;
+    if (!updData || updData.length === 0) throw new Error('Nenhuma linha foi atualizada no banco (possível bloqueio de permissão).');
 
     await sb.from('historico_status').insert([{
       indicacao_id: id,
@@ -1682,8 +1683,9 @@ async function salvarStatus(id) {
     if (novoStatus === 'Liberado' && statusAnterior !== 'Liberado') {
       updatePayload.data_liberacao = new Date().toISOString();
     }
-    const { error } = await sb.from('indicacoes').update(updatePayload).eq('id', id);
+    const { data: updData, error } = await sb.from('indicacoes').update(updatePayload).eq('id', id).select();
     if (error) throw error;
+    if (!updData || updData.length === 0) throw new Error('Nenhuma linha foi atualizada no banco (possível bloqueio de permissão). O status NÃO foi salvo, apesar de não ter dado erro.');
 
     // Gravar historico
     await sb.from('historico_status').insert([{
@@ -1766,8 +1768,9 @@ async function enviarReenvio() {
     const statusAnterior = indicacao.status;
     updates.status = 'Em validacao';
     updates.atualizado_em = new Date();
-    const { error } = await sb.from('indicacoes').update(updates).eq('id', id);
+    const { data: updData, error } = await sb.from('indicacoes').update(updates).eq('id', id).select();
     if (error) throw error;
+    if (!updData || updData.length === 0) throw new Error('Nenhuma linha foi atualizada no banco (possível bloqueio de permissão).');
 
     await sb.from('historico_status').insert([{
       indicacao_id: id,
@@ -2509,13 +2512,14 @@ async function salvarEdicao(id) {
   const registroAtual = todasIndicacoes.find(r => r.id === id);
   const statusAtual = registroAtual ? registroAtual.status : null;
   try {
-    const { error } = await sb.from('indicacoes').update({
+    const { data: updData, error } = await sb.from('indicacoes').update({
       telefone: tel,
       email_motorista: email,
       cidade: cidade,
       atualizado_em: new Date()
-    }).eq('id', id);
+    }).eq('id', id).select();
     if (error) throw error;
+    if (!updData || updData.length === 0) throw new Error('Nenhuma linha foi atualizada no banco (possível bloqueio de permissão).');
 
     await sb.from('historico_status').insert([{
       indicacao_id: id,
