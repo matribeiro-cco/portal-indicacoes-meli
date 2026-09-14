@@ -1497,7 +1497,9 @@ function renderAdmin(lista) {
   const tbody = document.createElement('tbody');
   lista.forEach(function(r) {
     const status = r.status || '';
-    const data = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '';
+    const dataCriado = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '';
+    const dataAtualizado = r.atualizado_em ? new Date(r.atualizado_em).toLocaleDateString('pt-BR') : '';
+    const data = 'Cadastro: ' + dataCriado + (dataAtualizado && dataAtualizado !== dataCriado ? '<br><span style="color:var(--text)">Atualizado: ' + dataAtualizado + '</span>' : '');
     const tr = document.createElement('tr');
     tr.style.cursor = 'pointer';
     tr.addEventListener('click', (function(row) { return function() { abrirDrawer(row, true); }; })(r));
