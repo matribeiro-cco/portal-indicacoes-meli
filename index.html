@@ -971,6 +971,8 @@ const STATUS_LIST = ['Em validacao','Documento incorreto','Aprovado','Reprovado'
 let sessao = null;
 let todasIndicacoes = [];
 let todasAdmin = [];
+let etcContatos = {};
+let etcContatosCarregado = false;
 let emailAtual = '';
 let currentStep = 1;
 let arquivos = { cnh: null, crlv: null };
@@ -1396,9 +1398,27 @@ function filtrarEtc() {
 }
 
 // ADMIN
+function normalizeEtc(s) {
+  return (s || '').trim().toLowerCase();
+}
+
+async function carregarEtcContatos() {
+  if (etcContatosCarregado) return;
+  try {
+    const { data, error } = await sb.from('etc_contatos').select('*');
+    if (error) throw error;
+    etcContatos = {};
+    (data || []).forEach(r => { etcContatos[normalizeEtc(r.etc)] = r.email; });
+    etcContatosCarregado = true;
+  } catch(e) {
+    console.warn('Nao foi possivel carregar etc_contatos', e);
+  }
+}
+
 async function carregarAdmin() {
   document.getElementById('adminTableBody').innerHTML = '<div class="loading-state"><div class="spinner"></div><br>Carregando...</div>';
   try {
+    await carregarEtcContatos();
     const { data } = await sb.from('indicacoes').select('*').order('criado_em', { ascending: false }).order('id', { ascending: false }).range(0, 19999);
     todasAdmin = data || [];
     const etcs = [...new Set(todasAdmin.map(r => r.etc).filter(Boolean))].sort();
@@ -1503,9 +1523,10 @@ function renderAdmin(lista) {
     const tr = document.createElement('tr');
     tr.style.cursor = 'pointer';
     tr.addEventListener('click', (function(row) { return function() { abrirDrawer(row, true); }; })(r));
+    const emailEtc = etcContatos[normalizeEtc(r.etc)];
     tr.innerHTML =
       '<td><strong>' + (r.nome_motorista||'') + '</strong>' + (r.cpf_duplicado_flag ? '<br><span title="' + (r.cpf_duplicado_info||'').replace(/"/g,'&quot;') + '" style="display:inline-block;margin-top:3px;font-size:10px;font-weight:700;color:var(--amber);background:rgba(245,158,11,.12);border:1px solid var(--amber);border-radius:4px;padding:2px 6px">⚠ CPF EM OUTRA ETC</span>' : '') + '</td>' +
-      '<td><span style="font-size:12px;color:var(--muted)">' + (r.etc||'') + '</span></td>' +
+      '<td><span style="font-size:12px;color:var(--muted)">' + (r.etc||'') + '</span>' + (emailEtc ? '<br><span style="font-size:10px;color:var(--blue);background:rgba(59,130,246,.12);border:1px solid var(--blue);border-radius:4px;padding:1px 5px;display:inline-block;margin-top:2px">' + emailEtc + '</span>' : '') + '</td>' +
       '<td><span class="cpf-chip">' + (r.cpf||'') + '</span></td>' +
       '<td style="font-size:12px">' + (r.cidade||'') + '</td>' +
       '<td>' + (r.tipo_veiculo||'') + '</td>' +
