@@ -477,6 +477,13 @@ input[type=file] { display: none; }
           <input type="date" class="period-input" id="chartDe" onchange="renderAllCharts()" style="color-scheme:dark">
           <label style="font-size:12px;color:var(--muted)">Ate:</label>
           <input type="date" class="period-input" id="chartAte" onchange="renderAllCharts()" style="color-scheme:dark">
+          <label style="font-size:12px;color:var(--muted)">Operacao:</label>
+          <select class="period-input" id="dashFiltroOperacao" onchange="renderAllCharts()" style="color-scheme:dark">
+            <option value="">Todas</option>
+            <option value="First Mile">First Mile</option>
+            <option value="Last Mile">Last Mile</option>
+            <option value="Full">Full</option>
+          </select>
           <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="limparPeriodo()">Limpar</button>
           <button class="btn btn-yellow" onclick="exportarExcel()" style="font-size:13px;padding:8px 16px">Exportar Excel</button>
         </div>
@@ -2360,12 +2367,7 @@ function filtrarEtcAdmin2() {
 let paretoChartInstance = null;
 
 function renderChart() {
-  const de = document.getElementById('chartDe') ? document.getElementById('chartDe').value : '';
-  const ate = document.getElementById('chartAte') ? document.getElementById('chartAte').value : '';
-
-  let lista = todasAdmin;
-  if (de) lista = lista.filter(r => r.criado_em && new Date(r.criado_em) >= new Date(de));
-  if (ate) lista = lista.filter(r => r.criado_em && new Date(r.criado_em) <= new Date(ate + 'T23:59:59'));
+  let lista = getFilteredData();
 
   // Count by ETC
   const etcMap = {};
@@ -2452,7 +2454,8 @@ function renderChart() {
 function limparPeriodo() {
   document.getElementById('chartDe').value = '';
   document.getElementById('chartAte').value = '';
-  renderChart();
+  if (document.getElementById('dashFiltroOperacao')) document.getElementById('dashFiltroOperacao').value = '';
+  renderAllCharts();
 }
 
 function renderAllCharts() { renderChart(); renderStatusChart(); renderTimelineChart(); renderOperacaoChart(); renderVeiculoChart(); renderAssistenteChart(); }
@@ -2461,8 +2464,10 @@ function getFilteredData() {
   var de = document.getElementById('chartDe') ? document.getElementById('chartDe').value : '';
   var ate = document.getElementById('chartAte') ? document.getElementById('chartAte').value : '';
   var etc = document.getElementById('dashFiltroEtc') ? document.getElementById('dashFiltroEtc').value : '';
+  var operacao = document.getElementById('dashFiltroOperacao') ? document.getElementById('dashFiltroOperacao').value : '';
   var lista = todasAdmin;
   if (etc) lista = lista.filter(function(r) { return r.etc === etc; });
+  if (operacao) lista = lista.filter(function(r) { return r.tipo_operacao === operacao; });
   if (de) lista = lista.filter(function(r) { return r.criado_em && new Date(r.criado_em) >= new Date(de); });
   if (ate) lista = lista.filter(function(r) { return r.criado_em && new Date(r.criado_em) <= new Date(ate + 'T23:59:59'); });
   return lista;
