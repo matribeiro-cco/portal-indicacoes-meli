@@ -391,6 +391,12 @@ input[type=file] { display: none; }
         <div class="metric-card amber"><div class="metric-value" style="color:var(--amber)" id="mPendente">—</div><div class="metric-label">Pendências</div></div>
         <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="mReprovado">—</div><div class="metric-label">Reprovados</div></div>
       </div>
+      <div class="priority-map-block">
+        <div class="priority-map-title">Prioridades de indicação agora</div>
+        <div class="priority-map-sub">Regiões com mais oportunidade aberta pra indicar motorista. Veja onde faz mais sentido antes de indicar.</div>
+        <div id="mapaPrioridades" style="height:280px;border-radius:10px;margin-top:10px"></div>
+        <div class="priority-map-legend" id="mapaPrioridadesLegenda"></div>
+      </div>
       <div class="table-card">
         <div class="table-toolbar">
           <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Motoristas</span><span class="count-badge" id="countBadge">—</span></div>
@@ -849,12 +855,6 @@ input[type=file] { display: none; }
         </div>
         <div class="form-section" id="step4">
           <div class="section-label">Etapa 4 — Operação</div>
-          <div class="priority-map-block">
-            <div class="priority-map-title">Prioridades de indicação agora</div>
-            <div class="priority-map-sub">Regiões com mais oportunidade aberta pra indicar motorista. Veja onde faz mais sentido antes de escolher a operação.</div>
-            <div id="mapaPrioridades" style="height:280px;border-radius:10px;margin-top:10px"></div>
-            <div class="priority-map-legend" id="mapaPrioridadesLegenda"></div>
-          </div>
           <div class="form-grid">
             <div class="field span2"><label class="f-label">Tipo de operação <span class="req">*</span></label><select class="f-select" id="fTipoOp" onchange="filtrarOperacoes()"><option value="">Selecione…</option><option>Last Mile</option><option>First Mile</option><option>Full</option></select><span class="f-err" id="errTipoOp">Campo obrigatório</span></div>
             <div class="field span2">
@@ -1159,6 +1159,7 @@ function entrarNoDash(data) {
     document.getElementById('pageSubNome').textContent = 'Ola, ' + data.nome + ' - ' + data.etc;
     showScreen('dashScreen');
     carregarIndicacoes();
+    carregarMapaPrioridades();
   }
 }
 
@@ -1182,6 +1183,7 @@ function switchEtcMainTab(tab) {
     document.getElementById('rotasEtcPanel').style.display = 'none';
     document.getElementById('tabMotoristas').classList.add('active');
     if (rotasEtcPollTimer) { clearInterval(rotasEtcPollTimer); rotasEtcPollTimer = null; }
+    if (mapaPrioridadesInstance) setTimeout(function(){ mapaPrioridadesInstance.invalidateSize(); }, 100);
   } else {
     document.getElementById('motoristasPanel').style.display = 'none';
     document.getElementById('rotasEtcPanel').style.display = '';
@@ -1859,7 +1861,7 @@ function atualizarSteps() {
   document.querySelectorAll('.form-section').forEach((s,i)=>s.classList.toggle('active',i+1===currentStep));
   document.getElementById('backBtn').style.display=currentStep>1?'inline-flex':'none';
   document.getElementById('nextBtn').textContent=currentStep===4?'Enviar indicacao':'Proximo >';
-  if(currentStep===4) { preencherRevisao(); carregarMapaPrioridades(); }
+  if(currentStep===4) preencherRevisao();
 }
 
 function validarStep(step) {
