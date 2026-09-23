@@ -2014,6 +2014,8 @@ async function enviarIndicacao(){
       alert('Este CPF ja foi indicado pela sua transportadora. Verifique suas indicacoes antes de tentar novamente.');
     } else if (e.code === '23514' || (e.message||'').includes('cpf_nao_vazio')) {
       alert('CPF invalido ou em branco. Preencha o CPF corretamente antes de enviar.');
+    } else if ((e.message||'').toLowerCase().includes('failed to fetch') || (e.message||'').toLowerCase().includes('network')) {
+      alert('Falha de conexao durante o envio (provavelmente o sinal caiu no meio do upload dos documentos). Nada foi salvo — verifique sua internet e tente enviar novamente.');
     } else {
       alert('Erro: '+e.message);
     }
