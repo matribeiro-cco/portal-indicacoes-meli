@@ -460,6 +460,7 @@ input[type=file] { display: none; }
           <div class="toolbar-left"><span style="font-size:14px;font-weight:600">Indicacoes</span><span class="count-badge" id="adminCount">—</span></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <select class="filter-select" id="filtroEtc" onchange="filtrarAdmin()"><option value="">Todas as ETCs</option></select>
+            <select class="filter-select" id="filtroAssistente" onchange="filtrarAdmin()"><option value="">Todos os assistentes</option></select>
             <select class="filter-select" id="filtroStatus" onchange="filtrarAdmin()">
               <option value="">Todos os status</option>
               <option>Em validacao</option><option>Documento incorreto</option><option>Aprovado</option>
@@ -1450,6 +1451,9 @@ async function carregarAdmin() {
     const etcs = [...new Set(todasAdmin.map(r => r.etc).filter(Boolean))].sort();
     const sel = document.getElementById('filtroEtc');
     sel.innerHTML = '<option value="">Todas as ETCs</option>' + etcs.map(e => '<option>' + e + '</option>').join('');
+    const assistentes = [...new Set(todasAdmin.map(r => r.assistente).filter(Boolean))].sort();
+    const selAssist = document.getElementById('filtroAssistente');
+    selAssist.innerHTML = '<option value="">Todos os assistentes</option>' + assistentes.map(a => '<option>' + a + '</option>').join('');
     atualizarMetricasAdmin(todasAdmin);
     renderAdmin(todasAdmin);
     renderChart();
@@ -1480,6 +1484,7 @@ function atualizarMetricasAdmin(lista) {
 
 function filtrarAdmin() {
   var etc = document.getElementById('filtroEtc').value;
+  var assistente = document.getElementById('filtroAssistente').value;
   var status = document.getElementById('filtroStatus').value;
   var operacao = document.getElementById('filtroOperacao').value;
   var veiculo = document.getElementById('filtroVeiculo').value;
@@ -1487,6 +1492,7 @@ function filtrarAdmin() {
   var hub = document.getElementById('adminHub') ? document.getElementById('adminHub').value : '';
   _adminFiltrado = todasAdmin.filter(function(r) {
     return (!etc || r.etc === etc) &&
+    (!assistente || r.assistente === assistente) &&
     (!status || r.status === status) &&
     (!operacao || r.tipo_operacao === operacao) &&
     (!veiculo || r.tipo_veiculo === veiculo) &&
@@ -2542,6 +2548,7 @@ function renderAssistenteChart() { var lista = getFilteredData(); var canvas = d
 
 function exportarExcel() {
   const etc = document.getElementById('filtroEtc').value;
+  const assistente = document.getElementById('filtroAssistente').value;
   const status = document.getElementById('filtroStatus').value;
   const operacao = document.getElementById('filtroOperacao').value;
   const veiculo = document.getElementById('filtroVeiculo').value;
@@ -2549,6 +2556,7 @@ function exportarExcel() {
 
   const lista = todasAdmin.filter(r =>
     (!etc || r.etc === etc) &&
+    (!assistente || r.assistente === assistente) &&
     (!status || r.status === status) &&
     (!operacao || r.tipo_operacao === operacao) &&
     (!veiculo || r.tipo_veiculo === veiculo) &&
@@ -2671,4 +2679,3 @@ function validarCpf(cpf){const n=cpf.replace(/\D/g,'');if(n.length!==11||/^(\d)\
 </script>
 </body>
 </html>
-
