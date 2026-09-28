@@ -172,6 +172,14 @@ input[type=file] { display: none; }
 .priority-map-title { font-size: 13px; color: var(--yellow); font-weight: 600; }
 .priority-map-sub { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
 .priority-map-legend { font-size: 11px; color: var(--muted); margin-top: 8px; }
+.disp-toggle { border: none; border-radius: 6px; padding: 5px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; }
+.disp-toggle.disponivel { background: rgba(16,185,129,.15); color: var(--green); border: 1px solid var(--green); }
+.disp-toggle.indisponivel { background: rgba(239,68,68,.12); color: var(--red); border: 1px solid var(--red); }
+.disp-group-row { cursor: pointer; }
+.disp-group-row:hover { background: rgba(255,255,255,.03); }
+.disp-detail-row td { background: rgba(255,255,255,.02); padding: 0 !important; }
+.disp-caret { display: inline-block; margin-right: 6px; transition: transform .15s; color: var(--muted); }
+.disp-caret.open { transform: rotate(90deg); }
 .priority-popup { font-size: 12px; line-height: 1.5; color: #111; }
 .priority-popup b { display: block; margin-bottom: 3px; font-size: 12.5px; }
 .priority-popup .tag-p0 { display: inline-block; background: #EF4444; color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-bottom: 4px; }
@@ -443,6 +451,7 @@ input[type=file] { display: none; }
         <button class="admin-tab" id="tabDash" onclick="switchTab('dash')">Dashboard</button>
         <button class="admin-tab" id="tabEtc" onclick="switchTab('etc')">Transportadoras</button>
         <button class="admin-tab" id="tabRotas" onclick="switchTab('rotas')">Rotas Extras</button>
+        <button class="admin-tab" id="tabDisp" onclick="switchTab('disp')">Disponibilidade</button>
       </div>
       <span class="admin-badge">👤 Admin</span>
       <button class="btn-sair" onclick="sair()">Sair</button>
@@ -561,6 +570,28 @@ input[type=file] { display: none; }
     </div>
 
     <!-- ABA ROTAS EXTRAS (visao admin/operacao) -->
+    <!-- ABA DISPONIBILIDADE -->
+    <div id="dispPanel" style="display:none">
+      <div class="page-header">
+        <div><div class="page-title">Disponibilidade</div><div class="page-sub">Motoristas liberados marcados como disponíveis ou não pelas transportadoras. Clique numa linha pra ver os motoristas.</div></div>
+        <button class="btn btn-ghost" onclick="carregarDisponibilidade()">Atualizar</button>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-card blue"><div class="metric-value" style="color:var(--blue)" id="dispTotalLiberados">—</div><div class="metric-label">Total liberados</div></div>
+        <div class="metric-card green"><div class="metric-value" style="color:var(--green)" id="dispTotalDisponiveis">—</div><div class="metric-label">Disponíveis</div></div>
+        <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="dispTotalIndisponiveis">—</div><div class="metric-label">Indisponíveis</div></div>
+        <div class="metric-card amber"><div class="metric-value" style="color:var(--amber)" id="dispPercAvailability">—</div><div class="metric-label">% disponibilidade</div></div>
+      </div>
+      <div class="table-card">
+        <div class="table-toolbar"><div class="toolbar-left"><span style="font-size:14px;font-weight:600">Por transportadora</span></div></div>
+        <div id="dispPorEtcBody"><div class="loading-state"><div class="spinner"></div><br>Carregando...</div></div>
+      </div>
+      <div class="table-card" style="margin-top:16px">
+        <div class="table-toolbar"><div class="toolbar-left"><span style="font-size:14px;font-weight:600">Por hub / operação</span></div></div>
+        <div id="dispPorHubBody"><div class="loading-state"><div class="spinner"></div><br>Carregando...</div></div>
+      </div>
+    </div>
+
     <div id="rotasAdminPanel" style="display:none">
       <div class="page-header">
         <div><div class="page-title">Rotas Extras</div><div class="page-sub">Publique rotas e escolha entre os lances das transportadoras</div></div>
@@ -1146,12 +1177,12 @@ function entrarNoDash(data) {
   sessao.isOperacaoLimitada = isOperacaoLimitada;
 
   if (isFullAdmin) {
-    ['tabAdmin','tabDash','tabEtc','tabRotas'].forEach(function(id) { document.getElementById(id).style.display = ''; });
+    ['tabAdmin','tabDash','tabEtc','tabRotas','tabDisp'].forEach(function(id) { document.getElementById(id).style.display = ''; });
     showScreen('adminScreen');
     carregarAdmin();
     switchTab('admin');
   } else if (isOperacaoLimitada) {
-    ['tabAdmin','tabDash','tabEtc'].forEach(function(id) { document.getElementById(id).style.display = 'none'; });
+    ['tabAdmin','tabDash','tabEtc','tabDisp'].forEach(function(id) { document.getElementById(id).style.display = 'none'; });
     document.getElementById('tabRotas').style.display = '';
     showScreen('adminScreen');
     switchTab('rotas');
@@ -1343,6 +1374,18 @@ async function declinarRota(rotaId) {
 }
 
 // DASHBOARD ETC
+async function alternarDisponibilidade(id, novoValor) {
+  try {
+    const { data, error } = await sb.from('indicacoes').update({ disponivel: novoValor, disponivel_atualizado_em: new Date() }).eq('id', id).select();
+    if (error) throw error;
+    if (!data || data.length === 0) throw new Error('Nenhuma linha foi atualizada no banco (possível bloqueio de permissão).');
+    todasIndicacoes = todasIndicacoes.map(r => r.id === id ? { ...r, disponivel: novoValor } : r);
+    renderTabela(todasIndicacoes);
+  } catch (e) {
+    alert('Erro ao atualizar disponibilidade: ' + e.message);
+  }
+}
+
 async function carregarIndicacoes() {
   document.getElementById('tableBody').innerHTML = '<div class="loading-state"><div class="spinner"></div><br>Carregando...</div>';
   try {
@@ -1379,6 +1422,9 @@ function renderTabela(lista) {
     const tr = document.createElement('tr');
     tr.style.cursor = 'pointer';
     tr.addEventListener('click', (function(row) { return function() { abrirDrawer(row, false); }; })(r));
+    const disponibilidadeCell = status === 'Liberado'
+      ? '<button class="disp-toggle ' + (r.disponivel === false ? 'indisponivel' : 'disponivel') + '" onclick="event.stopPropagation();alternarDisponibilidade(\'' + r.id + '\', ' + (r.disponivel === false) + ')">' + (r.disponivel === false ? 'Indisponível' : 'Disponível') + '</button>'
+      : '<span style="color:var(--muted);font-size:12px">—</span>';
     tr.innerHTML =
       '<td><strong>' + (r.nome_motorista||'') + '</strong>' + (isNovo ? '<span class="new-badge">NOVO</span>' : '') + '<br><span style="font-size:11px;color:var(--muted)">' + (r.cidade||'') + '</span></td>' +
       '<td><span class="cpf-chip">' + (r.cpf||'') + '</span></td>' +
@@ -1387,11 +1433,12 @@ function renderTabela(lista) {
       '<td>' + (r.tipo_operacao||'') + '</td>' +
       '<td style="color:var(--muted);font-size:12px">' + dataCriacao + '</td>' +
       '<td style="color:' + (dataLiberacao ? 'var(--green)' : 'var(--muted)') + ';font-size:12px">' + (dataLiberacao || '-') + '</td>' +
-      '<td><span class="badge ' + (STATUS_MAP[status]||'') + '">' + status + '</span></td>';
+      '<td><span class="badge ' + (STATUS_MAP[status]||'') + '">' + status + '</span></td>' +
+      '<td>' + disponibilidadeCell + '</td>';
     tbody1.appendChild(tr);
   });
   const tbl1 = document.createElement('table');
-  tbl1.innerHTML = '<thead><tr><th>Motorista</th><th>CPF</th><th>Veiculo</th><th>Placa</th><th>Operacao</th><th>Data</th><th>Data Liberacao</th><th>Status</th></tr></thead>';
+  tbl1.innerHTML = '<thead><tr><th>Motorista</th><th>CPF</th><th>Veiculo</th><th>Placa</th><th>Operacao</th><th>Data</th><th>Data Liberacao</th><th>Status</th><th>Disponibilidade</th></tr></thead>';
   tbl1.appendChild(tbody1);
   const tbEl = document.getElementById('tableBody');
   tbEl.innerHTML = '';
@@ -2037,10 +2084,12 @@ function switchTab(tab) {
   document.getElementById('dashPanel').style.display = 'none';
   document.getElementById('etcPanel').style.display = 'none';
   document.getElementById('rotasAdminPanel').style.display = 'none';
+  document.getElementById('dispPanel').style.display = 'none';
   document.getElementById('tabAdmin').classList.remove('active');
   document.getElementById('tabDash').classList.remove('active');
   document.getElementById('tabEtc').classList.remove('active');
   document.getElementById('tabRotas').classList.remove('active');
+  document.getElementById('tabDisp').classList.remove('active');
   if (tab === 'admin') {
     document.getElementById('adminPanel').style.display = '';
     document.getElementById('tabAdmin').classList.add('active');
@@ -2055,6 +2104,11 @@ function switchTab(tab) {
     document.getElementById('tabEtc').classList.add('active');
     document.getElementById('adminHeaderSub').textContent = 'Transportadoras';
     carregarEtcAdmin();
+  } else if (tab === 'disp') {
+    document.getElementById('dispPanel').style.display = '';
+    document.getElementById('tabDisp').classList.add('active');
+    document.getElementById('adminHeaderSub').textContent = 'Disponibilidade';
+    carregarDisponibilidade();
   } else {
     document.getElementById('rotasAdminPanel').style.display = '';
     document.getElementById('tabRotas').classList.add('active');
@@ -2341,6 +2395,85 @@ async function carregarDeclinios() {
         '</tr>';
     }).join('') +
     '</tbody></table>';
+}
+
+let dispDados = [];
+let dispExpandido = { etc: null, hub: null };
+
+async function carregarDisponibilidade() {
+  document.getElementById('dispPorEtcBody').innerHTML = '<div class="loading-state"><div class="spinner"></div><br>Carregando...</div>';
+  document.getElementById('dispPorHubBody').innerHTML = '<div class="loading-state"><div class="spinner"></div><br>Carregando...</div>';
+  try {
+    const { data, error } = await sb.from('indicacoes').select('nome_motorista, cpf, placa, etc, operacao_preferencia, disponivel').eq('status', 'Liberado');
+    if (error) throw error;
+    dispDados = data || [];
+    dispExpandido = { etc: null, hub: null };
+    const total = dispDados.length;
+    const disponiveis = dispDados.filter(r => r.disponivel !== false).length;
+    const indisponiveis = total - disponiveis;
+    document.getElementById('dispTotalLiberados').textContent = total;
+    document.getElementById('dispTotalDisponiveis').textContent = disponiveis;
+    document.getElementById('dispTotalIndisponiveis').textContent = indisponiveis;
+    document.getElementById('dispPercAvailability').textContent = total > 0 ? Math.round(100 * disponiveis / total) + '%' : '—';
+    renderDispTabela('etc', 'Transportadora');
+    renderDispTabela('operacao_preferencia', 'Hub / Operação');
+  } catch (e) {
+    document.getElementById('dispPorEtcBody').innerHTML = '<div class="empty-state"><div class="empty-title">Erro ao carregar</div></div>';
+    document.getElementById('dispPorHubBody').innerHTML = '';
+    console.warn('Erro ao carregar disponibilidade', e);
+  }
+}
+
+function toggleDispGrupo(campo, chave) {
+  dispExpandido[campo] = (dispExpandido[campo] === chave) ? null : chave;
+  renderDispTabela(campo, campo === 'etc' ? 'Transportadora' : 'Hub / Operação');
+}
+
+function renderDispTabela(campo, labelCol) {
+  const containerId = campo === 'etc' ? 'dispPorEtcBody' : 'dispPorHubBody';
+  if (!dispDados.length) {
+    document.getElementById(containerId).innerHTML = '<div class="empty-state"><div class="empty-title">Nenhum motorista liberado ainda</div></div>';
+    return;
+  }
+  const grupos = {};
+  dispDados.forEach(r => {
+    const chave = r[campo] || '(sem valor)';
+    if (!grupos[chave]) grupos[chave] = { total: 0, disponiveis: 0, motoristas: [] };
+    grupos[chave].total++;
+    if (r.disponivel !== false) grupos[chave].disponiveis++;
+    grupos[chave].motoristas.push(r);
+  });
+  const linhas = Object.entries(grupos).map(([chave, v]) => ({
+    chave, total: v.total, disponiveis: v.disponiveis, indisponiveis: v.total - v.disponiveis,
+    perc: Math.round(100 * v.disponiveis / v.total), motoristas: v.motoristas
+  })).sort((a, b) => b.indisponiveis - a.indisponiveis);
+
+  const linhasHtml = linhas.map(l => {
+    const aberto = dispExpandido[campo] === l.chave;
+    const chaveEscapada = l.chave.replace(/'/g, "\\'");
+    let html = '<tr class="disp-group-row" onclick="toggleDispGrupo(\'' + campo + '\',\'' + chaveEscapada + '\')">' +
+      '<td style="padding:10px 14px;font-size:13px"><span class="disp-caret' + (aberto ? ' open' : '') + '">▶</span>' + l.chave + '</td>' +
+      '<td style="padding:10px 14px;font-size:13px;text-align:center">' + l.total + '</td>' +
+      '<td style="padding:10px 14px;font-size:13px;text-align:center;color:var(--green)">' + l.disponiveis + '</td>' +
+      '<td style="padding:10px 14px;font-size:13px;text-align:center;color:var(--red)">' + l.indisponiveis + '</td>' +
+      '<td style="padding:10px 14px;font-size:13px;text-align:center">' + l.perc + '%</td></tr>';
+    if (aberto) {
+      const motoristasHtml = l.motoristas.map(m =>
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-top:1px solid var(--border)">' +
+        '<div><strong style="font-size:12.5px">' + (m.nome_motorista||'') + '</strong> <span class="cpf-chip" style="margin-left:6px">' + (m.cpf||'') + '</span> <span style="font-family:monospace;color:var(--yellow);font-size:11.5px;margin-left:6px">' + (m.placa||'') + '</span></div>' +
+        '<span style="font-size:11px;font-weight:600;color:' + (m.disponivel === false ? 'var(--red)' : 'var(--green)') + '">' + (m.disponivel === false ? 'Indisponível' : 'Disponível') + '</span></div>'
+      ).join('');
+      html += '<tr class="disp-detail-row"><td colspan="5">' + motoristasHtml + '</td></tr>';
+    }
+    return html;
+  }).join('');
+
+  document.getElementById(containerId).innerHTML = '<table><thead><tr>' +
+    '<th style="padding:10px 14px;text-align:left">' + labelCol + '</th>' +
+    '<th style="padding:10px 14px">Liberados</th>' +
+    '<th style="padding:10px 14px">Disponíveis</th>' +
+    '<th style="padding:10px 14px">Indisponíveis</th>' +
+    '<th style="padding:10px 14px">%</th></tr></thead><tbody>' + linhasHtml + '</tbody></table>';
 }
 
 async function carregarEtcAdmin() {
