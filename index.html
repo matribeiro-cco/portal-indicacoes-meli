@@ -1931,7 +1931,8 @@ async function verificarSaturacaoRegiao() {
   regiaoSaturada = false;
   if (avisoEl) avisoEl.style.display = 'none';
   if (altEl) altEl.textContent = '';
-  if (!BLOQUEIO_SATURACAO_ATIVO || !val) return;
+  // Trava de saturação vale somente para First Mile
+  if (!BLOQUEIO_SATURACAO_ATIVO || !val || document.getElementById('fTipoOp').value !== 'First Mile') return;
   const hubCode = val.split(' - ')[0].trim();
   try {
     const { data, error } = await sb.from('hubs_prioridade').select('prioridade').eq('hub_svc', hubCode);
@@ -1971,7 +1972,7 @@ function validarStep(step) {
   if(step===1){req('fNome','errNome');req('fCpf','errCpf',v=>validarCpf(v));req('fTel','errTel',v=>v.replace(/\D/g,'').length>=10);req('fEmail','errEmail',v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));req('fCidade','errCidade');}
   if(step===2){req('fCnhNum','errCnhNum',v=>v.replace(/\D/g,'').length>=9);req('fCnhCat','errCnhCat');req('fCnhVal','errCnhVal',v=>v&&new Date(v)>new Date());if(!arquivos.cnh){document.getElementById('areaCnh').classList.add('error');document.getElementById('errCnh').classList.add('show');ok=false;}}
   if(step===3){req('fTipoVei','errTipoVei');req('fPlaca','errPlaca',v=>/^[A-Za-z]{3}[\s-]?\d[A-Za-z0-9]\d{2}$/.test(v.trim()));if(!arquivos.crlv){document.getElementById('areaCrlv').classList.add('error');document.getElementById('errCrlv').classList.add('show');ok=false;}}
-  if(step===4){req('fTipoOp','errTipoOp');req('fOpPref','errOpPref');if(BLOQUEIO_SATURACAO_ATIVO&&regiaoSaturada)ok=false;}
+  if(step===4){req('fTipoOp','errTipoOp');req('fOpPref','errOpPref');if(BLOQUEIO_SATURACAO_ATIVO&&regiaoSaturada&&document.getElementById('fTipoOp').value==='First Mile')ok=false;}
   return ok;
 }
 
