@@ -894,7 +894,7 @@ input[type=file] { display: none; }
               <select class="f-select" id="fOpPref" onchange="verificarSaturacaoRegiao()"><option value="">Selecione o tipo primeiro...</option></select>
               <span class="f-err" id="errOpPref">Campo obrigatório</span>
               <div id="avisoSaturacao" style="display:none;color:var(--red);background:rgba(239,68,68,.1);border:1px solid var(--red);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12.5px">
-                <div>⚠ Região indisponível por excesso de veículos.</div>
+                <div>⚠ Atenção: região com excesso de veículos no momento. Você pode enviar a indicação, mas ela pode não ser priorizada.</div>
                 <div id="avisoSaturacaoAlternativas" style="margin-top:6px;color:var(--text);font-weight:400"></div>
               </div>
             </div>
@@ -1037,6 +1037,8 @@ let emailAtual = '';
 let currentStep = 1;
 // Chave do bloqueio de regiões saturadas (só P0/P1 liberados). Troque para false para desativar sem mexer no resto.
 const BLOQUEIO_SATURACAO_ATIVO = true;
+// Se false, a região saturada só mostra o aviso e NÃO impede o envio da indicação.
+const SATURACAO_IMPEDE_ENVIO = false;
 let regiaoSaturada = false;
 let arquivos = { cnh: null, crlv: null };
 let drawerIndicacao = null;
@@ -1972,7 +1974,7 @@ function validarStep(step) {
   if(step===1){req('fNome','errNome');req('fCpf','errCpf',v=>validarCpf(v));req('fTel','errTel',v=>v.replace(/\D/g,'').length>=10);req('fEmail','errEmail',v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));req('fCidade','errCidade');}
   if(step===2){req('fCnhNum','errCnhNum',v=>v.replace(/\D/g,'').length>=9);req('fCnhCat','errCnhCat');req('fCnhVal','errCnhVal',v=>v&&new Date(v)>new Date());if(!arquivos.cnh){document.getElementById('areaCnh').classList.add('error');document.getElementById('errCnh').classList.add('show');ok=false;}}
   if(step===3){req('fTipoVei','errTipoVei');req('fPlaca','errPlaca',v=>/^[A-Za-z]{3}[\s-]?\d[A-Za-z0-9]\d{2}$/.test(v.trim()));if(!arquivos.crlv){document.getElementById('areaCrlv').classList.add('error');document.getElementById('errCrlv').classList.add('show');ok=false;}}
-  if(step===4){req('fTipoOp','errTipoOp');req('fOpPref','errOpPref');if(BLOQUEIO_SATURACAO_ATIVO&&regiaoSaturada&&document.getElementById('fTipoOp').value==='First Mile')ok=false;}
+  if(step===4){req('fTipoOp','errTipoOp');req('fOpPref','errOpPref');if(BLOQUEIO_SATURACAO_ATIVO&&SATURACAO_IMPEDE_ENVIO&&regiaoSaturada&&document.getElementById('fTipoOp').value==='First Mile')ok=false;}
   return ok;
 }
 
