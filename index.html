@@ -415,6 +415,7 @@ input[type=file] { display: none; }
               <option>Reprovado</option><option>Pendente GUEP</option><option>Cancelado</option>
               <option>Licenciamento</option><option>Declinio</option><option>Em treinamento</option><option>Liberado</option><option>Contato realizado</option>
             </select>
+            <select class="filter-select" id="filtroSvcEtc" onchange="filtrarEtc()"><option value="">Todos os SVC</option></select>
             <input type="date" class="filter-select" id="filtroDeEtc" onchange="filtrarEtc()" style="color-scheme:dark;cursor:pointer">
             <input type="date" class="filter-select" id="filtroAteEtc" onchange="filtrarEtc()" style="color-scheme:dark;cursor:pointer">
             <input class="search-input" type="text" id="buscaEtc" placeholder="Buscar nome ou CPF..." oninput="filtrarEtc()" style="width:160px">
@@ -1400,8 +1401,9 @@ async function carregarIndicacoes() {
   try {
     const { data } = await sb.from('indicacoes').select('*').eq('etc', sessao.etc).order('criado_em', { ascending: false }).order('id', { ascending: false }).range(0, 19999);
     todasIndicacoes = data || [];
-    renderTabela(todasIndicacoes);
+    popularSvcEtc();
     atualizarMetricas(todasIndicacoes);
+    filtrarEtc();
   } catch(e) {
     document.getElementById('tableBody').innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Erro ao carregar</div></div>';
   }
@@ -1439,7 +1441,7 @@ function renderTabela(lista) {
       '<td><span class="cpf-chip">' + (r.cpf||'') + '</span></td>' +
       '<td>' + (r.tipo_veiculo||'') + '</td>' +
       '<td style="font-size:12px;font-family:monospace;color:var(--yellow)">' + (r.placa||'') + '</td>' +
-      '<td>' + (r.tipo_operacao||'') + '</td>' +
+      '<td>' + (r.tipo_operacao||'') + '<br><span style="color:var(--muted);font-size:11px">' + (r.operacao_preferencia||'') + '</span></td>' +
       '<td style="color:var(--muted);font-size:12px">' + dataCriacao + '</td>' +
       '<td style="color:' + (dataLiberacao ? 'var(--green)' : 'var(--muted)') + ';font-size:12px">' + (dataLiberacao || '-') + '</td>' +
       '<td><span class="badge ' + (STATUS_MAP[status]||'') + '">' + status + '</span></td>' +
@@ -1458,22 +1460,42 @@ function filtrar(q) {
   filtrarEtc();
 }
 
+function popularSvcEtc() {
+  const sel = document.getElementById('filtroSvcEtc');
+  if (!sel) return;
+  const atual = sel.value;
+  const porCodigo = {};
+  todasIndicacoes.forEach(function(r) {
+    const nome = (r.operacao_preferencia || '').trim();
+    if (!nome) return;
+    const codigo = nome.split(' - ')[0].trim().toUpperCase();
+    if (!porCodigo[codigo]) porCodigo[codigo] = nome;
+  });
+  const codigos = Object.keys(porCodigo).sort();
+  sel.innerHTML = '<option value="">Todos os SVC</option>' + codigos.map(function(c) {
+    return '<option value="' + c + '">' + porCodigo[c] + '</option>';
+  }).join('');
+  if (codigos.indexOf(atual) !== -1) sel.value = atual;
+}
+
 function filtrarEtc() {
   const status = document.getElementById('filtroStatusEtc') ? document.getElementById('filtroStatusEtc').value : '';
   const de = document.getElementById('filtroDeEtc') ? document.getElementById('filtroDeEtc').value : '';
   const ate = document.getElementById('filtroAteEtc') ? document.getElementById('filtroAteEtc').value : '';
   const q = document.getElementById('buscaEtc') ? document.getElementById('buscaEtc').value.toLowerCase().trim() : '';
   const placa = document.getElementById('buscaPlacaEtc') ? document.getElementById('buscaPlacaEtc').value.toUpperCase().trim() : '';
+  const svc = document.getElementById('filtroSvcEtc') ? document.getElementById('filtroSvcEtc').value : '';
 
   const f = todasIndicacoes.filter(function(r) {
     const matchStatus = !status || r.status === status;
+    const matchSvc = !svc || (r.operacao_preferencia || '').split(' - ')[0].trim().toUpperCase() === svc;
     const matchQ = !q || (r.nome_motorista||'').toLowerCase().includes(q) || (r.cpf||'').includes(q);
     const matchPlaca = !placa || (r.placa||'').toUpperCase().includes(placa);
     const campoData = (status === 'Liberado' && r.data_liberacao) ? r.data_liberacao : r.criado_em;
     const dataItem = campoData ? new Date(campoData) : null;
     const matchDe = !de || (dataItem && dataItem >= new Date(de));
     const matchAte = !ate || (dataItem && dataItem <= new Date(ate + 'T23:59:59'));
-    return matchStatus && matchQ && matchPlaca && matchDe && matchAte;
+    return matchStatus && matchSvc && matchQ && matchPlaca && matchDe && matchAte;
   });
 
   renderTabela(f);
