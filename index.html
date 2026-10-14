@@ -394,10 +394,10 @@ input[type=file] { display: none; }
         <button class="btn btn-yellow" onclick="abrirForm()">+ Indicar motorista</button>
       </div>
       <div class="metrics-grid">
-        <div class="metric-card blue"><div class="metric-value" style="color:var(--blue)" id="mValidacao">—</div><div class="metric-label">Em validacao</div></div>
-        <div class="metric-card green"><div class="metric-value" style="color:var(--green)" id="mAprovado">—</div><div class="metric-label">Aprovados</div></div>
+        <div class="metric-card blue"><div class="metric-value" style="color:var(--blue)" id="mValidacao">—</div><div class="metric-label">Em andamento</div></div>
+        <div class="metric-card green"><div class="metric-value" style="color:var(--green)" id="mAprovado">—</div><div class="metric-label">Liberados</div></div>
         <div class="metric-card amber"><div class="metric-value" style="color:var(--amber)" id="mPendente">—</div><div class="metric-label">Pendências</div></div>
-        <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="mReprovado">—</div><div class="metric-label">Reprovados</div></div>
+        <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="mReprovado">—</div><div class="metric-label">Encerrados</div></div>
       </div>
       <div class="priority-map-block">
         <div class="priority-map-title">Prioridades de indicação agora</div>
@@ -411,9 +411,6 @@ input[type=file] { display: none; }
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
             <select class="filter-select" id="filtroStatusEtc" onchange="filtrarEtc()">
               <option value="">Todos os status</option>
-              <option>Em validacao</option><option>Documento incorreto</option><option>Aprovado</option>
-              <option>Reprovado</option><option>Pendente GUEP</option><option>Cancelado</option>
-              <option>Licenciamento</option><option>Declinio</option><option>Em treinamento</option><option>Liberado</option><option>Contato realizado</option>
             </select>
             <select class="filter-select" id="filtroSvcEtc" onchange="filtrarEtc()"><option value="">Todos os SVC</option></select>
             <input type="date" class="filter-select" id="filtroDeEtc" onchange="filtrarEtc()" style="color-scheme:dark;cursor:pointer">
@@ -473,9 +470,6 @@ input[type=file] { display: none; }
             <select class="filter-select" id="filtroAssistente" onchange="filtrarAdmin()"><option value="">Todos os assistentes</option></select>
             <select class="filter-select" id="filtroStatus" onchange="filtrarAdmin()">
               <option value="">Todos os status</option>
-              <option>Em validacao</option><option>Documento incorreto</option><option>Aprovado</option>
-              <option>Reprovado</option><option>Pendente GUEP</option><option>Cancelado</option><option>Licenciamento</option>
-              <option>Declinio</option><option>Em treinamento</option><option>Liberado</option><option>Contato realizado</option>
             </select>
             <select class="filter-select" id="filtroOperacao" onchange="filtrarAdmin()">
               <option value="">Todas as operacoes</option>
@@ -515,10 +509,10 @@ input[type=file] { display: none; }
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-bottom:28px">
-        <div class="metric-card blue" style="cursor:pointer" onclick="filtrarPorStatus('Em validacao')"><div class="metric-value" style="color:var(--blue)" id="amValidacao">0</div><div class="metric-label">Em validacao</div></div>
-        <div class="metric-card green" style="cursor:pointer" onclick="filtrarPorStatus('Aprovado')"><div class="metric-value" style="color:var(--green)" id="amAprovado">0</div><div class="metric-label">Aprovados</div></div>
+        <div class="metric-card blue" style="cursor:pointer" onclick="filtrarPorStatus('andamento')"><div class="metric-value" style="color:var(--blue)" id="amValidacao">0</div><div class="metric-label">Em andamento</div></div>
+        <div class="metric-card green" style="cursor:pointer" onclick="filtrarPorStatus('Liberado')"><div class="metric-value" style="color:var(--green)" id="amAprovado">0</div><div class="metric-label">Liberados</div></div>
         <div class="metric-card amber" style="cursor:pointer" onclick="filtrarPorStatus('pendencias')"><div class="metric-value" style="color:var(--amber)" id="amPendente">0</div><div class="metric-label">Pendencias</div></div>
-        <div class="metric-card red" style="cursor:pointer" onclick="filtrarPorStatus('Reprovado')"><div class="metric-value" style="color:var(--red)" id="amReprovado">0</div><div class="metric-label">Reprovados</div></div>
+        <div class="metric-card red" style="cursor:pointer" onclick="filtrarPorStatus('encerrados')"><div class="metric-value" style="color:var(--red)" id="amReprovado">0</div><div class="metric-label">Encerrados</div></div>
         <div class="metric-card" style="border-top-color:var(--yellow)"><div class="metric-value" style="color:var(--yellow)" id="amHoje">0</div><div class="metric-label">Hoje</div></div>
         <div class="metric-card" style="border-top-color:var(--purple)"><div class="metric-value" style="color:var(--purple)" id="amTaxa">0%</div><div class="metric-label">Taxa aprovacao</div></div>
       </div>
@@ -544,10 +538,10 @@ input[type=file] { display: none; }
         </div>
       </div>
       <div class="metrics-grid">
-        <div class="metric-card blue"><div class="metric-value" style="color:var(--blue)" id="etcAmValidacao">—</div><div class="metric-label">Em validacao</div></div>
-        <div class="metric-card green"><div class="metric-value" style="color:var(--green)" id="etcAmAprovado">—</div><div class="metric-label">Aprovados</div></div>
+        <div class="metric-card blue"><div class="metric-value" style="color:var(--blue)" id="etcAmValidacao">—</div><div class="metric-label">Em andamento</div></div>
+        <div class="metric-card green"><div class="metric-value" style="color:var(--green)" id="etcAmAprovado">—</div><div class="metric-label">Liberados</div></div>
         <div class="metric-card amber"><div class="metric-value" style="color:var(--amber)" id="etcAmPendente">—</div><div class="metric-label">Pendências</div></div>
-        <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="etcAmReprovado">—</div><div class="metric-label">Reprovados</div></div>
+        <div class="metric-card red"><div class="metric-value" style="color:var(--red)" id="etcAmReprovado">—</div><div class="metric-label">Encerrados</div></div>
       </div>
       <div class="table-card">
         <div class="table-toolbar">
@@ -555,9 +549,6 @@ input[type=file] { display: none; }
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
             <select class="filter-select" id="filtroStatusEtcAm" onchange="filtrarEtcAdmin2()">
               <option value="">Todos os status</option>
-              <option>Em validacao</option><option>Documento incorreto</option><option>Aprovado</option>
-              <option>Reprovado</option><option>Pendente GUEP</option><option>Cancelado</option>
-              <option>Licenciamento</option><option>Declinio</option><option>Em treinamento</option><option>Liberado</option><option>Contato realizado</option>
             </select>
             <input type="date" class="filter-select" id="filtroDeEtcAm" onchange="filtrarEtcAdmin2()" style="color-scheme:dark;cursor:pointer">
             <input type="date" class="filter-select" id="filtroAteEtcAm" onchange="filtrarEtcAdmin2()" style="color-scheme:dark;cursor:pointer">
@@ -1024,11 +1015,33 @@ const ADMIN_EMAILS = [
 const OPERACAO_LIMITADA_EXTRA = [
 ];
 
+// Status vigentes (ordem usada nos filtros e no seletor de status)
+const STATUS_LIST = ['Pendente de acionamento','Documento incorreto','Em cadastro','Agd. Retorno do Motorista','Em treinamento','Liberado','Numero Invalido','Erro no App (Chamado TI)','Encerrado: Cancelado','Encerrado: Placa Reprovada','Encerrado: Falta de retorno','Encerrado: Motorista Reprovado'];
+// Status antigos que ainda podem existir no banco (Aprovado e Reprovado seguem sem equivalente definido)
+const STATUS_LEGADO = ['Aprovado','Reprovado'];
+// Grupos usados nos cards e graficos
+const STATUS_ANDAMENTO = ['Pendente de acionamento','Em cadastro','Agd. Retorno do Motorista','Em treinamento'];
+const STATUS_PENDENCIA = ['Documento incorreto','Numero Invalido','Erro no App (Chamado TI)'];
+const STATUS_LIBERADO = ['Liberado','Aprovado'];
+const STATUS_ENCERRADO = ['Encerrado: Cancelado','Encerrado: Placa Reprovada','Encerrado: Falta de retorno','Encerrado: Motorista Reprovado','Reprovado'];
 const STATUS_MAP = {
-  'Em validacao':'b-validacao','Documento incorreto':'b-doc','Aprovado':'b-aprovado',
-  'Reprovado':'b-reprovado','Pendente GUEP':'b-pendente','Cancelado':'b-cancelado','Licenciamento':'b-licenciamento','Declinio':'b-reprovado','Em treinamento':'b-pendente','Liberado':'b-aprovado','Contato realizado':'b-validacao'
+  'Pendente de acionamento':'b-validacao','Em cadastro':'b-validacao','Agd. Retorno do Motorista':'b-validacao',
+  'Em treinamento':'b-pendente','Documento incorreto':'b-doc','Numero Invalido':'b-doc','Erro no App (Chamado TI)':'b-licenciamento',
+  'Liberado':'b-aprovado','Encerrado: Cancelado':'b-cancelado','Encerrado: Placa Reprovada':'b-reprovado',
+  'Encerrado: Falta de retorno':'b-reprovado','Encerrado: Motorista Reprovado':'b-reprovado',
+  'Aprovado':'b-aprovado','Reprovado':'b-reprovado',
+  // nomes antigos (enquanto a migracao do banco nao roda)
+  'Em validacao':'b-validacao','Pendente GUEP':'b-pendente','Cancelado':'b-cancelado','Licenciamento':'b-licenciamento','Declinio':'b-reprovado','Contato realizado':'b-validacao'
 };
-const STATUS_LIST = ['Em validacao','Documento incorreto','Aprovado','Reprovado','Pendente GUEP','Cancelado','Licenciamento','Declinio','Em treinamento','Liberado','Contato realizado'];
+function contarStatus(lista, grupo) { return lista.filter(i => grupo.indexOf(i.status) !== -1).length; }
+function popularFiltrosStatus() {
+  ['filtroStatusEtc','filtroStatus','filtroStatusEtcAm'].forEach(function(id) {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Todos os status</option>' + STATUS_LIST.concat(STATUS_LEGADO).map(function(st) { return '<option>' + st + '</option>'; }).join('');
+  });
+}
+popularFiltrosStatus();
 
 let sessao = null;
 let todasIndicacoes = [];
@@ -1411,10 +1424,10 @@ async function carregarIndicacoes() {
 }
 
 function atualizarMetricas(lista) {
-  document.getElementById('mValidacao').textContent = lista.filter(i => i.status === 'Em validacao').length;
-  document.getElementById('mAprovado').textContent = lista.filter(i => i.status === 'Aprovado' || i.status === 'Liberado').length;
-  document.getElementById('mPendente').textContent = lista.filter(i => ['Pendente GUEP','Documento incorreto','Licenciamento'].includes(i.status)).length;
-  document.getElementById('mReprovado').textContent = lista.filter(i => i.status === 'Reprovado').length;
+  document.getElementById('mValidacao').textContent = contarStatus(lista, STATUS_ANDAMENTO);
+  document.getElementById('mAprovado').textContent = contarStatus(lista, STATUS_LIBERADO);
+  document.getElementById('mPendente').textContent = contarStatus(lista, STATUS_PENDENCIA);
+  document.getElementById('mReprovado').textContent = contarStatus(lista, STATUS_ENCERRADO);
   document.getElementById('countBadge').textContent = lista.length + ' indicacoes';
 }
 
@@ -1430,7 +1443,7 @@ function renderTabela(lista) {
     const dataCriacao = r.criado_em ? new Date(r.criado_em).toLocaleDateString('pt-BR') : '';
     const dataLiberacao = r.data_liberacao ? new Date(r.data_liberacao).toLocaleDateString('pt-BR') : '';
     const dataAtualizacao = r.atualizado_em ? new Date(r.atualizado_em) : null;
-    const isNovo = dataAtualizacao && (agora - dataAtualizacao) < 48 * 60 * 60 * 1000 && r.status !== 'Em validacao';
+    const isNovo = dataAtualizacao && (agora - dataAtualizacao) < 48 * 60 * 60 * 1000 && r.status !== 'Pendente de acionamento';
     const tr = document.createElement('tr');
     tr.style.cursor = 'pointer';
     tr.addEventListener('click', (function(row) { return function() { abrirDrawer(row, false); }; })(r));
@@ -1542,7 +1555,7 @@ async function carregarAdmin() {
 }
 
 function atualizarMetricasAdmin(lista) {
-  const aprovados = lista.filter(i => i.status === 'Aprovado' || i.status === 'Liberado').length;
+  const aprovados = contarStatus(lista, STATUS_LIBERADO);
   const total = lista.length;
   const hoje = new Date().toLocaleDateString('pt-BR');
   const novasHoje = lista.filter(i => {
@@ -1551,10 +1564,10 @@ function atualizarMetricasAdmin(lista) {
   }).length;
   const taxa = total > 0 ? Math.round((aprovados / total) * 100) : 0;
 
-  document.getElementById('amValidacao').textContent = lista.filter(i => i.status === 'Em validacao').length;
+  document.getElementById('amValidacao').textContent = contarStatus(lista, STATUS_ANDAMENTO);
   document.getElementById('amAprovado').textContent = aprovados;
-  document.getElementById('amPendente').textContent = lista.filter(i => ['Pendente GUEP','Documento incorreto','Licenciamento'].includes(i.status)).length;
-  document.getElementById('amReprovado').textContent = lista.filter(i => i.status === 'Reprovado').length;
+  document.getElementById('amPendente').textContent = contarStatus(lista, STATUS_PENDENCIA);
+  document.getElementById('amReprovado').textContent = contarStatus(lista, STATUS_ENCERRADO);
   document.getElementById('amHoje').textContent = novasHoje;
   document.getElementById('amTaxa').textContent = taxa + '%';
   document.getElementById('adminTotal').textContent = total + ' indicacoes no total';
@@ -1665,7 +1678,8 @@ function abrirDrawer(r, isAdmin) {
   let adminSection = '';
 
   if (isAdmin) {
-    const opts = STATUS_LIST.map(s => '<option ' + (s===r.status?'selected':'') + '>' + s + '</option>').join('');
+    const listaOpts = (r.status && STATUS_LIST.indexOf(r.status) === -1) ? [r.status].concat(STATUS_LIST) : STATUS_LIST;
+    const opts = listaOpts.map(s => '<option ' + (s===r.status?'selected':'') + '>' + s + '</option>').join('');
     adminSection = `
       <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
         <div style="font-size:11px;color:var(--yellow);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Atualizar caso</div>
@@ -1897,7 +1911,7 @@ async function enviarReenvio() {
     }
     if (Object.keys(updates).length === 0) { alert('Selecione pelo menos um documento.'); return; }
     const statusAnterior = indicacao.status;
-    updates.status = 'Em validacao';
+    updates.status = 'Pendente de acionamento';
     updates.atualizado_em = new Date();
     const { data: updData, error } = await sb.from('indicacoes').update(updates).eq('id', id).select();
     if (error) throw error;
@@ -1906,14 +1920,14 @@ async function enviarReenvio() {
     await sb.from('historico_status').insert([{
       indicacao_id: id,
       status_anterior: statusAnterior,
-      status_novo: 'Em validacao',
+      status_novo: 'Pendente de acionamento',
       assistente: sessao.etc || sessao.nome || sessao.email,
       observacao: 'Transportadora reenviou documento(s): ' + Object.keys(updates).filter(k => k.endsWith('_link')).join(', ')
     }]);
 
     fecharReenvio();
     carregarIndicacoes();
-    alert('Documentos reenviados! Status alterado para Em validacao.');
+    alert('Documentos reenviados! Status alterado para Pendente de acionamento.');
   } catch(e) { alert('Erro: ' + e.message); }
 }
 
@@ -2122,7 +2136,7 @@ async function enviarIndicacao(){
       crlv_link:crlvUrl.publicUrl,
       tipo_operacao:document.getElementById('fTipoOp').value,
       operacao_preferencia:document.getElementById('fOpPref').value,
-      status:'Em validacao',
+      status:'Pendente de acionamento',
       cpf_duplicado_flag: cpfDuplicadoFlag,
       cpf_duplicado_info: cpfDuplicadoInfo
     }]);
@@ -2555,10 +2569,10 @@ async function carregarEtcAdmin() {
   try {
     const { data } = await sb.from('indicacoes').select('*').order('criado_em', { ascending: false }).order('id', { ascending: false }).range(0, 19999);
     const lista = data || [];
-    document.getElementById('etcAmValidacao').textContent = lista.filter(i => i.status === 'Em validacao').length;
-    document.getElementById('etcAmAprovado').textContent = lista.filter(i => i.status === 'Aprovado' || i.status === 'Liberado').length;
-    document.getElementById('etcAmPendente').textContent = lista.filter(i => ['Pendente GUEP','Documento incorreto','Licenciamento'].includes(i.status)).length;
-    document.getElementById('etcAmReprovado').textContent = lista.filter(i => i.status === 'Reprovado').length;
+    document.getElementById('etcAmValidacao').textContent = contarStatus(lista, STATUS_ANDAMENTO);
+    document.getElementById('etcAmAprovado').textContent = contarStatus(lista, STATUS_LIBERADO);
+    document.getElementById('etcAmPendente').textContent = contarStatus(lista, STATUS_PENDENCIA);
+    document.getElementById('etcAmReprovado').textContent = contarStatus(lista, STATUS_ENCERRADO);
     document.getElementById('etcAmCount').textContent = lista.length + ' indicacoes';
     renderEtcAdmin(lista);
   } catch(e) {
@@ -2646,7 +2660,7 @@ function renderChart() {
     const etc = r.etc || 'Sem ETC';
     if (!etcMap[etc]) etcMap[etc] = { total: 0, aprovados: 0 };
     etcMap[etc].total++;
-    if (r.status === 'Aprovado' || r.status === 'Liberado') etcMap[etc].aprovados++;
+    if (STATUS_LIBERADO.indexOf(r.status) !== -1) etcMap[etc].aprovados++;
   });
 
   // Sort by total desc, take top 15
@@ -2730,7 +2744,7 @@ function limparPeriodo() {
 }
 
 function renderAllCharts() { atualizarMetricasAdmin(getFilteredData()); renderChart(); renderStatusChart(); renderTimelineChart(); renderOperacaoChart(); renderVeiculoChart(); renderAssistenteChart(); }
-function filtrarPorStatus(status) { switchTab('admin'); document.getElementById('filtroStatus').value = (status === 'pendencias') ? '' : status; filtrarAdmin(); }
+function filtrarPorStatus(status) { switchTab('admin'); document.getElementById('filtroStatus').value = (['pendencias','andamento','encerrados'].indexOf(status) !== -1) ? '' : status; filtrarAdmin(); }
 function getFilteredData() {
   var de = document.getElementById('chartDe') ? document.getElementById('chartDe').value : '';
   var ate = document.getElementById('chartAte') ? document.getElementById('chartAte').value : '';
@@ -2747,11 +2761,11 @@ function getFilteredData() {
 var chartInstances = {};
 function destroyChart(id) { if (chartInstances[id]) { chartInstances[id].destroy(); chartInstances[id] = null; } }
 function limparPeriodo() { document.getElementById('chartDe').value = ''; document.getElementById('chartAte').value = ''; renderAllCharts(); }
-function renderStatusChart() { var lista = getFilteredData(); var canvas = document.getElementById('statusChart'); if (!canvas) return; destroyChart('status'); var sMap = {}; lista.forEach(function(r) { var s = r.status || 'Sem status'; sMap[s] = (sMap[s]||0) + 1; }); var colors = {'Em validacao':'#3B82F6','Aprovado':'#10B981','Reprovado':'#EF4444','Documento incorreto':'#F59E0B','Pendente GUEP':'#F59E0B','Cancelado':'#7A8BA8','Licenciamento':'#8B5CF6','Declinio':'#EF4444','Em treinamento':'#F59E0B','Liberado':'#10B981','Contato realizado':'#3B82F6'}; chartInstances['status'] = new Chart(canvas.getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(sMap), datasets: [{ data: Object.values(sMap), backgroundColor: Object.keys(sMap).map(function(s) { return colors[s]||'#7A8BA8'; }), borderWidth: 2, borderColor: '#111827' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#7A8BA8', font: { size: 11 }, boxWidth: 12 } } } } }); }
+function renderStatusChart() { var lista = getFilteredData(); var canvas = document.getElementById('statusChart'); if (!canvas) return; destroyChart('status'); var sMap = {}; lista.forEach(function(r) { var s = r.status || 'Sem status'; sMap[s] = (sMap[s]||0) + 1; }); var colors = {'Pendente de acionamento':'#3B82F6','Em cadastro':'#60A5FA','Agd. Retorno do Motorista':'#93C5FD','Em treinamento':'#F59E0B','Documento incorreto':'#FBBF24','Numero Invalido':'#F97316','Erro no App (Chamado TI)':'#8B5CF6','Liberado':'#10B981','Aprovado':'#10B981','Encerrado: Cancelado':'#7A8BA8','Encerrado: Placa Reprovada':'#EF4444','Encerrado: Falta de retorno':'#F87171','Encerrado: Motorista Reprovado':'#B91C1C','Reprovado':'#EF4444','Em validacao':'#3B82F6','Pendente GUEP':'#F59E0B','Cancelado':'#7A8BA8','Licenciamento':'#8B5CF6','Declinio':'#EF4444','Contato realizado':'#3B82F6'}; chartInstances['status'] = new Chart(canvas.getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(sMap), datasets: [{ data: Object.values(sMap), backgroundColor: Object.keys(sMap).map(function(s) { return colors[s]||'#7A8BA8'; }), borderWidth: 2, borderColor: '#111827' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#7A8BA8', font: { size: 11 }, boxWidth: 12 } } } } }); }
 function renderTimelineChart() { var lista = getFilteredData(); var canvas = document.getElementById('timelineChart'); if (!canvas) return; destroyChart('timeline'); var dayMap = {}; lista.forEach(function(r) { if (!r.criado_em) return; var day = new Date(r.criado_em).toLocaleDateString('pt-BR'); dayMap[day] = (dayMap[day]||0) + 1; }); var sorted = Object.entries(dayMap).sort(function(a,b) { var pa = a[0].split('/'); var pb = b[0].split('/'); return new Date(pa[2],pa[1]-1,pa[0]) - new Date(pb[2],pb[1]-1,pb[0]); }); chartInstances['timeline'] = new Chart(canvas.getContext('2d'), { type: 'line', data: { labels: sorted.map(function(x){return x[0];}), datasets: [{ label: 'Indicacoes', data: sorted.map(function(x){return x[1];}), borderColor: '#FFE600', backgroundColor: 'rgba(255,230,0,.1)', borderWidth: 2, pointBackgroundColor: '#FFE600', tension: 0.3, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#7A8BA8', font: { size: 10 } }, grid: { color: '#1E2D45' } }, y: { ticks: { color: '#7A8BA8' }, grid: { color: '#1E2D45' } } } } }); }
 function renderOperacaoChart() { var lista = getFilteredData(); var canvas = document.getElementById('operacaoChart'); if (!canvas) return; destroyChart('operacao'); var fm = lista.filter(function(r){return r.tipo_operacao==='First Mile';}).length; var lm = lista.filter(function(r){return r.tipo_operacao==='Last Mile';}).length; var full = lista.filter(function(r){return r.tipo_operacao==='Full';}).length; chartInstances['operacao'] = new Chart(canvas.getContext('2d'), { type: 'doughnut', data: { labels: ['First Mile','Last Mile','Full'], datasets: [{ data: [fm,lm,full], backgroundColor: ['#3B82F6','#10B981','#F59E0B'], borderWidth: 2, borderColor: '#111827' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#7A8BA8', font: { size: 12 } } } } } }); }
 function renderVeiculoChart() { var lista = getFilteredData(); var canvas = document.getElementById('veiculoChart'); if (!canvas) return; destroyChart('veiculo'); var vMap = {}; lista.forEach(function(r){ var v = r.tipo_veiculo||'Outros'; vMap[v]=(vMap[v]||0)+1; }); var sorted = Object.entries(vMap).sort(function(a,b){return b[1]-a[1];}); chartInstances['veiculo'] = new Chart(canvas.getContext('2d'), { type: 'bar', data: { labels: sorted.map(function(x){return x[0];}), datasets: [{ label: 'Quantidade', data: sorted.map(function(x){return x[1];}), backgroundColor: 'rgba(139,92,246,.7)', borderColor: 'rgba(139,92,246,1)', borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#7A8BA8', font: { size: 11 } }, grid: { color: '#1E2D45' } }, y: { ticks: { color: '#7A8BA8' }, grid: { color: '#1E2D45' } } } } }); }
-function renderAssistenteChart() { var lista = getFilteredData(); var canvas = document.getElementById('assistenteChart'); if (!canvas) return; destroyChart('assistente'); var aMap = {}; lista.forEach(function(r){ var a = r.assistente||'Sem assistente'; if(!aMap[a]) aMap[a]={total:0,aprovados:0}; aMap[a].total++; if(r.status==='Aprovado'||r.status==='Liberado') aMap[a].aprovados++; }); var sorted = Object.entries(aMap).sort(function(a,b){return b[1].total-a[1].total;}).slice(0,10); chartInstances['assistente'] = new Chart(canvas.getContext('2d'), { type: 'bar', data: { labels: sorted.map(function(x){return x[0].split('@')[0].split('.').slice(0,2).join('.');}), datasets: [{ label: 'Total', data: sorted.map(function(x){return x[1].total;}), backgroundColor: 'rgba(59,130,246,.7)', borderColor: 'rgba(59,130,246,1)', borderWidth: 1, yAxisID: 'y' }, { label: 'Taxa aprov %', data: sorted.map(function(x){return x[1].total>0?Math.round((x[1].aprovados/x[1].total)*100):0;}), type: 'line', borderColor: '#10B981', backgroundColor: 'transparent', borderWidth: 2, pointBackgroundColor: '#10B981', yAxisID: 'y2', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#7A8BA8', font: { size: 10 } } } }, scales: { x: { ticks: { color: '#7A8BA8', font: { size: 10 } }, grid: { color: '#1E2D45' } }, y: { ticks: { color: '#7A8BA8' }, grid: { color: '#1E2D45' } }, y2: { position: 'right', min: 0, max: 100, ticks: { color: '#7A8BA8', callback: function(v){return v+'%';} }, grid: { drawOnChartArea: false } } } } }); }
+function renderAssistenteChart() { var lista = getFilteredData(); var canvas = document.getElementById('assistenteChart'); if (!canvas) return; destroyChart('assistente'); var aMap = {}; lista.forEach(function(r){ var a = r.assistente||'Sem assistente'; if(!aMap[a]) aMap[a]={total:0,aprovados:0}; aMap[a].total++; if(STATUS_LIBERADO.indexOf(r.status)!==-1) aMap[a].aprovados++; }); var sorted = Object.entries(aMap).sort(function(a,b){return b[1].total-a[1].total;}).slice(0,10); chartInstances['assistente'] = new Chart(canvas.getContext('2d'), { type: 'bar', data: { labels: sorted.map(function(x){return x[0].split('@')[0].split('.').slice(0,2).join('.');}), datasets: [{ label: 'Total', data: sorted.map(function(x){return x[1].total;}), backgroundColor: 'rgba(59,130,246,.7)', borderColor: 'rgba(59,130,246,1)', borderWidth: 1, yAxisID: 'y' }, { label: 'Taxa aprov %', data: sorted.map(function(x){return x[1].total>0?Math.round((x[1].aprovados/x[1].total)*100):0;}), type: 'line', borderColor: '#10B981', backgroundColor: 'transparent', borderWidth: 2, pointBackgroundColor: '#10B981', yAxisID: 'y2', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#7A8BA8', font: { size: 10 } } } }, scales: { x: { ticks: { color: '#7A8BA8', font: { size: 10 } }, grid: { color: '#1E2D45' } }, y: { ticks: { color: '#7A8BA8' }, grid: { color: '#1E2D45' } }, y2: { position: 'right', min: 0, max: 100, ticks: { color: '#7A8BA8', callback: function(v){return v+'%';} }, grid: { drawOnChartArea: false } } } } }); }
 
 function exportarExcel() {
   const etc = document.getElementById('filtroEtc').value;
